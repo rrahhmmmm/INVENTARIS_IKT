@@ -80,9 +80,9 @@ END
      */
     public function down(): void
     {   //drop trigger
-        db::unprepared('drop trigger if exists trg_m_lokasi_insert');
-        db::unprepared('drop trigger if exists trg_m_lokasi_update');
-        db::unprepared('drop trigger if exists trg_m_lokasi_delete');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_m_lokasi_insert');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_m_lokasi_update');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_m_lokasi_delete');
        //drop table
         Schema::dropIfExists('M_LOKASI');
     }
