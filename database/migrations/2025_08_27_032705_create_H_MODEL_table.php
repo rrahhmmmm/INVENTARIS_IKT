@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_MODEL', function (Blueprint $table) {
+        Schema::create('H_M_MODEL', function (Blueprint $table) {
             $table->integer('IDH_MODEL', true);
             $table->integer('ID_MODEL');
             $table->string('NAMA_MODEL', 20);

@@ -32,7 +32,7 @@ return new class extends Migration
             AFTER INSERT ON M_MODEL
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_MODEL
+                INSERT INTO H_M_MODEL
                 (ID_MODEL, NAMA_MODEL, KETERANGAN,
                  create_by, create_date, update_by, update_date, status,
                  attr1, attr2, attr3)
@@ -49,7 +49,7 @@ return new class extends Migration
             AFTER UPDATE ON M_MODEL
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_MODEL
+                INSERT INTO H_M_MODEL
                 (ID_MODEL, NAMA_MODEL, KETERANGAN,
                  create_by, create_date, update_by, update_date, status,
                  attr1, attr2, attr3)
@@ -66,7 +66,7 @@ return new class extends Migration
             AFTER DELETE ON M_MODEL
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_MODEL
+                INSERT INTO H_M_MODEL
                 (ID_MODEL, NAMA_MODEL, KETERANGAN,
                  create_by, create_date, update_by, update_date, status,
                  attr1, attr2, attr3)

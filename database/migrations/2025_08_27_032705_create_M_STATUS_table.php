@@ -32,7 +32,7 @@ return new class extends Migration
             AFTER INSERT ON M_STATUS
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_STATUS
+                INSERT INTO H_M_STATUS
                 (ID_STATUS, nama_status, keterangan, create_by, create_date, update_by, update_date, status,
                  attr1, attr2, attr3)
                 VALUES
@@ -47,7 +47,7 @@ return new class extends Migration
             AFTER UPDATE ON M_STATUS
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_STATUS
+                INSERT INTO H_M_STATUS
                 (ID_STATUS, nama_status, keterangan, create_by, create_date, update_by, update_date, status,
                  attr1, attr2, attr3)
                 VALUES
@@ -62,7 +62,7 @@ return new class extends Migration
             AFTER DELETE ON M_STATUS
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_STATUS
+                INSERT INTO H_M_STATUS
                 (ID_STATUS, nama_status, keterangan, create_by, create_date, update_by, update_date, status,
                  attr1, attr2, attr3)
                 VALUES

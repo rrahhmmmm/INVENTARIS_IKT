@@ -34,7 +34,7 @@ return new class extends Migration
             AFTER INSERT ON M_USER
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_USER
+                INSERT INTO H_M_USER
                 (ID_USER, username, password, email, full_name, create_by, create_date,
                  update_by, update_date, status, param1, param2, param3)
                 VALUES
@@ -49,7 +49,7 @@ return new class extends Migration
             AFTER UPDATE ON M_USER
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_USER
+                INSERT INTO H_M_USER
                 (ID_USER, username, password, email, full_name, create_by, create_date,
                  update_by, update_date, status, param1, param2, param3)
                 VALUES
@@ -64,7 +64,7 @@ return new class extends Migration
             AFTER DELETE ON M_USER
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_USER
+                INSERT INTO H_M_USER
                 (ID_USER, username, password, email, full_name, create_by, create_date,
                  update_by, update_date, status, param1, param2, param3)
                 VALUES

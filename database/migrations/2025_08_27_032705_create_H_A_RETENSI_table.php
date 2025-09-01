@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_A_RETENSI', function (Blueprint $table) {
+        Schema::create('H_M_A_RETENSI', function (Blueprint $table) {
             $table->integer('IDH_RETENSI', true);
             $table->integer('id_retensi')->nullable();
             $table->string('jenis_arsip', 150);

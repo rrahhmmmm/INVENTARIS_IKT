@@ -33,7 +33,7 @@ return new class extends Migration
             AFTER INSERT ON M_ROLE
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_ROLE
+                INSERT INTO H_M_ROLE
                 (ID_role, Nama_role, keterangan, ID_user, create_by, create_date, update_by, update_date, status,
                  param1, param2, param3)
                 VALUES
@@ -48,7 +48,7 @@ return new class extends Migration
             AFTER UPDATE ON M_ROLE
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_ROLE
+                INSERT INTO H_M_ROLE
                 (ID_role, Nama_role, keterangan, ID_user, create_by, create_date, update_by, update_date, status,
                  param1, param2, param3)
                 VALUES
@@ -63,7 +63,7 @@ return new class extends Migration
             AFTER DELETE ON M_ROLE
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_ROLE
+                INSERT INTO H_M_ROLE
                 (ID_role, Nama_role, keterangan, ID_user, create_by, create_date, update_by, update_date, status,
                  param1, param2, param3)
                 VALUES

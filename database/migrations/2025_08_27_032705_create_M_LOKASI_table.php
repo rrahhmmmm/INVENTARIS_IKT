@@ -28,7 +28,7 @@ return new class extends Migration
         DB::unprepared ('
         CREATE TRIGGER `trg_m_lokasi_delete` AFTER DELETE ON `M_LOKASI`
  FOR EACH ROW BEGIN 
-    INSERT INTO H_LOKASI (
+    INSERT INTO H_M_LOKASI (
         ID_LOKASI, nama_lokasi, alamat, ID_terminal,
         create_by, create_date, update_by, update_date,
         status, param1, param2, param3
@@ -44,7 +44,7 @@ END
     DB::unprepared ('
 CREATE TRIGGER `trg_m_lokasi_insert` AFTER INSERT ON `M_LOKASI`
  FOR EACH ROW BEGIN
-    INSERT INTO H_LOKASI (
+    INSERT INTO H_M_LOKASI (
         ID_LOKASI, nama_lokasi, alamat, ID_terminal,
         create_by, create_date, update_by, update_date,
         status, param1, param2, param3
@@ -60,7 +60,7 @@ END
     DB::unprepared ('
     CREATE TRIGGER `trg_m_lokasi_update` AFTER UPDATE ON `M_LOKASI`
     FOR EACH ROW BEGIN
-    INSERT INTO H_LOKASI (
+    INSERT INTO H_M_LOKASI (
         ID_LOKASI, nama_lokasi, alamat, ID_terminal,
         create_by, create_date, update_by, update_date,
         status, param1, param2, param3

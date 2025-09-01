@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_ANGGARAN', function (Blueprint $table) {
+        Schema::create('H_M_ANGGARAN', function (Blueprint $table) {
             $table->integer('IDH_ANGGARAN', true);
             $table->integer('ID_ANGGARAN');
             $table->enum('nama_anggaran', ['opex', 'capex']);

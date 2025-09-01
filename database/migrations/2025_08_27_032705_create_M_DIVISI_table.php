@@ -32,7 +32,7 @@ return new class extends Migration
             AFTER INSERT ON M_DIVISI
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_DIVISI
+                INSERT INTO H_M_DIVISI
                 (ID_DIVISI, NAMA_DIVISI, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, deskripsi, STATUS,
                  attr1, attr2, attr3)
                 VALUES
@@ -47,7 +47,7 @@ return new class extends Migration
             AFTER UPDATE ON M_DIVISI
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_DIVISI
+                INSERT INTO H_M_DIVISI
                 (ID_DIVISI, NAMA_DIVISI, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, deskripsi, STATUS,
                  attr1, attr2, attr3)
                 VALUES
@@ -62,7 +62,7 @@ return new class extends Migration
             AFTER DELETE ON M_DIVISI
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_DIVISI
+                INSERT INTO H_M_DIVISI
                 (ID_DIVISI, NAMA_DIVISI, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, deskripsi, STATUS,
                  attr1, attr2, attr3)
                 VALUES

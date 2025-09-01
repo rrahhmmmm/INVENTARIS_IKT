@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_LOKASI', function (Blueprint $table) {
+        Schema::create('H_M_LOKASI', function (Blueprint $table) {
             $table->integer('IDH_LOKASI', true);
             $table->integer('ID_LOKASI');
             $table->string('nama_lokasi', 20);

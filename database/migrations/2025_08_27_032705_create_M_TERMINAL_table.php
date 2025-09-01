@@ -33,7 +33,7 @@ return new class extends Migration
             AFTER INSERT ON M_TERMINAL
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_TERMINAL
+                INSERT INTO H_M_TERMINAL
                 (ID_TERMINAL, KODE_TERMINAL, NAMA_TERMINAL, LOKASI, CREATE_BY, CREATE_DATE,
                  UPDATE_BY, UPDATE_DATE, STATUS, attr1, attr2, attr3)
                 VALUES
@@ -48,7 +48,7 @@ return new class extends Migration
             AFTER UPDATE ON M_TERMINAL
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_TERMINAL
+                INSERT INTO H_M_TERMINAL
                 (ID_TERMINAL, KODE_TERMINAL, NAMA_TERMINAL, LOKASI, CREATE_BY, CREATE_DATE,
                  UPDATE_BY, UPDATE_DATE, STATUS, attr1, attr2, attr3)
                 VALUES
@@ -63,7 +63,7 @@ return new class extends Migration
             AFTER DELETE ON M_TERMINAL
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_TERMINAL
+                INSERT INTO H_M_ERMINAL
                 (ID_TERMINAL, KODE_TERMINAL, NAMA_TERMINAL, LOKASI, CREATE_BY, CREATE_DATE,
                  UPDATE_BY, UPDATE_DATE, STATUS, attr1, attr2, attr3)
                 VALUES

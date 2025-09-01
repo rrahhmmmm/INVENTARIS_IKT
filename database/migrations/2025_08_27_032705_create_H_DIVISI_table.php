@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_DIVISI', function (Blueprint $table) {
+        Schema::create('H_M_DIVISI', function (Blueprint $table) {
             $table->integer('IDH_DIVSI', true);
             $table->integer('ID_DIVISI')->nullable();
             $table->string('NAMA_DIVISI', 100);

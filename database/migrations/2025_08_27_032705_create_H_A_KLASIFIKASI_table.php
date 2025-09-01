@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_A_KLASIFIKASI', function (Blueprint $table) {
+        Schema::create('H_M_A_KLASIFIKASI', function (Blueprint $table) {
             $table->integer('IDH_KLASIFIKASI', true);
             $table->integer('ID_KLASIFIKASI')->nullable();
             $table->string('KODE_KLASIFIKASI', 100);

@@ -37,7 +37,7 @@ return new class extends Migration
             AFTER INSERT ON T_BARANG
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_BARANG
+                INSERT INTO H_M_BARANG
                 (ID_BARANG, KODE_BARANG, NAMA_BARANG, ID_TIPE, ID_STATUS, ID_LOKASI, ID_ANGGARAN, ID_PARAMETER,
                  create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
                 VALUES
@@ -53,7 +53,7 @@ return new class extends Migration
             AFTER UPDATE ON T_BARANG
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_BARANG
+                INSERT INTO H_M_BARANG
                 (ID_BARANG, KODE_BARANG, NAMA_BARANG, ID_TIPE, ID_STATUS, ID_LOKASI, ID_ANGGARAN, ID_PARAMETER,
                  create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
                 VALUES
@@ -69,7 +69,7 @@ return new class extends Migration
             AFTER DELETE ON T_BARANG
             FOR EACH ROW
             BEGIN
-                INSERT INTO H_BARANG
+                INSERT INTO H_M_BARANG
                 (ID_BARANG, KODE_BARANG, NAMA_BARANG, ID_TIPE, ID_STATUS, ID_LOKASI, ID_ANGGARAN, ID_PARAMETER,
                  create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
                 VALUES

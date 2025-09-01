@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_PARAMETER', function (Blueprint $table) {
+        Schema::create('H_M_PARAMETER', function (Blueprint $table) {
             $table->integer('IDH_PARAMETER', true);
             $table->integer('ID_PARAMETER');
             $table->string('Nilai_parameter', 20);

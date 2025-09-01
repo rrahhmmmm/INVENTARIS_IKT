@@ -33,7 +33,7 @@ return new class extends Migration
             AFTER DELETE ON M_ANGGARAN 
             FOR EACH ROW 
             BEGIN
-                INSERT INTO H_ANGGARAN 
+                INSERT INTO H_M_ANGGARAN 
                 (ID_ANGGARAN, nama_anggaran, tahun_anggaran, keterangan, create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
                 VALUES 
                 (OLD.ID_ANGGARAN, OLD.nama_anggaran, OLD.tahun_anggaran, OLD.keterangan, OLD.create_by, OLD.create_date, OLD.update_by, OLD.update_date, OLD.status, OLD.attr1, OLD.attr2, OLD.attr3);
@@ -46,7 +46,7 @@ return new class extends Migration
             AFTER INSERT ON M_ANGGARAN 
             FOR EACH ROW 
             BEGIN
-                INSERT INTO H_ANGGARAN 
+                INSERT INTO H_M_ANGGARAN 
                 (ID_ANGGARAN, nama_anggaran, tahun_anggaran, keterangan, create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
                 VALUES 
                 (NEW.ID_ANGGARAN, NEW.nama_anggaran, NEW.tahun_anggaran, NEW.keterangan, NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date, NEW.status, NEW.attr1, NEW.attr2, NEW.attr3);
@@ -59,7 +59,7 @@ return new class extends Migration
             AFTER UPDATE ON M_ANGGARAN 
             FOR EACH ROW 
             BEGIN
-                INSERT INTO H_ANGGARAN 
+                INSERT INTO H_M_ANGGARAN 
                 (ID_ANGGARAN, nama_anggaran, tahun_anggaran, keterangan, create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
                 VALUES 
                 (NEW.ID_ANGGARAN, NEW.nama_anggaran, NEW.tahun_anggaran, NEW.keterangan, NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date, NEW.status, NEW.attr1, NEW.attr2, NEW.attr3);
