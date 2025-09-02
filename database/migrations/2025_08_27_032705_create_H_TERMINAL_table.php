@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->useCurrent();
             $table->boolean('status');
-            $table->string('attr1');
-            $table->string('attr2');
+            $table->string('attr1')->nullable();
+            $table->string('attr2')->nullable();
             $table->string('attr3')->nullable();
         });
     }
