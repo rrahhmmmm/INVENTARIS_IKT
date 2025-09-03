@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('UPDATE_BY', 50)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
             $table->text('deskripsi')->nullable();
-            $table->boolean('STATUS')->nullable();
+            $table->integer('STATUS')->default(1);
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
             $table->string('attr3')->nullable();
@@ -52,7 +52,17 @@ return new class extends Migration
                  attr1, attr2, attr3)
                 VALUES
                 (NEW.ID_DIVISI, NEW.NAMA_DIVISI, NEW.CREATE_BY, NEW.CREATE_DATE, NEW.UPDATE_BY, NEW.UPDATE_DATE,
-                 NEW.deskripsi, NEW.STATUS, NEW.attr1, NEW.attr2, NEW.attr3);
+                 NEW.deskripsi, 2, NEW.attr1, NEW.attr2, NEW.attr3);
+            END
+        ');
+
+        //trigger update sts insert
+        DB::unprepared('
+        CREATE TRIGGER trg_status_divisi
+            BEFORE UPDATE ON M_DIVISI
+            FOR EACH ROW
+            BEGIN
+                SET NEW.status = 2;
             END
         ');
 
@@ -81,6 +91,7 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_divisi_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_divisi_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_divisi_delete');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_status_divsi');
 
         Schema::dropIfExists('M_DIVISI');
     }

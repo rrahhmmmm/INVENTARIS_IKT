@@ -91,7 +91,7 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_terminal_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_terminal_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_terminal_delete');
-        DB::unprepared('DROP TRIGGER IF EXISTS trg_items_before_update');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_update_m');
 
         Schema::dropIfExists('M_TERMINAL');
     }

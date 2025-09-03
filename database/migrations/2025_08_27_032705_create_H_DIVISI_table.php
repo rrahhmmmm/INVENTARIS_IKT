@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('UPDATE_BY', 50)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
             $table->text('deskripsi')->nullable();
-            $table->boolean('STATUS')->nullable();
+            $table->integer('STATUS')->default();
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
             $table->string('attr3')->nullable();
