@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 100)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable()->useCurrent();
-            $table->boolean('STATUS')->default(true);
+            $table->integer('STATUS')->default(1);
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
             $table->string('attr3')->nullable();
@@ -53,7 +53,16 @@ return new class extends Migration
                  UPDATE_BY, UPDATE_DATE, STATUS, attr1, attr2, attr3)
                 VALUES
                 (NEW.ID_TERMINAL, NEW.KODE_TERMINAL, NEW.NAMA_TERMINAL, NEW.LOKASI, NEW.CREATE_BY, NEW.CREATE_DATE,
-                 NEW.UPDATE_BY, NEW.UPDATE_DATE, NEW.STATUS, NEW.attr1, NEW.attr2, NEW.attr3);
+                 NEW.UPDATE_BY, NEW.UPDATE_DATE, 2, NEW.attr1, NEW.attr2, NEW.attr3);
+            END
+        ');
+
+        DB::unprepared('
+            CREATE TRIGGER trg_update_m
+            BEFORE UPDATE ON M_TERMINAL
+            FOR EACH ROW
+            BEGIN
+                SET NEW.status = 2;
             END
         ');
 
@@ -68,7 +77,7 @@ return new class extends Migration
                  UPDATE_BY, UPDATE_DATE, STATUS, attr1, attr2, attr3)
                 VALUES
                 (OLD.ID_TERMINAL, OLD.KODE_TERMINAL, OLD.NAMA_TERMINAL, OLD.LOKASI, OLD.CREATE_BY, OLD.CREATE_DATE,
-                 OLD.UPDATE_BY, OLD.UPDATE_DATE, OLD.STATUS, OLD.attr1, OLD.attr2, OLD.attr3);
+                 OLD.UPDATE_BY, OLD.UPDATE_DATE, 99, OLD.attr1, OLD.attr2, OLD.attr3);
             END
         ');
     }
@@ -82,6 +91,7 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_terminal_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_terminal_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_terminal_delete');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_items_before_update');
 
         Schema::dropIfExists('M_TERMINAL');
     }
