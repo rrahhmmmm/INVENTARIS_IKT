@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('H_M_LOKASI', function (Blueprint $table) {
             $table->integer('IDH_LOKASI', true);
             $table->integer('ID_LOKASI');
-            $table->string('nama_lokasi', 20);
-            $table->string('alamat', 200)->nullable();
-            $table->integer('ID_terminal');
+            $table->string('NAMA_LOKASI', 20);
+            $table->string('ALAMAT', 200)->nullable();
+            $table->integer('ID_TERMINAL');
             $table->string('create_by', 100);
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
