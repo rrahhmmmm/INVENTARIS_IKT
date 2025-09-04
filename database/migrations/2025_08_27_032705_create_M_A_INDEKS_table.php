@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('M_A_INDEKS', function (Blueprint $table) {
+        Schema::create('M_INDEKS', function (Blueprint $table) {
             $table->integer('ID_INDEKS', true);
             $table->string('NO_INDEKS', 100);
             $table->string('WILAYAH', 100);
