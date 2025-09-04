@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
-            $table->boolean('status');
+            $table->integer('status')->defult(1);
             $table->string('param1')->nullable();
             $table->string('param2')->nullable();
             $table->string('param3')->nullable();
@@ -73,6 +73,15 @@ END
 END
 ');
 
+        DB::unprepared('
+            CREATE TRIGGER trg_status_lokasi
+            BEFORE UPDATE ON M_LOKASI
+            FOR EACH ROW
+            BEGIN
+                SET NEW.status = 2;
+            END
+        ');
+
     }
 
     /**
@@ -83,6 +92,7 @@ END
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_lokasi_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_lokasi_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_lokasi_delete');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_status_lokasi');
        //drop table
         Schema::dropIfExists('M_LOKASI');
     }

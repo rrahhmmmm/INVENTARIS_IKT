@@ -92,6 +92,7 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_subdivisi_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_subdivisi_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_subdivisi_delete');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_status_subdivisi');
 
         Schema::dropIfExists('M_SUBDIVISI');
     }
