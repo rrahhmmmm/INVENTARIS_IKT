@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('H_M_SUBDIVISI', function (Blueprint $table) {
             $table->integer('IDH_SUBDIVISI', true);
             $table->integer('ID_SUBDIVISI')->nullable();
-            $table->integer('ID_DIVIS')->nullable();
+            $table->integer('ID_DIVISI');
             $table->string('NAMA_SUBDIVISI', 100);
             $table->string('CREATE_BY', 50);
             $table->timestamp('CREATE_DATE')->useCurrent();
