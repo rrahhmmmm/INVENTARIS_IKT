@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
-            $table->boolean('status');
+            $table->integer('status')defult(1);
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
             $table->string('attr3')->nullable();
@@ -55,8 +55,18 @@ return new class extends Migration
                  attr1, attr2, attr3)
                 VALUES
                 (NEW.ID_MODEL, NEW.NAMA_MODEL, NEW.KETERANGAN,
-                 NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date, NEW.status,
+                 NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date, 2,
                  NEW.attr1, NEW.attr2, NEW.attr3);
+            END
+        ');
+
+        // status on update 
+        DB::unprepared('
+            CREATE TRIGGER trg_status_model
+            BEFORE UPDATE ON M_MODEL
+            FOR EACH ROW
+            BEGIN
+                SET NEW.status = 2;
             END
         ');
 
@@ -72,7 +82,7 @@ return new class extends Migration
                  attr1, attr2, attr3)
                 VALUES
                 (OLD.ID_MODEL, OLD.NAMA_MODEL, OLD.KETERANGAN,
-                 OLD.create_by, OLD.create_date, OLD.update_by, OLD.update_date, OLD.status,
+                 OLD.create_by, OLD.create_date, OLD.update_by, OLD.update_date, 99,
                  OLD.attr1, OLD.attr2, OLD.attr3);
             END
         ');
@@ -87,7 +97,7 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_delete');
-
+        DB::unprepared('DROP TRIGGER IF EXIST trg_status_model');
         Schema::dropIfExists('M_MODEL');
     }
 };
