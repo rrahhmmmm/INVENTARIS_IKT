@@ -36,7 +36,7 @@ return new class extends Migration
     VALUES (
         OLD.ID_LOKASI, OLD.nama_lokasi, OLD.alamat, OLD.ID_terminal,
         OLD.create_by, OLD.create_date, OLD.update_by, OLD.update_date,
-        OLD.status, OLD.param1, OLD.param2, OLD.param3
+        99, OLD.param1, OLD.param2, OLD.param3
     );
 END
 ');
@@ -68,7 +68,7 @@ END
     VALUES (
         NEW.ID_LOKASI, NEW.nama_lokasi, NEW.alamat, NEW.ID_terminal,
         NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date,
-        NEW.status, NEW.param1, NEW.param2, NEW.param3
+        22, NEW.param1, NEW.param2, NEW.param3
     );
 END
 ');
