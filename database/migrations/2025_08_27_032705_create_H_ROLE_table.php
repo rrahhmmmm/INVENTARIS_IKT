@@ -16,12 +16,11 @@ return new class extends Migration
             $table->integer('ID_role');
             $table->string('Nama_role', 100);
             $table->string('keterangan', 100);
-            $table->integer('ID_user');
             $table->string('create_by', 100);
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
-            $table->boolean('status');
+            $table->integer('status');
             $table->string('param1')->nullable();
             $table->string('param2')->nullable();
             $table->string('param3')->nullable();
