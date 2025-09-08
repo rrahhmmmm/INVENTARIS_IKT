@@ -22,7 +22,6 @@ return new class extends Migration
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 50)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
-            $table->text('deskripsi')->nullable();
             $table->integer('STATUS')->default(1);
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
@@ -38,11 +37,11 @@ return new class extends Migration
         INSERT INTO H_M_INDEKS
         (ID_INDEKS, NO_INDEKS, WILAYAH, NAMA_INDEKS, START_DATE, END_DATE,
          CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE,
-         deskripsi, STATUS, attr1, attr2, attr3)
+          STATUS, attr1, attr2, attr3)
         VALUES
         (NEW.ID_INDEKS, NEW.NO_INDEKS, NEW.WILAYAH, NEW.NAMA_INDEKS, NEW.START_DATE, NEW.END_DATE,
          NEW.CREATE_BY, NEW.CREATE_DATE, NEW.UPDATE_BY, NEW.UPDATE_DATE,
-         NEW.deskripsi, NEW.STATUS, NEW.attr1, NEW.attr2, NEW.attr3);
+        NEW.STATUS, NEW.attr1, NEW.attr2, NEW.attr3);
     END
 ');
 
@@ -55,11 +54,11 @@ DB::unprepared('
         INSERT INTO H_M_INDEKS
         (ID_INDEKS, NO_INDEKS, WILAYAH, NAMA_INDEKS, START_DATE, END_DATE,
          CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE,
-         deskripsi, STATUS, attr1, attr2, attr3)
+         STATUS, attr1, attr2, attr3)
         VALUES
         (NEW.ID_INDEKS, NEW.NO_INDEKS, NEW.WILAYAH, NEW.NAMA_INDEKS, NEW.START_DATE, NEW.END_DATE,
          NEW.CREATE_BY, NEW.CREATE_DATE, NEW.UPDATE_BY, NEW.UPDATE_DATE,
-         NEW.deskripsi, 2, NEW.attr1, NEW.attr2, NEW.attr3);
+          2, NEW.attr1, NEW.attr2, NEW.attr3);
     END
 ');
 
@@ -82,11 +81,11 @@ DB::unprepared('
         INSERT INTO H_M_INDEKS
         (ID_INDEKS, NO_INDEKS, WILAYAH, NAMA_INDEKS, START_DATE, END_DATE,
          CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE,
-         deskripsi, STATUS, attr1, attr2, attr3)
+         STATUS, attr1, attr2, attr3)
         VALUES
         (OLD.ID_INDEKS, OLD.NO_INDEKS, OLD.WILAYAH, OLD.NAMA_INDEKS, OLD.START_DATE, OLD.END_DATE,
          OLD.CREATE_BY, OLD.CREATE_DATE, OLD.UPDATE_BY, OLD.UPDATE_DATE,
-         OLD.deskripsi, 99, OLD.attr1, OLD.attr2, OLD.attr3);
+         99, OLD.attr1, OLD.attr2, OLD.attr3);
     END
 ');
     }

@@ -23,7 +23,6 @@ return new class extends Migration
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 50)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
-            $table->text('deskripsi')->nullable();
             $table->integer('STATUS')->nullable();
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
