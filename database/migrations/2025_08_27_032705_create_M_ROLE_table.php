@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
-            $table->integer('status')->defult(1);
+            $table->integer('status')->default(1);
             $table->string('param1')->nullable();
             $table->string('param2')->nullable();
             $table->string('param3')->nullable();
