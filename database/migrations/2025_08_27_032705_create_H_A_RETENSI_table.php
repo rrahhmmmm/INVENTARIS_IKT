@@ -11,22 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('H_M_A_RETENSI', function (Blueprint $table) {
+        Schema::create('H_M_RETENSI', function (Blueprint $table) {
             $table->integer('IDH_RETENSI', true);
-            $table->integer('id_retensi')->nullable();
+            $table->integer('ID_RETENSI')->nullable();
             $table->string('jenis_arsip', 150);
             $table->string('bidang_arsip', 150);
             $table->string('tipe_arsip', 150);
             $table->string('detail_tipe_arsip')->nullable();
             $table->text('masa_aktif');
+            $table->string('DESC_AKTIF',150)->nullable();
             $table->integer('masa_inaktif');
+            $table->string('DESC_INAKTIF',150)->nullable();
             $table->text('keterangan')->nullable();
             $table->string('CREATE_BY', 50);
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 50)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
-            $table->text('deskripsi')->nullable();
-            $table->boolean('STATUS')->nullable();
+            $table->integer('STATUS')->nullable();
             $table->string('attr1')->nullable();
             $table->string('attr2')->nullable();
             $table->string('attr3')->nullable();
