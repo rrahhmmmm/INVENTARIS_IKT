@@ -18,11 +18,14 @@ return new class extends Migration
             $table->string('password');
             $table->string('email', 150)->nullable();
             $table->string('full_name', 150)->nullable();
+            $table->integer('ID_DIVISI');
+            $table->integer('ID_SUBDIVISI');
+            $table->integer('ID_ROLE');
             $table->string('create_by', 100);
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
-            $table->boolean('status');
+            $table->integer('status');
             $table->string('param1')->nullable();
             $table->string('param2')->nullable();
             $table->string('param3')->nullable();
@@ -35,10 +38,11 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 INSERT INTO H_M_USER
-                (ID_USER, username, password, email, full_name, create_by, create_date,
+                (ID_USER, username, password, email, full_name, ID_DIVISI, ID_SUBDIVISI, ID_ROLE, create_by, create_date,
                  update_by, update_date, status, param1, param2, param3)
                 VALUES
-                (NEW.ID_USER, NEW.username, NEW.password, NEW.email, NEW.full_name, NEW.create_by, NEW.create_date,
+                (NEW.ID_USER, NEW.username, NEW.password, NEW.email, NEW.full_name, NEW.ID_DIVISI, NEW.ID_SUBDIVISI, NEW.ID_ROLE,
+                NEW.create_by, NEW.create_date,
                  NEW.update_by, NEW.update_date, NEW.status, NEW.param1, NEW.param2, NEW.param3);
             END
         ');
@@ -50,11 +54,21 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 INSERT INTO H_M_USER
-                (ID_USER, username, password, email, full_name, create_by, create_date,
+                (ID_USER, username, password, email, full_name, ID_DIVISI, ID_SUBDIVISI, ID_ROLE, create_by, create_date,
                  update_by, update_date, status, param1, param2, param3)
                 VALUES
-                (NEW.ID_USER, NEW.username, NEW.password, NEW.email, NEW.full_name, NEW.create_by, NEW.create_date,
-                 NEW.update_by, NEW.update_date, NEW.status, NEW.param1, NEW.param2, NEW.param3);
+                (NEW.ID_USER, NEW.username, NEW.password, NEW.email, NEW.full_name, NEW.ID_DIVISI, NEW.ID_SUBDIVISI, NEW.ID_ROLE, 
+                NEW.create_by, NEW.create_date,
+                 NEW.update_by, NEW.update_date, 2, NEW.param1, NEW.param2, NEW.param3);
+            END
+        ');
+
+        DB::unprepared('
+            CREATE TRIGGER trg_status_user
+            BEFORE UPDATE ON M_USER
+            FOR EACH ROW
+            BEGIN
+                SET NEW.status = 2;
             END
         ');
 
@@ -65,11 +79,12 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 INSERT INTO H_M_USER
-                (ID_USER, username, password, email, full_name, create_by, create_date,
+                (ID_USER, username, password, email, full_name,  ID_DIVISI, ID_SUBDIVISI, ID_ROLE, create_by, create_date,
                  update_by, update_date, status, param1, param2, param3)
                 VALUES
-                (OLD.ID_USER, OLD.username, OLD.password, OLD.email, OLD.full_name, OLD.create_by, OLD.create_date,
-                 OLD.update_by, OLD.update_date, OLD.status, OLD.param1, OLD.param2, OLD.param3);
+                (OLD.ID_USER, OLD.username, OLD.password, OLD.email, OLD.full_name, OLD.ID_DIVISI, OLD.ID_SUBDIVISI, OLD.ID_ROLE, 
+                 OLD.create_by, OLD.create_date,
+                 OLD.update_by, OLD.update_date, 99, OLD.param1, OLD.param2, OLD.param3);
             END
         ');
     }
@@ -83,6 +98,7 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_user_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_user_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_user_delete');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_status_user');
 
         Schema::dropIfExists('M_USER');
     }
