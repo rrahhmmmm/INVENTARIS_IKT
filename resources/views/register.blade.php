@@ -43,8 +43,8 @@
                 <form class="space-y-6">
                     <!-- Username Field -->
                     <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                            Username
+                        <label for="username" class="block text-sm font-medium text-gray-700 ">
+                            Nama Lengkap
                         </label>
                         <input 
                             type="text" 
@@ -57,8 +57,47 @@
 
                     <!-- Password Field -->
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="password" class="block text-sm font-medium text-gray-700 ">
+                            Username
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 ">
                             Password
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 ">
+                            Divisi
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            SubDivisi
                         </label>
                         <input 
                             type="password" 
@@ -74,13 +113,13 @@
                         type="submit" 
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
-                        Login
+                        Register
                     </button>
 
                     <!-- Register Link -->
                     <div class="text-center">
-                        <span class="text-gray-600">Buat akun? </span>
-                        <a href="{{ url('/register') }}" class="text-blue-600 hover:text-blue-800 font-medium">Register</a>
+                        <span class="text-gray-600"> Sudah Punya Account? </span>
+                        <a href="{{ url('/login') }}" class="text-blue-600 hover:text-blue-800 font-medium">Login</a>
                     </div>
                 </form>
             </div>
