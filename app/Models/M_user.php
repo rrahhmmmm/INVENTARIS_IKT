@@ -2,26 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class M_user extends Model
+class M_user extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens;
 
-    protected $table = "M_USER";
-    protected $primaryKey = "ID_USER";
-    
+    protected $table = 'M_USER';
+    protected $primaryKey = 'ID_USER';
     public $timestamps = false;
 
-    protected $fillable =[
+    protected $fillable = [
         'username',
         'password',
         'email',
         'full_name',
-        'ID_DIVISIS',
+        'ID_DIVISI',
         'ID_SUBDIVISI',
-        'ID_ROLE',
-        'create_by'
+        'ID_ROLE'
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 }
