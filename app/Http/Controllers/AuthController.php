@@ -1,48 +1,82 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login - IKT Inventory</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen flex items-center justify-center bg-blue-800">
-  <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
-    <div class="flex justify-center mb-4">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-16" />
-    </div>
+<?php
 
-    <h2 class="text-xl font-bold text-center mb-6">IKT Inventory Aset & Arsip</h2>
+namespace App\Http\Controllers;
 
-    <form id="loginForm" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium mb-1">Username</label>
-        <div class="relative">
-          <input id="username" type="text" required
-                 class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-      </div>
+use App\Models\M_user;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
-      <div>
-        <label class="block text-sm font-medium mb-1">Password</label>
-        <div class="relative">
-          <input id="password" type="password" required
-                 class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-      </div>
+class AuthController extends Controller
+{
+    // REGISTER
+    public function register(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|unique:M_USER,username',
+            'email'    => 'required|email|unique:M_USER,email',
+            'password' => 'required|min:6',
+        ]);
 
-      <div class="flex items-center">
-        <input id="remember" type="checkbox" class="mr-2" />
-        <label for="remember" class="text-sm">Ingat saya</label>
-      </div>
+        $user = M_user::create([
+            'username' => $request->username,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'full_name'=> $request->full_name ?? null,
+            'ID_DIVISI'=> $request->ID_DIVISI ?? null,
+            'ID_SUBDIVISI'=> $request->ID_SUBDIVISI ?? null,
+            'ID_ROLE'  => $request->ID_ROLE ?? null,
+        ]);
 
-      <div class="flex justify-between">
-        <button type="submit"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">LOGIN</button>
+        $token = $user->createToken('api_token')->plainTextToken;
 
-        <a href="{{ url('/register') }}" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg">REGISTRASI</a>
-      </div>
-    </form>
-  </div>
+        return response()->json([
+            'message' => 'Registrasi berhasil',
+            'user'    => $user,
+            'token'   => $token,
+        ]);
+    }
 
-  
+    // LOGIN
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        $user = M_user::where('username', $request->username)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Username atau password salah',
+            ], 401);
+        }
+
+        // Hapus token lama (opsional)
+        $user->tokens()->delete();
+
+        $token = $user->createToken('api_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login berhasil',
+            'user'    => $user,
+            'token'   => $token,
+        ]);
+    }
+
+    // LOGOUT
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logout berhasil',
+        ]);
+    }
+
+    // GET USER LOGIN
+    public function me(Request $request)
+    {
+        return response()->json($request->user());
+    }
+}
