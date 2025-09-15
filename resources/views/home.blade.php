@@ -18,10 +18,43 @@
 
   <!-- Header -->
   <header class="bg-white shadow-sm">
-    <div class="container mx-auto flex justify-start p-4">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-16">
+  <div class="container mx-auto flex justify-between items-center p-4">
+    <!-- Logo -->
+    <div class="flex items-center space-x-4">
+      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-20 ">
     </div>
-  </header>
+
+    <!-- Navbar -->
+    <nav class="flex items-center space-x-6">
+      <!-- Dropdown Master -->
+      <div class="relative group">
+        <button class="flex items-center space-x-1 text-black hover:text-blue-600 focus:outline-none">
+          <span>Master Admin</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <!-- Dropdown Menu -->
+        <div class="absolute hidden group-hover:block bg-white border rounded-md shadow-lg mt-2 w-40">
+          <a href="/divisi" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Divisi</a>
+          <a href="/subdivisi" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Subdivisi</a>
+          <a href="/user" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">User</a>
+        </div>
+      </div>
+
+      <!-- Tombol Logout -->
+      <form action="/logout" method="POST">
+        <!-- csrf token kalau pakai Laravel -->
+        @csrf
+        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+          Logout
+        </button>
+      </form>
+    </nav>
+  </div>
+</header>
+
 
   <!-- Main Portal -->
   <main class="flex-1 bg- relative">
@@ -67,7 +100,7 @@
 
   <!-- Footer -->
   <footer class="bg-white text-[#357ABD] p-6 text-center">
-    <p class="text-sm">© 2025 PT Indonesia Kendaraan Terminal Tbk</p>
+    <p class="text-sm">© PT Indonesia Kendaraan Terminal Tbk</p>
   </footer>
 
 </body>

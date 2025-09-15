@@ -6,16 +6,18 @@
   <title>Registrasi Akun</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-blue-800 min-h-screen flex items-center justify-center">
+<body class="bg-blue-800 min-h-screen flex items-center justify-center"
+      style="background-image: url('/storage/bglogin.png');">
 
   <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 m-8 ">
     <!-- Logo -->
-    <div class="flex justify-center mb-4">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-16">
+    <div class="flex justify-between items-center ">
+      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" />
+      <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" />
     </div>
-
-    <!-- Title -->
-    <h2 class="text-2xl font-bold text-center mb-6">Registrasi Akun</h2>
+    <div class="flex justify-center items-center">
+      <img src="/storage/iktlogo.png" alt="IKT Logo" class="h-40 " />
+    </div>
 
     <!-- Alert -->
     <div id="alertBox" class="hidden p-3 mb-4 rounded-lg text-sm"></div>

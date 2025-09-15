@@ -6,14 +6,16 @@
   <title>Login - IKT Inventory</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-blue-800">
-  <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
-    <div class="flex justify-center mb-4">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-16" />
+<body class="min-h-screen flex items-center justify-center bg-cover bg-center" 
+      style="background-image: url('/storage/bglogin.png');">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-8 ">
+  <div class="flex justify-between items-center ">
+      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" />
+      <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" />
     </div>
-
-    <h2 class="text-xl font-bold text-center mb-6">IKT Inventory Aset & Arsip</h2>
-
+    <div class="flex justify-center items-center">
+      <img src="/storage/iktlogo.png" alt="IKT Logo" class="h-40 " />
+    </div>
     <form id="loginForm" class="space-y-4">
       <div>
         <label class="block text-sm font-medium mb-1">Username</label>
