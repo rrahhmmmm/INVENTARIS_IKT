@@ -11,6 +11,7 @@ use App\Http\Controllers\M_klasifikasiController;
 use App\Http\Controllers\M_roleController;
 use App\Http\Controllers\M_retensiController;
 
+
 use App\Http\Controllers\AuthController;
 
 Route::get('/ping', function () {
@@ -18,8 +19,12 @@ Route::get('/ping', function () {
 });
 
 Route::apiResource('m_terminal', M_terminalController::class);
+
 Route::apiResource('m_divisi', M_divisiController::class);
+
 Route::apiResource('m_subdivisi', M_subdivisiController::class);
+Route::get('/m_subdivisi/divisi/{id}', [M_SUBDIVISICONTROLLER::class, 'getByDivisi']);
+
 Route::apiResource('m_lokasi', M_lokasiController::class);
 Route::apiResource('m_model', M_modelController::class);
 Route::apiResource('m_status', M_statusController::class);

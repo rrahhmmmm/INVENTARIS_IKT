@@ -1,172 +1,209 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PELINDO - Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .bg-pelindo-blue {
-            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-        }
-        .bg-terminal {
-    background-image: url('/storage/bgimg.svg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrasi Akun</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-blue-800 min-h-screen flex items-center justify-center">
 
-    <body class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-white">
-    <div class="container flex flex-col justify-start">
-        <div>
-            <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-20 w-25">
-        </div>
+  <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 m-8 ">
+    <!-- Logo -->
+    <div class="flex justify-center mb-4">
+      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-16">
     </div>
 
-    <!-- Garis biru full screen -->
-    <div class="bg-[#1698E1] w-full h-10 "></div>
-    </header>
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center mb-6">Registrasi Akun</h2>
+
+    <!-- Alert -->
+    <div id="alertBox" class="hidden p-3 mb-4 rounded-lg text-sm"></div>
+
+    <!-- Form -->
+    <form id="registerForm" class="space-y-4">
+      <!-- Username -->
+      <div>
+        <label class="block text-sm font-medium">Username</label>
+        <input type="text" name="username" required placeholder="NIP / NRPP"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ">
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-sm font-medium">Password</label>
+        <input type="password" name="password" required 
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <label class="block text-sm font-medium">Re-type Password</label>
+        <input type="password" name="password_confirmation" required 
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium">Email</label>
+        <input type="email" name="email" required 
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      </div>
+
+      <!-- Full Name -->
+      <div>
+        <label class="block text-sm font-medium">Full Name</label>
+        <input type="text" name="full_name" required 
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      </div>
+
+      <!-- Divisi -->
+<div class="mb-4">
+  <label class="block text-sm font-medium text-gray-700 mb-2">
+    Divisi
+  </label>
+  <div class="relative">
+    <select name="ID_DIVISI" id="divisiSelect" required
+      class="w-full appearance-none px-4 py-2 rounded-lg border border-gray-300 
+             bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 
+             focus:border-blue-500 outline-none transition duration-200 ease-in-out">
+      <option value="">Pilih Divisi</option>
+    </select>
+  </div>
+</div>
+
+<!-- Subdivisi -->
+<div class="mb-4">
+  <label class="block text-sm font-medium text-gray-700 mb-2">
+    Subdivisi
+  </label>
+  <div class="relative">
+    <select name="ID_SUBDIVISI" id="subdivisiSelect" required
+      class="w-full appearance-none px-4 py-2 rounded-lg border border-gray-300 
+             bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 
+             focus:border-blue-500 outline-none transition duration-200 ease-in-out">
+      <option value="">Pilih Subdivisi</option>
+    </select>
+  </div>
+</div>
+
+      <!-- Submit -->
+      <button type="submit" 
+        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+        Submit
+      </button>
+    </form>
+
+    <!-- Link ke Login -->
+    <p class="text-center text-sm mt-4">
+      Sudah punya akun? 
+      <a href="{{ url('/') }}" class="text-blue-600 hover:underline">Login</a>
+    </p>
+  </div>
 
 
+  <script>
+    const form = document.getElementById('registerForm');
+    const alertBox = document.getElementById('alertBox');
+    const divisiSelect = document.getElementById('divisiSelect');
+    const subdivisiSelect = document.getElementById('subdivisiSelect');
 
-    <!-- Main Content -->
-    <main class="flex-1 bg-terminal relative">
-        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-        <div class="relative z-10 min-h-full flex items-center justify-center p-4">
-            <!-- Login Form -->
-            <div class="bg-white bg-opacity-65 backdrop-blur-sm rounded-lg shadow-xl p-8 w-full max-w-md">
-                <form class="space-y-6">
-                    <!-- Username Field -->
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-gray-700 ">
-                            Nama Lengkap
-                        </label>
-                        <input 
-                            type="text" 
-                            id="username" 
-                            name="username" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                    </div>
+    async function loadDivisi() {
+try {
+  const res = await fetch("/api/m_divisi");
+  const data = await res.json();
 
-                    <!-- Password Field -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 ">
-                            Username
-                        </label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                    </div>
+  data.forEach(div => {
+    const option = document.createElement("option");
+    option.value = div.ID_DIVISI;   // pastikan nama kolom pk di tabel M_DIVISI
+    option.textContent = div.NAMA_DIVISI;
+    divisiSelect.appendChild(option);
+  });
+} catch (err) {
+  console.error("Gagal load divisi:", err);
+}
+}
+loadDivisi();
 
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 ">
-                            Password
-                        </label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                    </div>
+// Load subdivisi berdasarkan divisi
+async function loadSubdivisi(idDivisi) {
+  subdivisiSelect.innerHTML = '<option value="">Pilih Subdivisi</option>'; // reset
 
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 ">
-                            Divisi
-                        </label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                    </div>
+  if (!idDivisi) return;
 
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700">
-                            SubDivisi
-                        </label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                    </div>
+  try {
+    const res = await fetch(`/api/m_subdivisi/divisi/${idDivisi}`);
+    const data = await res.json();
 
-                    <!-- Login Button -->
-                    <button 
-                        type="submit" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        Register
-                    </button>
+    data.forEach(sub => {
+      const option = document.createElement("option");
+      option.value = sub.ID_SUBDIVISI;  // pastikan sesuai PK tabel M_SUBDIVISI
+      option.textContent = sub.NAMA_SUBDIVISI;
+      subdivisiSelect.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Gagal load subdivisi:", err);
+  }
+}
+// load ulang subdiv
+divisiSelect.addEventListener("change", (e) => {
+  loadSubdivisi(e.target.value);
+});
 
-                    <!-- Register Link -->
-                    <div class="text-center">
-                        <span class="text-gray-600"> Sudah Punya Account? </span>
-                        <a href="{{ url('/login') }}" class="text-blue-600 hover:text-blue-800 font-medium">Login</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    <!-- Footer -->
-    <footer class="bg-pelindo-blue text-white p-6">
-        <div class="container mx-auto">
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Company Info -->
-                <div>
-                    <h3 class="font-semibold mb-2">PT Indonesia Kendaraan Terminal Tbk</h3>
-                    <address class="text-sm opacity-90 not-italic leading-relaxed">
-                        Jl. Sindang Laut No.100, RW.11, Kali<br>
-                        Baru, Kec. Cilincing, Kota Jkt Utara,<br>
-                        Daerah Khusus Ibukota Jakarta 14110,<br>
-                        Indonesia
-                    </address>
-                </div>
+      // ambil data dari form
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
 
-                <!-- Social Media -->
-                <div>
-                    <h3 class="font-semibold mb-3">Media Sosial</h3>
-                    <div class="space-y-2">
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                            </svg>
-                            <span class="text-sm">@IPCC Terminal Kendaraan</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                            </svg>
-                            <span class="text-sm">@IPCC Terminal Kendaraan</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.748-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z"/>
-                            </svg>
-                            <span class="text-sm">@IPCC Terminal Kendaraan</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+      // cek konfirmasi password
+      if (data.password !== data.password_confirmation) {
+        showAlert("Password dan konfirmasi tidak sama!", "bg-red-100 text-red-600");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          let msg = result.message || "Registrasi gagal!";
+          if (result.errors) {
+            msg += " " + Object.values(result.errors).join(" ");
+          }
+          showAlert(msg, "bg-red-100 text-red-600");
+        } else {
+          showAlert(result.message, "bg-green-100 text-green-600");
+
+          // simpan token ke localStorage
+          localStorage.setItem("token", result.token);
+
+          // redirect ke login
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert("Terjadi kesalahan pada server.", "bg-red-100 text-red-600");
+      }
+    });
+
+    function showAlert(message, classes) {
+      alertBox.textContent = message;
+      alertBox.className = `p-3 mb-4 rounded-lg text-sm ${classes}`;
+      alertBox.classList.remove("hidden");
+    }
+  </script>
+
 </body>
 </html>

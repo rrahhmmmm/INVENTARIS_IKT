@@ -3,34 +3,32 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-
-// Import middleware yang akan dipakai
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful; // Middleware Sanctum
-use Illuminate\Routing\Middleware\SubstituteBindings; // Middleware default Laravel untuk binding model
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return Application::configure(basePath: dirname(__DIR__))
-    // Routing utama aplikasi
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',       // Route untuk halaman web
-        api: __DIR__.'/../routes/api.php',       // Route untuk API (wajib ditambah kalau mau bikin API)
-        commands: __DIR__.'/../routes/console.php', // Route untuk command artisan (console)
-        health: '/up',                           // Endpoint health check default
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
     )
+    ->withMiddleware(function (Middleware $middleware) {
+        // Group web
+        $middleware->group('web', [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
 
-    // Konfigurasi middleware
-    ->withMiddleware(function (Middleware $middleware): void {
-        // Middleware khusus untuk grup API
-        $middleware->api(prepend: [
-            EnsureFrontendRequestsAreStateful::class, // Middleware Sanctum agar token dikenali
-            'throttle:api',                           // Batasi request API (rate limiting)
-            SubstituteBindings::class,                // Otomatis resolve model di route parameter
+        // Group api
+        $middleware->group('api', [
+         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })
-
-    // Konfigurasi exception handler (error handling)
-    ->withExceptions(function (Exceptions $exceptions): void {
+    ->withExceptions(function (Exceptions $exceptions) {
         //
     })
-
-    // Buat instance aplikasi
     ->create();

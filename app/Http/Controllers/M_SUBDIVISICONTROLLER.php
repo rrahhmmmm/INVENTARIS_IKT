@@ -12,6 +12,12 @@ class M_SUBDIVISICONTROLLER extends Controller
         return M_subdivisi::all();
     }
 
+    public function getByDivisi($id_divisi)
+{
+    $subdivisi = M_subdivisi::where('ID_DIVISI', $id_divisi)->get();
+    return response()->json($subdivisi);
+}
+
     public function store(Request $request)
     {
         $validated = $request->validate([
