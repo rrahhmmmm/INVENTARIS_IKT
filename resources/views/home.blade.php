@@ -17,6 +17,8 @@
 <body class="min-h-screen flex flex-col">
 
   @include('components.A_navbar')
+  <header class="bg-white shadow-lg h-20">
+</header>
 
 
   <!-- Main Portal -->

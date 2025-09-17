@@ -31,14 +31,14 @@
 
   <!-- HOME -->
   <a href="home" 
-     class="w-full flex justify-between items-center px-3 py-2 rounded-md hover:bg-blue-200">
+     class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
     <span>HOME</span>
   </a>
 
   <!-- Dropdown Master -->
   <div class="relative mt-2">
     <button id="masterBtn" 
-      class="w-full flex justify-between items-center px-3 py-2 rounded-md hover:bg-blue-200">
+      class="w-full flex justify-between items-center font-semibold px-3 py-2 rounded-md hover:bg-blue-200">
       <span>MASTER</span>
       <svg id="masterIcon" xmlns="http://www.w3.org/2000/svg" 
         class="h-4 w-4 transform transition-transform duration-200" 
@@ -53,6 +53,7 @@
       <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Divisi</a>
       <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Subdivisi</a>
       <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Role</a>
+      <a href="/terminal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Terminal</a>
     </div>
   </div>
 </nav>
@@ -61,13 +62,11 @@
       <!-- Logout -->
       <div class="p-4 border-t">
       <div class="flex items-center space-x-3 p-4">
-        <img src="https://ui-avatars.com/api/?name=User" alt="User Avatar" 
+        <img src="storage/user.png" alt="User Avatar" 
              class="w-12 h-12 rounded-full border">
         <div>
-          <p class="font-semibold text-gray-800">
-            {{ $user->username ?? 'Guest' }}
-          </p>
-          <small class="text-gray-500">Logged In</small>
+        <p id="username" class="font-semibold text-gray-800">Guest</p>
+<small id="status" class="text-gray-500">Not Logged In</small>
         </div>
       </div>
         <button onclick="logoutUser()" 
@@ -114,33 +113,59 @@
       masterIcon.classList.toggle("rotate-180");
     });
 
+    // username user
+    async function loadUsername() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) return;
+
+  try {
+    const res = await fetch('/api/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (res.ok) {
+      const user = await res.json();
+      document.getElementById('username').textContent = user.username || 'Guest';
+      document.getElementById('status').textContent = 'Logged In';
+    } else {
+      document.getElementById('username').textContent = 'Guest';
+      document.getElementById('status').textContent = 'Not Logged In';
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById('username').textContent = 'Guest';
+  }
+}
+
+loadUsername();
+
     // Logout
     async function logoutUser() {
-      try {
-      
-        const token = localStorage.getItem('token');
+    try {
+        const token = localStorage.getItem('auth_token');
         const response = await fetch('/api/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-         
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
         });
-        
-        
         const data = await response.json();
         if (response.ok) {
-          localStorage.removeItem('token');
-          window.location.href = '/';
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+            window.location.href = '/';
         } else {
-          alert(data.message || 'Logout gagal');
+            alert(data.message || 'Logout gagal');
         }
-      } catch (error) {
+    } catch (error) {
         console.log(error);
         alert('Terjadi kesalahan saat logout');
-      }
     }
+}
   </script>
 </body>
 </html>

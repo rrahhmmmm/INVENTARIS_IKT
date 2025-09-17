@@ -17,6 +17,8 @@
 <body class="bg-gray-100">
 
     @include ('components.A_navbar')
+    <header class="bg-white shadow-lg h-20">
+</header>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6">

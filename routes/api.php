@@ -19,6 +19,10 @@ Route::get('/ping', function () {
     return response()->json(['message' => 'API siappp']);
 });
 
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
 Route::apiResource('m_terminal', M_terminalController::class);
 
 Route::apiResource('m_divisi', M_divisiController::class);
@@ -36,10 +40,10 @@ Route::apiResource('m_retensi', M_retensiController::class);
 Route::apiResource('m_user', M_userController::class);
 
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
+    // Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 });
