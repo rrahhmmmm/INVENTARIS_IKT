@@ -17,3 +17,19 @@ Route::get('/terminal', function () {
 Route::get('/register', function () {
     return view('register');
 });
+
+Route::get('/role', function () { 
+    return view('role');
+});
+
+Route::get('/user', function () {
+    return view('user');
+});
+
+Route::get('/divisi', function () {
+    return view('divisi');
+});
+
+Route::get('/subdivisi', function () {
+    return view('subdivisi');
+});

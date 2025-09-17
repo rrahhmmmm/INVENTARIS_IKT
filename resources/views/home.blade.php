@@ -16,52 +16,20 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="bg-white shadow-sm">
-  <div class="container mx-auto flex justify-between items-center p-4">
-    <!-- Logo -->
-    <div class="flex items-center space-x-4">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-20 ">
-    </div>
-
-    <!-- Navbar -->
-    <nav class="flex items-center space-x-6">
-      <!-- Dropdown Master -->
-      <div class="relative group">
-        <button class="flex items-center space-x-1 text-black hover:text-blue-600 focus:outline-none">
-          <span>Master Admin</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <!-- Dropdown Menu -->
-        <div class="absolute hidden group-hover:block bg-white border rounded-md shadow-lg mt-2 w-40">
-          <a href="/divisi" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Divisi</a>
-          <a href="/subdivisi" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Subdivisi</a>
-          <a href="/user" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">User</a>
-        </div>
-      </div>
-
-      <!-- Tombol Logout -->
-      <form action="/logout" method="POST">
-        <!-- csrf token kalau pakai Laravel -->
-        @csrf
-        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-          Logout
-        </button>
-      </form>
-    </nav>
-  </div>
-</header>
+  @include('components.A_navbar')
 
 
   <!-- Main Portal -->
   <main class="flex-1 bg- relative">
     <div class="absolute inset-0 bg-white bg-opacity-30"></div>
+
+    
     <div class="relative z-10 min-h-full flex items-center justify-center p-6">
       
+    
       <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full mt-32">
+
+      
 
         <!-- Card Inventaris -->
         <a href="/inventaris" 

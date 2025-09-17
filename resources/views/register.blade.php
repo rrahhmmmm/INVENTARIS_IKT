@@ -12,11 +12,11 @@
   <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 m-8 ">
     <!-- Logo -->
     <div class="flex justify-between items-center ">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" />
-      <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" />
+      <!-- <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" /> -->
+      <!-- <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" /> -->
     </div>
     <div class="flex justify-center items-center">
-      <img src="/storage/iktlogo.png" alt="IKT Logo" class="h-40 " />
+      <img src="/storage/iktinven.png" alt="IKT Logo" class="h-48 " />
     </div>
 
     <!-- Alert -->

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelindo Multi Terminal - Role Management</title>
+    <title>Pelindo Multi Terminal - Divisi Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -16,21 +16,20 @@
 </head>
 <body class="bg-gray-100">
 
-    @include('components.A_navbar')
+    @include ('components.A_navbar')
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6">
         <!-- Controls -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
             <div class="flex items-center justify-between">
+                <button id="addDivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                    <i class="fas fa-plus"></i>
+                    <span>Tambah Divisi</span>
+                </button>
+
                 <div class="flex items-center space-x-4">
-                    <button id="addRoleBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                        <i class="fas fa-plus"></i>
-                        <span>Tambah Role</span>
-                    </button>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <input type="text" id="searchInput" placeholder="Cari role..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
+                    <input type="text" id="searchInput" placeholder="Cari divisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
                     <button id="searchBtn" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg">
                         <i class="fas fa-search text-gray-600"></i>
                     </button>
@@ -38,18 +37,18 @@
             </div>
         </div>
 
-        <!-- Role Table -->
+        <!-- Divisi Table -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <table class="w-full">
                 <thead class="bg-blue-600 text-white">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium">ID</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium">Nama Role</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium">Keterangan</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">NO</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Nama Divisi</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Dibuat Oleh</th>
                         <th class="px-6 py-3 text-center text-sm font-medium">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="roleTableBody" class="divide-y divide-gray-200"></tbody>
+                <tbody id="divisiTableBody" class="divide-y divide-gray-200"></tbody>
             </table>
         </div>
 
@@ -60,29 +59,29 @@
         </div>
         <div id="emptyState" class="text-center py-8 hidden">
             <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-            <p class="text-gray-600">Tidak ada data role</p>
+            <p class="text-gray-600">Tidak ada data divisi</p>
         </div>
     </main>
 
     <!-- Modal Add/Edit -->
-    <div id="roleModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div id="divisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
             <div class="flex items-center justify-between mb-4">
-                <h3 id="modalTitle" class="text-lg font-semibold">Tambah Role</h3>
+                <h3 id="modalTitle" class="text-lg font-semibold">Tambah Divisi</h3>
                 <button id="closeModal" class="text-gray-400 hover:text-gray-600">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             
-            <form id="roleForm">
-                <input type="hidden" id="roleIdRole"> <!-- ganti hidden input jadi ID_ROLE -->
+            <form id="divisiForm">
+                <input type="hidden" id="divisiId">
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Role</label>
-                    <input type="text" id="namaRole" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
+                    <input type="text" id="namaDivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
-                    <input type="text" id="keteranganRole" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
+                    <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="flex space-x-3">
                     <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
@@ -100,24 +99,23 @@
         </div>
     </div>
 
-    
     <script>
-        const apiUrl = "/api/m_role"; 
-        const tableBody = document.getElementById("roleTableBody");
+        const apiUrl = "/api/m_divisi"; 
+        const tableBody = document.getElementById("divisiTableBody");
         const loadingState = document.getElementById("loadingState");
         const emptyState = document.getElementById("emptyState");
 
-        const modal = document.getElementById("roleModal");
-        const addBtn = document.getElementById("addRoleBtn");
+        const modal = document.getElementById("divisiModal");
+        const addBtn = document.getElementById("addDivisiBtn");
         const closeModal = document.getElementById("closeModal");
         const cancelBtn = document.getElementById("cancelBtn");
-        const form = document.getElementById("roleForm");
+        const form = document.getElementById("divisiForm");
 
         const toast = document.getElementById("toast");
         const toastMessage = document.getElementById("toastMessage");
 
         // ==== Fetch Data ====
-        async function loadRoles() {
+        async function loadDivisi() {
             loadingState.classList.remove("hidden");
             emptyState.classList.add("hidden");
             tableBody.innerHTML = "";
@@ -133,15 +131,15 @@
                     return;
                 }
 
-                data.forEach((role) => {
+                data.forEach((divisi, i) => {
                     let row = `
                         <tr>
-                            <td class="px-6 py-4">${role.ID_ROLE}</td>
-                            <td class="px-6 py-4">${role.Nama_role}</td>
-                            <td class="px-6 py-4">${role.keterangan ?? '-'}</td>
+                            <td class="px-6 py-4">${i+1}</td>
+                            <td class="px-6 py-4">${divisi.NAMA_DIVISI}</td>
+                            <td class="px-6 py-4">${divisi.CREATE_BY ?? '-'}</td>
                             <td class="px-6 py-4 text-center space-x-2">
-                                <button onclick="editRole(${role.ID_ROLE})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteRole(${role.ID_ROLE})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                <button onclick="editDivisi(${divisi.ID_DIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteDivisi(${divisi.ID_DIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -155,26 +153,25 @@
         // ==== Add/Edit ====
         addBtn.addEventListener("click", () => {
             modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Tambah Role";
+            document.getElementById("modalTitle").innerText = "Tambah Divisi";
             form.reset();
-            document.getElementById("roleIdRole").value = "";
+            document.getElementById("divisiId").value = "";
         });
         closeModal.addEventListener("click", () => modal.classList.remove("show"));
         cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            let ID_ROLE = document.getElementById("roleIdRole").value;
+            let id = document.getElementById("divisiId").value;
             let payload = {
-                Nama_role: document.getElementById("namaRole").value,
-                keterangan: document.getElementById("keteranganRole").value,
-                create_by: "admin"
+                NAMA_DIVISI: document.getElementById("namaDivisi").value,
+                CREATE_BY: document.getElementById("createBy").value,
             };
 
             try {
                 let res;
-                if (ID_ROLE) {
-                    res = await fetch(`${apiUrl}/${ID_ROLE}`, {
+                if (id) {
+                    res = await fetch(`${apiUrl}/${id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload),
@@ -189,7 +186,7 @@
                 if (res.ok) {
                     showToast("Data berhasil disimpan");
                     modal.classList.remove("show");
-                    loadRoles();
+                    loadDivisi();
                 }
             } catch (err) {
                 console.error(err);
@@ -197,25 +194,25 @@
         });
 
         // ==== Edit Function ====
-        async function editRole(ID_ROLE) {
-            let res = await fetch(`${apiUrl}/${ID_ROLE}`);
+        async function editDivisi(id) {
+            let res = await fetch(`${apiUrl}/${id}`);
             let data = await res.json();
 
             modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Edit Role";
-            document.getElementById("roleIdRole").value = data.ID_ROLE;
-            document.getElementById("namaRole").value = data.Nama_role;
-            document.getElementById("keteranganRole").value = data.keterangan ?? '';
+            document.getElementById("modalTitle").innerText = "Edit Divisi";
+            document.getElementById("divisiId").value = data.ID_DIVISI;
+            document.getElementById("namaDivisi").value = data.NAMA_DIVISI;
+            document.getElementById("createBy").value = data.CREATE_BY ?? "";
         }
 
         // ==== Delete Function ====
-        async function deleteRole(ID_ROLE) {
+        async function deleteDivisi(id) {
             if (!confirm("Yakin ingin menghapus data ini?")) return;
 
-            let res = await fetch(`${apiUrl}/${ID_ROLE}`, { method: "DELETE" });
+            let res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
             if (res.ok) {
                 showToast("Data berhasil dihapus");
-                loadRoles();
+                loadDivisi();
             }
         }
 
@@ -227,7 +224,7 @@
         }
 
         // Load pertama kali
-        loadRoles();
+        loadDivisi();
     </script>
 </body>
 </html>

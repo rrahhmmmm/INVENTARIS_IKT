@@ -19,4 +19,9 @@ class M_divisi extends Model
         'CREATE_BY'
 
     ];
+
+    public function subdivisi()
+    {
+        return $this->hasMany(M_subdivisi::class, 'ID_DIVISI', 'ID_DIVISI');
+    }
 }

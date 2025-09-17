@@ -8,13 +8,13 @@
 </head>
 <body class="min-h-screen flex items-center justify-center bg-cover bg-center" 
       style="background-image: url('/storage/bglogin.png');">
-  <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-8 ">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-md pb-8 px-8 pt-1">
   <div class="flex justify-between items-center ">
-      <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" />
-      <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" />
+      <!-- <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" />
+      <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" /> -->
     </div>
     <div class="flex justify-center items-center">
-      <img src="/storage/iktlogo.png" alt="IKT Logo" class="h-40 " />
+      <img src="/storage/iktinven.png" alt="IKT Logo" class="h-48 " />
     </div>
     <form id="loginForm" class="space-y-4">
       <div>
@@ -75,7 +75,7 @@
             localStorage.setItem("auth_user", JSON.stringify(data.user));
 
             alert("Login berhasil!");
-            window.location.href = "/terminal"; // 
+            window.location.href = "/home"; // 
         } catch (err) {
             alert("Error: " + err.message);
         }

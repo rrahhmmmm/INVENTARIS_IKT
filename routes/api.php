@@ -10,6 +10,7 @@ use App\Http\Controllers\M_indeksController;
 use App\Http\Controllers\M_klasifikasiController;
 use App\Http\Controllers\M_roleController;
 use App\Http\Controllers\M_retensiController;
+use App\Http\Controllers\M_userController;
 
 
 use App\Http\Controllers\AuthController;
@@ -32,6 +33,7 @@ Route::apiResource('m_indeks', M_indeksController::class);
 Route::apiResource('m_klasifikasi', M_klasifikasiController::class);
 Route::apiResource('m_role', M_roleController::class);
 Route::apiResource('m_retensi', M_retensiController::class);
+Route::apiResource('m_user', M_userController::class);
 
 
 Route::post('/register', [AuthController::class, 'register']);

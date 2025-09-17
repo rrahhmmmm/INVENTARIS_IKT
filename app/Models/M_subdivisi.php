@@ -18,4 +18,9 @@ class M_subdivisi extends Model
     'NAMA_SUBDIVISI',
     'CREATE_BY'
    ];
+
+   public function divisi()
+    {
+        return $this->belongsTo(M_divisi::class, 'ID_DIVISI', 'ID_DIVISI');
+    }
 }

@@ -26,4 +26,22 @@ class M_user extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    // Relasi ke Role
+    public function role()
+    {
+        return $this->belongsTo(M_role::class, 'ID_ROLE', 'ID_ROLE');
+    }
+
+    // Relasi ke Divisi
+    public function divisi()
+    {
+        return $this->belongsTo(M_divisi::class, 'ID_DIVISI', 'ID_DIVISI');
+    }
+
+    // Relasi ke Subdivisi
+    public function subdivisi()
+    {
+        return $this->belongsTo(M_subdivisi::class, 'ID_SUBDIVISI', 'ID_SUBDIVISI');
+    }
 }
