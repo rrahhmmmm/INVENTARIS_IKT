@@ -12,18 +12,37 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Tabel master
         Schema::create('M_MODEL', function (Blueprint $table) {
             $table->integer('ID_MODEL', true);
-            $table->string('NAMA_MODEL', 20);
+            $table->string('NAMA_MODEL', 50);
             $table->string('KETERANGAN', 200)->nullable();
             $table->string('create_by', 100);
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
             $table->integer('status')->default(1);
-            $table->string('attr1')->nullable();
-            $table->string('attr2')->nullable();
-            $table->string('attr3')->nullable();
+            // attr jadi param tambahan
+            $table->string('attr1', 100)->nullable();
+            $table->string('attr2', 100)->nullable();
+            $table->string('attr3', 100)->nullable();
+        });
+
+        // Tabel history
+        Schema::create('H_M_MODEL', function (Blueprint $table) {
+            $table->bigIncrements('id'); // auto increment ID history
+            $table->integer('ID_MODEL');
+            $table->string('NAMA_MODEL', 50);
+            $table->string('KETERANGAN', 200)->nullable();
+            $table->string('create_by', 100);
+            $table->timestamp('create_date')->nullable();
+            $table->string('update_by', 100)->nullable();
+            $table->timestamp('update_date')->nullable();
+            $table->integer('status');
+            $table->string('attr1', 100)->nullable();
+            $table->string('attr2', 100)->nullable();
+            $table->string('attr3', 100)->nullable();
+            $table->timestamp('logged_at')->useCurrent(); // kapan dicatat ke history
         });
 
         // Trigger INSERT
@@ -60,7 +79,7 @@ return new class extends Migration
             END
         ');
 
-        // status on update 
+        // status otomatis di-update
         DB::unprepared('
             CREATE TRIGGER trg_status_model
             BEFORE UPDATE ON M_MODEL
@@ -97,7 +116,9 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_insert');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_delete');
-        DB::unprepared('DROP TRIGGER IF EXIST trg_status_model');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_status_model');
+        
+        Schema::dropIfExists('H_M_MODEL');
         Schema::dropIfExists('M_MODEL');
     }
 };

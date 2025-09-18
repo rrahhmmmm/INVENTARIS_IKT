@@ -22,9 +22,9 @@ return new class extends Migration
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
             $table->text('deskripsi')->nullable();
             $table->boolean('STATUS')->nullable();
-            $table->string('attr1')->nullable();
-            $table->string('attr2')->nullable();
-            $table->string('attr3')->nullable();
+            $table->string('param1')->nullable();
+            $table->string('param2')->nullable();
+            $table->string('param3')->nullable();
         });
     }
 

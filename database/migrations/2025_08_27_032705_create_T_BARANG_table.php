@@ -26,9 +26,9 @@ return new class extends Migration
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
             $table->boolean('status');
-            $table->string('attr1')->nullable();
-            $table->string('attr2')->nullable();
-            $table->string('attr3')->nullable();
+            $table->string('param1')->nullable();
+            $table->string('param2')->nullable();
+            $table->string('param3')->nullable();
         });
 
         // Trigger INSERT
@@ -39,11 +39,11 @@ return new class extends Migration
             BEGIN
                 INSERT INTO H_M_BARANG
                 (ID_BARANG, KODE_BARANG, NAMA_BARANG, ID_TIPE, ID_STATUS, ID_LOKASI, ID_ANGGARAN, ID_PARAMETER,
-                 create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
+                 create_by, create_date, update_by, update_date, status, param1, param2, param3)
                 VALUES
                 (NEW.ID_BARANG, NEW.KODE_BARANG, NEW.NAMA_BARANG, NEW.ID_TIPE, NEW.ID_STATUS, NEW.ID_LOKASI,
                  NEW.ID_ANGGARAN, NEW.ID_PARAMETER, NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date,
-                 NEW.status, NEW.attr1, NEW.attr2, NEW.attr3);
+                 NEW.status, NEW.param1, NEW.param2, NEW.param3);
             END
         ');
 
@@ -55,11 +55,11 @@ return new class extends Migration
             BEGIN
                 INSERT INTO H_M_BARANG
                 (ID_BARANG, KODE_BARANG, NAMA_BARANG, ID_TIPE, ID_STATUS, ID_LOKASI, ID_ANGGARAN, ID_PARAMETER,
-                 create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
+                 create_by, create_date, update_by, update_date, status, param1, param2, param3)
                 VALUES
                 (NEW.ID_BARANG, NEW.KODE_BARANG, NEW.NAMA_BARANG, NEW.ID_TIPE, NEW.ID_STATUS, NEW.ID_LOKASI,
                  NEW.ID_ANGGARAN, NEW.ID_PARAMETER, NEW.create_by, NEW.create_date, NEW.update_by, NEW.update_date,
-                 NEW.status, NEW.attr1, NEW.attr2, NEW.attr3);
+                 2, NEW.param1, NEW.param2, NEW.param3);
             END
         ');
 
@@ -71,11 +71,11 @@ return new class extends Migration
             BEGIN
                 INSERT INTO H_M_BARANG
                 (ID_BARANG, KODE_BARANG, NAMA_BARANG, ID_TIPE, ID_STATUS, ID_LOKASI, ID_ANGGARAN, ID_PARAMETER,
-                 create_by, create_date, update_by, update_date, status, attr1, attr2, attr3)
+                 create_by, create_date, update_by, update_date, status, param1, param2, param3)
                 VALUES
                 (OLD.ID_BARANG, OLD.KODE_BARANG, OLD.NAMA_BARANG, OLD.ID_TIPE, OLD.ID_STATUS, OLD.ID_LOKASI,
                  OLD.ID_ANGGARAN, OLD.ID_PARAMETER, OLD.create_by, OLD.create_date, OLD.update_by, OLD.update_date,
-                 OLD.status, OLD.attr1, OLD.attr2, OLD.attr3);
+                 OLD.status, OLD.param1, OLD.param2, OLD.param3);
             END
         ');
     }

@@ -24,9 +24,9 @@ return new class extends Migration
             $table->string('UPDATE_BY', 50)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
             $table->integer('STATUS')->nullable();
-            $table->string('attr1')->nullable();
-            $table->string('attr2')->nullable();
-            $table->string('attr3')->nullable();
+            $table->string('param1')->nullable();
+            $table->string('param2')->nullable();
+            $table->string('param3')->nullable();
         });
     }
 
