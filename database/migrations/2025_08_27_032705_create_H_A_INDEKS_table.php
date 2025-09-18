@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('H_A_INDEKS');
+        Schema::dropIfExists('H_M_INDEKS');
     }
 };

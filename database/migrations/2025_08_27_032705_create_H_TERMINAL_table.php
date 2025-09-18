@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('H_TERMINAL');
+        Schema::dropIfExists('H_M_TERMINAL');
     }
 };

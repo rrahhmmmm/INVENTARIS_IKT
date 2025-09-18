@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('H_DIVISI');
+        Schema::dropIfExists('H_M_DIVISI');
     }
 };
