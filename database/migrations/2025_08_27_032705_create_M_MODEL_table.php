@@ -22,28 +22,11 @@ return new class extends Migration
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
             $table->integer('status')->default(1);
-            // attr jadi param tambahan
             $table->string('attr1', 100)->nullable();
             $table->string('attr2', 100)->nullable();
             $table->string('attr3', 100)->nullable();
         });
 
-        // Tabel history
-        Schema::create('H_M_MODEL', function (Blueprint $table) {
-            $table->bigIncrements('id'); // auto increment ID history
-            $table->integer('ID_MODEL');
-            $table->string('NAMA_MODEL', 50);
-            $table->string('KETERANGAN', 200)->nullable();
-            $table->string('create_by', 100);
-            $table->timestamp('create_date')->nullable();
-            $table->string('update_by', 100)->nullable();
-            $table->timestamp('update_date')->nullable();
-            $table->integer('status');
-            $table->string('attr1', 100)->nullable();
-            $table->string('attr2', 100)->nullable();
-            $table->string('attr3', 100)->nullable();
-            $table->timestamp('logged_at')->useCurrent(); // kapan dicatat ke history
-        });
 
         // Trigger INSERT
         DB::unprepared('
@@ -118,7 +101,6 @@ return new class extends Migration
         DB::unprepared('DROP TRIGGER IF EXISTS trg_m_model_delete');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_status_model');
         
-        Schema::dropIfExists('H_M_MODEL');
         Schema::dropIfExists('M_MODEL');
     }
 };
