@@ -177,43 +177,47 @@
     }
 
     // Load Users
-    async function loadUsers() {
-      loadingState.classList.remove("hidden");
-      emptyState.classList.add("hidden");
-      tableBody.innerHTML = "";
+    // Load Users
+async function loadUsers() {
+  loadingState.classList.remove("hidden");
+  emptyState.classList.add("hidden");
+  tableBody.innerHTML = "";
 
-      try {
-        let res = await fetch(apiUrl);
-        let data = await res.json();
-        loadingState.classList.add("hidden");
+  try {
+    let res = await fetch(apiUrl);
+    let data = await res.json();
+    loadingState.classList.add("hidden");
 
-        if (data.length === 0) {
-          emptyState.classList.remove("hidden");
-          return;
-        }
-
-        data.forEach(user => {
-          let row = `
-            <tr>
-              <td class="px-6 py-4">${user.ID_USER}</td>
-              <td class="px-6 py-4">${user.username}</td>
-              <td class="px-6 py-4">${user.email}</td>
-              <td class="px-6 py-4">${user.full_name ?? '-'}</td>
-              <td class="px-6 py-4">${user.divisi?.NAMA_DIVISI ?? '-'}</td>
-              <td class="px-6 py-4">${user.subdivisi?.NAMA_SUBDIVISI ?? '-'}</td>
-              <td class="px-6 py-4">${user.role?.Nama_role ?? '-'}</td>
-              <td class="px-6 py-4 text-center space-x-2">
-                <button onclick="editUser(${user.ID_USER})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                <button onclick="deleteUser(${user.ID_USER})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-              </td>
-            </tr>
-          `;
-          tableBody.insertAdjacentHTML("beforeend", row);
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    if (data.length === 0) {
+      emptyState.classList.remove("hidden");
+      return;
     }
+
+    data.forEach(user => {
+      let row = `
+        <tr>
+          <td class="px-6 py-4">${user.ID_USER}</td>
+          <td class="px-6 py-4">${user.username}</td>
+          <td class="px-6 py-4">${user.email}</td>
+          <td class="px-6 py-4">${user.full_name ?? '-'}</td>
+          <td class="px-6 py-4">${user.divisi?.NAMA_DIVISI ?? '-'}</td>
+          <td class="px-6 py-4">${user.subdivisi?.NAMA_SUBDIVISI ?? '-'}</td>
+          <td class="px-6 py-4">${user.role?.Nama_role ?? '-'}</td>
+          <td class="px-6 py-4 text-center space-x-2">
+            <button onclick="editUser(${user.ID_USER})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteUser(${user.ID_USER})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `;
+      tableBody.insertAdjacentHTML("beforeend", row);
+    });
+  } catch (err) {
+    console.error(err);
+    loadingState.classList.add("hidden");
+    emptyState.classList.remove("hidden");
+  }
+}
+
 
     // Tambah
     addBtn.addEventListener("click", async () => {

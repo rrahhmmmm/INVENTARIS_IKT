@@ -21,11 +21,8 @@ class M_USERCONTROLLER extends Controller
             });
         }
 
-        // default 10 per halaman
-        $perPage = $request->get('per_page', 10);
 
-        $users = $query->paginate($perPage);
-
+        $users = $query->get();
         return response()->json($users);
     }
 
