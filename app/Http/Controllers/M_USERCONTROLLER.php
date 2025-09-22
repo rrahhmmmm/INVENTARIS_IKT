@@ -8,27 +8,33 @@ use Illuminate\Support\Facades\Hash;
 
 class M_USERCONTROLLER extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-{
-    $users = M_user::with(['role','divisi','subdivisi'])->get();
-    return response()->json($users);
-}
+    public function index(Request $request)
+    {
+        $query = M_user::with(['role', 'divisi', 'subdivisi']);
 
-    /**
-     * Display the specified resource.
-     */
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('username', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('full_name', 'like', "%{$search}%");
+            });
+        }
+
+        // default 10 per halaman
+        $perPage = $request->get('per_page', 10);
+
+        $users = $query->paginate($perPage);
+
+        return response()->json($users);
+    }
+
     public function show(string $id)
     {
-        $user = M_user::findOrFail($id);
+        $user = M_user::with(['role','divisi','subdivisi'])->findOrFail($id);
         return response()->json($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $user = M_user::findOrFail($id);
@@ -43,7 +49,6 @@ class M_USERCONTROLLER extends Controller
             "ID_ROLE"      => "nullable|integer",
         ]);
 
-        // Kalau password diupdate, hash ulang
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         }
@@ -53,9 +58,6 @@ class M_USERCONTROLLER extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $user = M_user::findOrFail($id);

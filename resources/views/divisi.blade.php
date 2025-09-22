@@ -32,9 +32,6 @@
 
                 <div class="flex items-center space-x-4">
                     <input type="text" id="searchInput" placeholder="Cari divisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
-                    <button id="searchBtn" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg">
-                        <i class="fas fa-search text-gray-600"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -117,40 +114,58 @@
         const toastMessage = document.getElementById("toastMessage");
 
         // ==== Fetch Data ====
-        async function loadDivisi() {
-            loadingState.classList.remove("hidden");
-            emptyState.classList.add("hidden");
-            tableBody.innerHTML = "";
+        async function loadDivisi(keyword = "") {
+        loadingState.classList.remove("hidden");
+        emptyState.classList.add("hidden");
+        tableBody.innerHTML = "";
 
-            try {
-                let res = await fetch(apiUrl);
-                let data = await res.json();
-
-                loadingState.classList.add("hidden");
-
-                if (data.length === 0) {
-                    emptyState.classList.remove("hidden");
-                    return;
-                }
-
-                data.forEach((divisi, i) => {
-                    let row = `
-                        <tr>
-                            <td class="px-6 py-4">${i+1}</td>
-                            <td class="px-6 py-4">${divisi.NAMA_DIVISI}</td>
-                            <td class="px-6 py-4">${divisi.CREATE_BY ?? '-'}</td>
-                            <td class="px-6 py-4 text-center space-x-2">
-                                <button onclick="editDivisi(${divisi.ID_DIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteDivisi(${divisi.ID_DIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML("beforeend", row);
-                });
-            } catch (err) {
-                console.error("Error:", err);
+        try {
+            let url = apiUrl;
+            if (keyword && keyword.trim() !== "") {
+                url += `?search=${encodeURIComponent(keyword)}`;
             }
+
+            let res = await fetch(url);
+            let data = await res.json();
+
+            loadingState.classList.add("hidden");
+
+            if (!Array.isArray(data) || data.length === 0) {
+                emptyState.classList.remove("hidden");
+                return;
+            }
+
+            data.forEach((divisi, i) => {
+                let row = `
+                    <tr>
+                        <td class="px-6 py-4">${i+1}</td>
+                        <td class="px-6 py-4">${divisi.NAMA_DIVISI}</td>
+                        <td class="px-6 py-4">${divisi.CREATE_BY ?? '-'}</td>
+                        <td class="px-6 py-4 text-center space-x-2">
+                            <button onclick="editDivisi(${divisi.ID_DIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteDivisi(${divisi.ID_DIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
+        } catch (err) {
+            console.error("Error:", err);
+            loadingState.classList.add("hidden");
         }
+    }
+
+    // Event search realtime (opsional, seperti di subdivisi)
+    let searchTimeout = null;
+    searchInput.addEventListener("input", () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            loadDivisi(searchInput.value);
+        }, 500);
+    });
+
+    // Load pertama kali
+    loadDivisi();
 
         // ==== Add/Edit ====
         addBtn.addEventListener("click", () => {

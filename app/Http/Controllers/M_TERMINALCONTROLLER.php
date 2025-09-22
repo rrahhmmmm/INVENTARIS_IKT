@@ -10,10 +10,22 @@ class M_TERMINALCONTROLLER extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-            return M_terminal::all();
+    public function index(Request $request)
+{
+    $query = M_terminal::query();
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('KODE_TERMINAL', 'like', '%' . $search . '%')
+              ->orWhere('NAMA_TERMINAL', 'like', '%' . $search . '%')
+              ->orWhere('LOKASI', 'like', '%' . $search . '%')
+              ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+        });
     }
+
+    return $query->get();
+}
 
     /**
      * Store a newly created resource in storage.

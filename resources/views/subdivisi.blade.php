@@ -31,11 +31,25 @@
                 </button>
 
                 <div class="flex items-center space-x-4">
-                    <input type="text" id="searchInput" placeholder="Cari subdivisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
-                    <button id="searchBtn" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg">
-                        <i class="fas fa-search text-gray-600"></i>
-                    </button>
-                </div>
+    <input 
+        id="searchInput" 
+        type="text" 
+        placeholder="Cari..." 
+        class="border px-2 py-1" 
+    />
+</div>
+
+<script>
+let searchTimeout = null;
+
+document.getElementById("searchInput").addEventListener("input", function() {
+    clearTimeout(searchTimeout);
+    let keyword = this.value;
+    searchTimeout = setTimeout(() => {
+        loadSubdivisi(keyword);
+    }, 500); // tunggu 0.5 detik setelah user stop ngetik
+});
+</script>
             </div>
         </div>
 
@@ -150,13 +164,17 @@
         }
 
         // ==== Fetch Subdivisi ====
-        async function loadSubdivisi() {
+        async function loadSubdivisi(keyword = "") {
             loadingState.classList.remove("hidden");
             emptyState.classList.add("hidden");
             tableBody.innerHTML = "";
 
             try {
-                let res = await fetch(apiUrl);
+                let url = apiUrl;
+        if (keyword && keyword.trim() !== "") {
+            url += `?search=${encodeURIComponent(keyword)}`;
+        }
+                let res = await fetch(url);
                 let data = await res.json();
 
                 loadingState.classList.add("hidden");

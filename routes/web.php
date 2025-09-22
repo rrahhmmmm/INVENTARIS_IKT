@@ -38,3 +38,10 @@ Route::get('/register', function () {
         return view('subdivisi');
     })->name('subdivisi');
 
+    Route::get('parameter', function () {
+        return view('parameter');
+    })->name('parameter');
+
+    Route::get('arsip', function () {
+        return view('arsip');
+    })->name('arsip');

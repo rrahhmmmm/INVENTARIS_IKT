@@ -7,9 +7,19 @@ use Illuminate\Http\Request;
 
 class M_DIVISICONTROLLER extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return M_divisi::all();
+        $query = M_divisi::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('NAMA_DIVISI', 'like', '%' . $search . '%')
+                  ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+            });
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(Request $request)

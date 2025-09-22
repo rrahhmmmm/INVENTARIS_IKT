@@ -7,11 +7,21 @@ use Illuminate\Http\Request;
 
 class M_SUBDIVISICONTROLLER extends Controller
 {
-    public function index()
-{
-    $subdivisi = M_subdivisi::with('divisi')->get();
-    return response()->json($subdivisi);
-}
+    public function index(Request $request)
+    {
+        $query = M_subdivisi::with('divisi');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('NAMA_SUBDIVISI', 'like', '%' . $search . '%')
+                  ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+            });
+        }
+
+        $subdivisi = $query->get();
+        return response()->json($subdivisi);
+    }
 
     public function getByDivisi($id_divisi)
     {

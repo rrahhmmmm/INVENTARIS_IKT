@@ -35,6 +35,16 @@
     <span>HOME</span>
   </a>
 
+  <a href="arsip" 
+     class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
+    <span>DASHBOARD</span>
+  </a>
+
+  <a href="Tarsip" 
+     class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
+    <span>TRANSAKSI</span>
+  </a>
+
   <!-- Dropdown Master -->
   <div class="relative mt-2">
     <button id="masterBtn" 
@@ -49,13 +59,10 @@
     </button>
 
     <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
-      <a href="/user" class="block px-3 py-2 rounded-md hover:bg-blue-200">User</a>
-      <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Divisi</a>
-      <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Subdivisi</a>
-      <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Role</a>
-      <a href="/terminal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Terminal</a>
-      <a href="/parameter" class="block px-3 py-2 rounded-md hover:bg-blue-200">parameter</a>
-    </div>
+      <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
+      <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
+      <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
+      <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
   </div>
 </nav>
 
