@@ -24,8 +24,6 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::apiResource('m_terminal', M_terminalController::class);
-
 Route::apiResource('m_divisi', M_divisiController::class);
 
 Route::apiResource('m_subdivisi', M_subdivisiController::class);
@@ -44,7 +42,10 @@ Route::apiResource('m_parameter', M_parameterController::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
+Route::get('/terminal/export', [M_TERMINALCONTROLLER::class, 'exportExcel']);
 Route::middleware('auth:sanctum')->group(function () {
-    // Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::apiResource('m_terminal', M_TERMINALCONTROLLER::class);
+    Route::post('/terminal/import', [M_TERMINALCONTROLLER::class, 'importExcel']);
+// Route::get('/terminal/export-template', [M_TERMINALCONTROLLER::class, 'exportTemplate']);
 });

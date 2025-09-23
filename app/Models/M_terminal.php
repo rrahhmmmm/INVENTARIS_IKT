@@ -18,6 +18,7 @@ class M_terminal extends Model
         'KODE_TERMINAL',
         'NAMA_TERMINAL',
         'LOKASI',
-        'CREATE_BY'
+        'CREATE_BY',
+        'UPDATE_BY'
     ];
 }

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\M_terminal;
+use App\Exports\TerminalExport;
+use App\Imports\TerminalImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class M_TERMINALCONTROLLER extends Controller
 {
@@ -65,7 +68,8 @@ class M_TERMINALCONTROLLER extends Controller
         'KODE_TERMINAL' => 'sometimes|string|max:50|unique:M_TERMINAL,KODE_TERMINAL,' . $id . ',ID_TERMINAL',
         'NAMA_TERMINAL' => 'sometimes|string|max:100',
         'LOKASI'        => 'nullable|string|max:255',
-        'CREATE_BY'     => 'nullable|string|max:100'
+        'CREATE_BY'     => 'nullable|string|max:100',
+        'UPDATE_BY'     => 'nullable|string|max:100'
     ]);
 
     $terminal->update($validated);
@@ -82,5 +86,26 @@ class M_TERMINALCONTROLLER extends Controller
         $terminal->delete();
     
         return response()->json(['message' => 'Deleted successfully']);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new TerminalExport, 'terminal.xlsx');
+    }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new \App\Exports\TerminalExportTemplate, 'terminal_template.xlsx');
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        Excel::import(new TerminalImport, $request->file('file'));
+
+        return response()->json(['message' => 'Data berhasil diimport']);
     }
 }
