@@ -44,6 +44,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/terminal/export-template', [M_TERMINALCONTROLLER::class, 'exportTemplate']);
 Route::get('/terminal/export', [M_TERMINALCONTROLLER::class, 'exportExcel']);
 Route::get('/user/export', [M_USERCONTROLLER::class, 'exportExcel']);
+Route::get('/divisi/export', [M_DIVISICONTROLLER::class,'exportExcel']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::apiResource('m_terminal', M_TERMINALCONTROLLER::class);

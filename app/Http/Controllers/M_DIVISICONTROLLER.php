@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\M_divisi;
 use Illuminate\Http\Request;
+use App\Exports\DivisiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class M_DIVISICONTROLLER extends Controller
 {
@@ -56,5 +58,10 @@ class M_DIVISICONTROLLER extends Controller
         $divisi = M_divisi::findOrFail($id);
         $divisi->delete();
         return response()->json(null, 204);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new DivisiExport, 'divisi.xlsx');
     }
 }

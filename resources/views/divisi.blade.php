@@ -25,10 +25,17 @@
         <!-- Controls -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
             <div class="flex items-center justify-between">
-                <button id="addDivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                <div class="flex item-center gap-4">
+                <button id="addDivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 pr-4">
                     <i class="fas fa-plus"></i>
                     <span>Tambah Divisi</span>
                 </button>
+                <a href = " {{ url ('/api/divisi/export') }}" id=""exportbtn
+                class = " rounded bg-green-600 hove:bg-green-700 text-white px-4 py-2 flex item-center space-x-2" >
+                Export Excel <i class = "fas fa-file-excel"></i>
+
+                </a>
+                </div>
 
                 <div class="flex items-center space-x-4">
                     <input type="text" id="searchInput" placeholder="Cari divisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
