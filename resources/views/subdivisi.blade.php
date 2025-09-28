@@ -17,51 +17,30 @@
 <body class="bg-gray-100">
 
     @include('components.A_navbar')
-    <header class="bg-white shadow-lg h-20">
-</header>
+    <header class="bg-white shadow-lg h-20"></header>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6">
         <!-- Controls -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
-    <div class="flex items-center justify-between">
-        <!-- Bagian kiri -->
-        <div class="flex items-center gap-4">
-            <button id="addSubdivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                <i class="fas fa-plus"></i>
-                <span>Tambah Subdivisi</span>
-            </button>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button id="addSubdivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah Subdivisi</span>
+                    </button>
 
-            <a href="{{ url('/api/subdivisi/export') }}" 
-               class="rounded bg-green-600 hover:bg-green-700 text-white px-4 py-2 flex items-center space-x-2">
-                Export Excel <i class="fas fa-file-excel"></i>
-            </a>
+                    <a href="{{ url('/api/subdivisi/export') }}" 
+                    class="rounded bg-green-600 hover:bg-green-700 text-white px-4 py-2 flex items-center space-x-2">
+                        Export Excel <i class="fas fa-file-excel"></i>
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <input id="searchInput" type="text" placeholder="Cari..." class="border px-2 py-1 rounded"/>
+                </div>
+            </div>
         </div>
-
-        <!-- Bagian kanan (search) -->
-        <div class="flex items-center space-x-4">
-            <input 
-                id="searchInput" 
-                type="text" 
-                placeholder="Cari..." 
-                class="border px-2 py-1 rounded"
-            />
-        </div>
-    </div>
-</div>
-
-<script>
-let searchTimeout = null;
-
-document.getElementById("searchInput").addEventListener("input", function() {
-    clearTimeout(searchTimeout);
-    let keyword = this.value;
-    searchTimeout = setTimeout(() => {
-        loadSubdivisi(keyword);
-    }, 500); // tunggu 0.5 detik setelah user stop ngetik
-});
-</script>
-
 
         <!-- Subdivisi Table -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -118,7 +97,7 @@ document.getElementById("searchInput").addEventListener("input", function() {
 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
-                    <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 focus:ring-2 focus:ring-blue-500" readonly>
                 </div>
 
                 <div id="formErrors" class="text-red-600 text-sm mb-3 hidden"></div>
@@ -128,18 +107,20 @@ document.getElementById("searchInput").addEventListener("input", function() {
                     <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
                 </div>
             </form>
-            <div class="mt-8 gap-4">
-                <h4 class="text-md font-semo=ibold mb-3"> Tambah Data Dengan Excel</h4>
 
-                <a href = "{{url('/api/subdivisi/export-template')  }}"
-                id="templateBTn"
-                class="bg-green-600 hover:-bg-green-700 text-white px-2 py-2 rounded-lg flex items-center spaca-x-2 mb-4">
-                Download Template <i class="fas fa-download"></i> 
+            <!-- Import Excel -->
+            <div class="mt-8 gap-4">
+                <h4 class="text-md font-semibold mb-3"> Tambah Data Dengan Excel</h4>
+
+                <a href="{{url('/api/subdivisi/export-template')}}" id="templateBTn"
+                class="bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg flex items-center space-x-2 mb-4">
+                    Download Template <i class="fas fa-download"></i> 
                 </a>
                 <form id="importForm">
                     <input type="file" name="file" id="importFile" class="border px-2 py-1 mb-2">
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded ml-2"> Import</button>
                 </form>
+            </div>
         </div>
     </div>
 
@@ -154,6 +135,8 @@ document.getElementById("searchInput").addEventListener("input", function() {
     <script>
         const apiUrl = "/api/m_subdivisi"; 
         const apiDivisiUrl = "/api/m_divisi"; 
+        const token = localStorage.getItem('auth_token'); // ambil token login
+
         const tableBody = document.getElementById("subdivisiTableBody");
         const loadingState = document.getElementById("loadingState");
         const emptyState = document.getElementById("emptyState");
@@ -168,7 +151,24 @@ document.getElementById("searchInput").addEventListener("input", function() {
         const toastMessage = document.getElementById("toastMessage");
         const formErrors = document.getElementById('formErrors');
 
-        // ==== Load Divisi into Select ====
+        // ==== Ambil username dari /me ====
+        async function loadUsername() {
+            try {
+                const res = await fetch('/api/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!res.ok) throw new Error("Gagal memuat user");
+                const data = await res.json();
+                document.getElementById("createBy").value = data.username || "";
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ==== Load Divisi ke Select ====
         async function loadDivisiOptions() {
             try {
                 let res = await fetch(apiDivisiUrl);
@@ -193,9 +193,9 @@ document.getElementById("searchInput").addEventListener("input", function() {
 
             try {
                 let url = apiUrl;
-        if (keyword && keyword.trim() !== "") {
-            url += `?search=${encodeURIComponent(keyword)}`;
-        }
+                if (keyword && keyword.trim() !== "") {
+                    url += `?search=${encodeURIComponent(keyword)}`;
+                }
                 let res = await fetch(url);
                 let data = await res.json();
 
@@ -237,6 +237,7 @@ document.getElementById("searchInput").addEventListener("input", function() {
             formErrors.classList.add('hidden');
             document.getElementById("subdivisiId").value = "";
             await loadDivisiOptions();
+            await loadUsername(); // isi otomatis createBy
         });
         closeModal.addEventListener("click", () => modal.classList.remove("show"));
         cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
@@ -256,13 +257,13 @@ document.getElementById("searchInput").addEventListener("input", function() {
                 if (id) {
                     res = await fetch(`${apiUrl}/${id}`, {
                         method: "PUT",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                         body: JSON.stringify(payload),
                     });
                 } else {
                     res = await fetch(apiUrl, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                         body: JSON.stringify(payload),
                     });
                 }
@@ -278,8 +279,6 @@ document.getElementById("searchInput").addEventListener("input", function() {
                     formErrors.innerText = messages.join('\n');
                     formErrors.classList.remove('hidden');
                 } else {
-                    const text = await res.text();
-                    console.error('Server error:', text);
                     showToast('Gagal menyimpan data');
                 }
             } catch (err) {
@@ -291,7 +290,7 @@ document.getElementById("searchInput").addEventListener("input", function() {
         // ==== Edit Function ====
         async function editSubdivisi(id) {
             try {
-                let res = await fetch(`${apiUrl}/${id}`);
+                let res = await fetch(`${apiUrl}/${id}`, { headers: { 'Authorization': `Bearer ${token}` }});
                 if (!res.ok) { showToast('Gagal memuat data subdivisi'); return; }
                 let data = await res.json();
 
@@ -301,7 +300,6 @@ document.getElementById("searchInput").addEventListener("input", function() {
                 document.getElementById("namaSubdivisi").value = data.NAMA_SUBDIVISI;
                 document.getElementById("createBy").value = data.CREATE_BY ?? "";
                 await loadDivisiOptions();
-                // pastikan value dipilih setelah opsi terisi
                 document.getElementById("divisiSelect").value = data.ID_DIVISI;
             } catch (err) {
                 console.error(err);
@@ -313,7 +311,7 @@ document.getElementById("searchInput").addEventListener("input", function() {
         async function deleteSubdivisi(id) {
             if (!confirm("Yakin ingin menghapus data ini?")) return;
 
-            let res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+            let res = await fetch(`${apiUrl}/${id}`, { method: "DELETE", headers: { 'Authorization': `Bearer ${token}` } });
             if (res.ok) {
                 showToast("Data berhasil dihapus");
                 loadSubdivisi();
@@ -322,8 +320,6 @@ document.getElementById("searchInput").addEventListener("input", function() {
             }
         }
 
-
-
         // ==== Toast ====
         function showToast(msg) {
             toastMessage.innerText = msg;
@@ -331,38 +327,45 @@ document.getElementById("searchInput").addEventListener("input", function() {
             setTimeout(() => toast.classList.remove("show"), 3000);
         }
 
+        // ==== Import Excel ====
         document.getElementById("importForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+            e.preventDefault();
 
-    let fileInput = document.getElementById("importFile");
-    if (!fileInput.files.length) {
-        alert("Pilih file terlebih dahulu!");
-        return;
-    }
+            let fileInput = document.getElementById("importFile");
+            if (!fileInput.files.length) {
+                alert("Pilih file terlebih dahulu!");
+                return;
+            }
 
-    let formData = new FormData();
-    formData.append("file", fileInput.files[0]);
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
 
-    try {
-        let res = await fetch("/api/subdivisi/import", {
-            method: "POST",
-            body: formData
+            try {
+                let res = await fetch("/api/subdivisi/import", {
+                    method: "POST",
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    showToast("Data subdivisi berhasil diimport");
+                    loadSubdivisi();
+                } else {
+                    showToast("Gagal import data");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Terjadi kesalahan");
+            }
         });
 
-        if (res.ok) {
-            showToast("Data subdivisi berhasil diimport");
-            loadSubdivisi();
-        } else {
-            let err = await res.text();
-            console.error(err);
-            showToast("Gagal import data");
-        }
-    } catch (err) {
-        console.error(err);
-        showToast("Terjadi kesalahan");
-    }
-});
-
+        // ==== Search ====
+        let searchTimeout = null;
+        document.getElementById("searchInput").addEventListener("input", function() {
+            clearTimeout(searchTimeout);
+            let keyword = this.value;
+            searchTimeout = setTimeout(() => loadSubdivisi(keyword), 500);
+        });
 
         // Load pertama kali
         loadSubdivisi();
