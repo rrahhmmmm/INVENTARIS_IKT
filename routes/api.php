@@ -45,10 +45,11 @@ Route::get('/terminal/export-template', [M_TERMINALCONTROLLER::class, 'exportTem
 Route::get('/terminal/export', [M_TERMINALCONTROLLER::class, 'exportExcel']);
 Route::get('/user/export', [M_USERCONTROLLER::class, 'exportExcel']);
 Route::get('/divisi/export', [M_DIVISICONTROLLER::class,'exportExcel']);
-
+Route::get('/divisi/export-template', [M_DIVISICONTROLLER::class, 'exportTemplate']);
+Route::post('/divisi/import', [M_DIVISICONTROLLER::class, 'importExcel']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::apiResource('m_terminal', M_TERMINALCONTROLLER::class);
     Route::post('/terminal/import', [M_TERMINALCONTROLLER::class, 'importExcel']);
-
+    Route::post('/divisi/import', [M_DIVISICONTROLLER::class, 'importExcel']);
 });

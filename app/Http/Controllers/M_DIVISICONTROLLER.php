@@ -6,6 +6,7 @@ use App\Models\M_divisi;
 use Illuminate\Http\Request;
 use App\Exports\DivisiExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\DivisiImport;
 
 class M_DIVISICONTROLLER extends Controller
 {
@@ -64,4 +65,20 @@ class M_DIVISICONTROLLER extends Controller
     {
         return Excel::download(new DivisiExport, 'divisi.xlsx');
     }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new \App\Exports\DivisiExportTemplate,'divisi_template.xlsx');
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        Excel::import(new DivisiImport, $request->file('file'));
+
+        return response()->json(['message' => 'Data berhasil diimport']);
+        }
 }

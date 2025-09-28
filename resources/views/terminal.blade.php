@@ -138,10 +138,7 @@ const form = document.getElementById("terminalForm");
 const formErrors = document.getElementById("formErrors");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
-
-// ==== AUTH TOKEN BEARER ====
-// Simpan token login di localStorage saat login
-const token = localStorage.getItem('auth_token'); // <<< ini token Bearer yang dipakai untuk semua request
+const token = localStorage.getItem('auth_token'); 
 
 // ==== Fetch Terminals ====
 async function loadTerminals(keyword = "") {

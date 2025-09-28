@@ -81,174 +81,264 @@
             
             <form id="divisiForm">
                 <input type="hidden" id="divisiId">
+                <input type="hidden" id="updateBy">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
                     <input type="text" id="namaDivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
-                    <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100" readonly>
                 </div>
                 <div class="flex space-x-3">
                     <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
                     <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
                 </div>
             </form>
+
+
+            <!-- import excel -->
+            <div class="mt-8 gap-4">
+                <h4 class="text-md font-semo=ibold mb-3"> Tambah Data Dengan Excel</h4>
+
+                <a href = "{{url('/api/divisi/export-template')  }}"
+                id="templateBTn"
+                class="bg-green-600 hover:-bg-green-700 text-white px-2 py-2 rounded-lg flex items-center spaca-x-2 mb-4">
+                Download Template <i class="fas fa-download"></i> 
+                </a>
+                <form id="importForm">
+                    <input type="file" name="file" id="importFile" class="border px-2 py-1 mb-2">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded ml-2"> Import</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Toast -->
     <div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
         <div class="flex items-center space-x-2">
-            <i id="toastIcon" class="fas fa-check-circle"></i>
             <span id="toastMessage">Pesan berhasil</span>
         </div>
     </div>
 
     <script>
-        const apiUrl = "/api/m_divisi"; 
-        const tableBody = document.getElementById("divisiTableBody");
-        const loadingState = document.getElementById("loadingState");
-        const emptyState = document.getElementById("emptyState");
+const apiUrl = "/api/m_divisi"; 
+const tableBody = document.getElementById("divisiTableBody");
+const loadingState = document.getElementById("loadingState");
+const emptyState = document.getElementById("emptyState");
+const modal = document.getElementById("divisiModal");
+const addBtn = document.getElementById("addDivisiBtn");
+const closeModal = document.getElementById("closeModal");
+const cancelBtn = document.getElementById("cancelBtn");
+const form = document.getElementById("divisiForm");
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
+const token = localStorage.getItem('auth_token'); // samakan dengan terminal
 
-        const modal = document.getElementById("divisiModal");
-        const addBtn = document.getElementById("addDivisiBtn");
-        const closeModal = document.getElementById("closeModal");
-        const cancelBtn = document.getElementById("cancelBtn");
-        const form = document.getElementById("divisiForm");
+// ==== Fetch Divisi ====
+async function loadDivisi(keyword = "") {
+    loadingState.classList.remove("hidden");
+    emptyState.classList.add("hidden");
+    tableBody.innerHTML = "";
 
-        const toast = document.getElementById("toast");
-        const toastMessage = document.getElementById("toastMessage");
-
-        // ==== Fetch Data ====
-        async function loadDivisi(keyword = "") {
-        loadingState.classList.remove("hidden");
-        emptyState.classList.add("hidden");
-        tableBody.innerHTML = "";
-
-        try {
-            let url = apiUrl;
-            if (keyword && keyword.trim() !== "") {
-                url += `?search=${encodeURIComponent(keyword)}`;
-            }
-
-            let res = await fetch(url);
-            let data = await res.json();
-
-            loadingState.classList.add("hidden");
-
-            if (!Array.isArray(data) || data.length === 0) {
-                emptyState.classList.remove("hidden");
-                return;
-            }
-
-            data.forEach((divisi, i) => {
-                let row = `
-                    <tr>
-                        <td class="px-6 py-4">${i+1}</td>
-                        <td class="px-6 py-4">${divisi.NAMA_DIVISI}</td>
-                        <td class="px-6 py-4">${divisi.CREATE_BY ?? '-'}</td>
-                        <td class="px-6 py-4 text-center space-x-2">
-                            <button onclick="editDivisi(${divisi.ID_DIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                            <button onclick="deleteDivisi(${divisi.ID_DIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.insertAdjacentHTML("beforeend", row);
-            });
-        } catch (err) {
-            console.error("Error:", err);
-            loadingState.classList.add("hidden");
+    try {
+        let url = apiUrl;
+        if (keyword && keyword.trim() !== "") {
+            url += `?search=${encodeURIComponent(keyword)}`;
         }
+
+        const res = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        let json = await res.json();
+        const data = json.data ?? json;
+
+        loadingState.classList.add("hidden");
+
+        if (!Array.isArray(data) || data.length === 0) {
+            emptyState.classList.remove("hidden");
+            return;
+        }
+
+        data.forEach((divisi, i) => {
+            let row = `
+                <tr>
+                    <td class="px-6 py-4">${i+1}</td>
+                    <td class="px-6 py-4">${divisi.NAMA_DIVISI}</td>
+                    <td class="px-6 py-4">${divisi.CREATE_BY ?? '-'}</td>
+                    <td class="px-6 py-4 text-center space-x-2">
+                        <button onclick="editDivisi(${divisi.ID_DIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteDivisi(${divisi.ID_DIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML("beforeend", row);
+        });
+    } catch(err) {
+        console.error(err);
+        loadingState.classList.add("hidden");
+        showToast("Gagal memuat data");
     }
+}
+async function loadUsername(forField = 'createBy') {
+    try {
+        const res = await fetch('/api/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        if (!res.ok) throw new Error('Gagal memuat user');
+        const data = await res.json();
+        if (forField === 'createBy') document.getElementById('createBy').value = data.username || '';
+        // if (forField === 'updateBy') document.getElementById('updateBy').value = data.username || '';
+    } catch(err) {
+        console.error(err);
+    }
+}
 
-    // Event search realtime (opsional, seperti di subdivisi)
-    let searchTimeout = null;
-    searchInput.addEventListener("input", () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            loadDivisi(searchInput.value);
-        }, 500);
+// ==== Add Modal ====
+addBtn.addEventListener("click", () => {
+    modal.classList.add("show");
+    document.getElementById("modalTitle").innerText = "Tambah Divisi";
+    form.reset();
+    document.getElementById("divisiId").value = "";
+    loadUsername('createBy'); // otomatis isi CREATE_BY
+});
+closeModal.addEventListener("click", () => modal.classList.remove("show"));
+cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
+
+// ==== Submit Form ====
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const id = document.getElementById("divisiId").value;
+    const payload = {
+        NAMA_DIVISI: document.getElementById("namaDivisi").value,
+        CREATE_BY: document.getElementById("createBy").value
+    };
+
+    try {
+        let res;
+        if (id) {
+            res = await fetch(`${apiUrl}/${id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            res = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (res.ok) {
+            showToast("Data berhasil disimpan");
+            modal.classList.remove("show");
+            loadDivisi();
+        } else {
+            showToast("Gagal menyimpan data");
+        }
+    } catch(err) {
+        console.error(err);
+        showToast("Terjadi kesalahan");
+    }
+});
+
+// ==== Edit Divisi ====
+async function editDivisi(id) {
+    try {
+        const res = await fetch(`${apiUrl}/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const json = await res.json();
+        const data = json.data ?? json;
+
+        modal.classList.add("show");
+        document.getElementById("modalTitle").innerText = "Edit Divisi";
+
+        document.getElementById("divisiId").value = data.ID_DIVISI;
+        document.getElementById("namaDivisi").value = data.NAMA_DIVISI;
+        document.getElementById("createBy").value = data.CREATE_BY ?? "";
+    } catch(err) {
+        console.error(err);
+        showToast("Gagal memuat data edit");
+    }
+}
+
+// ==== Delete Divisi ====
+async function deleteDivisi(id) {
+    if (!confirm("Yakin ingin menghapus data ini?")) return;
+    const res = await fetch(`${apiUrl}/${id}`, {
+        method: "DELETE",
+        headers: { 'Authorization': `Bearer ${token}` }
     });
-
-    // Load pertama kali
-    loadDivisi();
-
-        // ==== Add/Edit ====
-        addBtn.addEventListener("click", () => {
-            modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Tambah Divisi";
-            form.reset();
-            document.getElementById("divisiId").value = "";
-        });
-        closeModal.addEventListener("click", () => modal.classList.remove("show"));
-        cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            let id = document.getElementById("divisiId").value;
-            let payload = {
-                NAMA_DIVISI: document.getElementById("namaDivisi").value,
-                CREATE_BY: document.getElementById("createBy").value,
-            };
-
-            try {
-                let res;
-                if (id) {
-                    res = await fetch(`${apiUrl}/${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                    });
-                } else {
-                    res = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                    });
-                }
-                if (res.ok) {
-                    showToast("Data berhasil disimpan");
-                    modal.classList.remove("show");
-                    loadDivisi();
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        });
-
-        // ==== Edit Function ====
-        async function editDivisi(id) {
-            let res = await fetch(`${apiUrl}/${id}`);
-            let data = await res.json();
-
-            modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Edit Divisi";
-            document.getElementById("divisiId").value = data.ID_DIVISI;
-            document.getElementById("namaDivisi").value = data.NAMA_DIVISI;
-            document.getElementById("createBy").value = data.CREATE_BY ?? "";
-        }
-
-        // ==== Delete Function ====
-        async function deleteDivisi(id) {
-            if (!confirm("Yakin ingin menghapus data ini?")) return;
-
-            let res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
-            if (res.ok) {
-                showToast("Data berhasil dihapus");
-                loadDivisi();
-            }
-        }
-
-        // ==== Toast ====
-        function showToast(msg) {
-            toastMessage.innerText = msg;
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 3000);
-        }
-
-        // Load pertama kali
+    if (res.ok) {
+        showToast("Data berhasil dihapus");
         loadDivisi();
-    </script>
+    } else {
+        showToast("Gagal menghapus data");
+    }
+}
+
+// ==== Import Excel ====
+document.getElementById("importForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById("importFile").files[0];
+    if (!fileInput) { showToast("Pilih file terlebih dahulu"); return; }
+
+    const formData = new FormData();
+    formData.append("file", fileInput);
+
+    try {
+        const res = await fetch("/api/divisi/import", {
+            method: "POST",
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(data.message || "Import berhasil");
+            modal.classList.remove("show");
+            loadDivisi();
+        } else {
+            showToast(data.message || "Gagal import");
+        }
+    } catch(err) {
+        console.error(err);
+        showToast("Error saat import");
+    }
+});
+
+// ==== Toast ====
+function showToast(msg) {
+    toastMessage.innerText = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
+// ==== Search ====
+let searchTimeout = null;
+document.getElementById("searchInput").addEventListener("input", function() {
+    clearTimeout(searchTimeout);
+    let keyword = this.value;
+    searchTimeout = setTimeout(() => loadDivisi(keyword), 500);
+});
+
+loadDivisi();
+</script>
+
 </body>
 </html>
