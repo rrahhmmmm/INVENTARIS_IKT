@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 use App\Models\M_subdivisi;
 use App\Models\M_divisi;
 use Illuminate\Http\Request;
+use App\Exports\SubdivisiExport;
+use App\Exports\SubdivisiExportTemplate;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\SubdivisiImport;
 
 class M_SUBDIVISICONTROLLER extends Controller
 {
@@ -71,4 +75,25 @@ class M_SUBDIVISICONTROLLER extends Controller
         $subdivisi->delete();
         return response()->json(null, 204);
     }
+
+    public function exportExcel()
+    {
+        return Excel::download(new SubdivisiExport, 'subdivisi.xlsx');
+    }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new SubdivisiExportTemplate, 'template_subdivisi.xlsx');
+    }
+
+    public function importExcel(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    Excel::import(new SubdivisiImport, $request->file('file'));
+
+    return response()->json(['message' => 'Data subdivisi berhasil diimport']);
+}   
 }

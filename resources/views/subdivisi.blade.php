@@ -24,19 +24,30 @@
     <main class="container mx-auto px-4 py-6">
         <!-- Controls -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
-            <div class="flex items-center justify-between">
-                <button id="addSubdivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                    <i class="fas fa-plus"></i>
-                    <span>Tambah Subdivisi</span>
-                </button>
+    <div class="flex items-center justify-between">
+        <!-- Bagian kiri -->
+        <div class="flex items-center gap-4">
+            <button id="addSubdivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Tambah Subdivisi</span>
+            </button>
 
-                <div class="flex items-center space-x-4">
-    <input 
-        id="searchInput" 
-        type="text" 
-        placeholder="Cari..." 
-        class="border px-2 py-1" 
-    />
+            <a href="{{ url('/api/subdivisi/export') }}" 
+               class="rounded bg-green-600 hover:bg-green-700 text-white px-4 py-2 flex items-center space-x-2">
+                Export Excel <i class="fas fa-file-excel"></i>
+            </a>
+        </div>
+
+        <!-- Bagian kanan (search) -->
+        <div class="flex items-center space-x-4">
+            <input 
+                id="searchInput" 
+                type="text" 
+                placeholder="Cari..." 
+                class="border px-2 py-1 rounded"
+            />
+        </div>
+    </div>
 </div>
 
 <script>
@@ -50,8 +61,7 @@ document.getElementById("searchInput").addEventListener("input", function() {
     }, 500); // tunggu 0.5 detik setelah user stop ngetik
 });
 </script>
-            </div>
-        </div>
+
 
         <!-- Subdivisi Table -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -118,6 +128,18 @@ document.getElementById("searchInput").addEventListener("input", function() {
                     <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
                 </div>
             </form>
+            <div class="mt-8 gap-4">
+                <h4 class="text-md font-semo=ibold mb-3"> Tambah Data Dengan Excel</h4>
+
+                <a href = "{{url('/api/subdivisi/export-template')  }}"
+                id="templateBTn"
+                class="bg-green-600 hover:-bg-green-700 text-white px-2 py-2 rounded-lg flex items-center spaca-x-2 mb-4">
+                Download Template <i class="fas fa-download"></i> 
+                </a>
+                <form id="importForm">
+                    <input type="file" name="file" id="importFile" class="border px-2 py-1 mb-2">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded ml-2"> Import</button>
+                </form>
         </div>
     </div>
 
@@ -300,12 +322,47 @@ document.getElementById("searchInput").addEventListener("input", function() {
             }
         }
 
+
+
         // ==== Toast ====
         function showToast(msg) {
             toastMessage.innerText = msg;
             toast.classList.add("show");
             setTimeout(() => toast.classList.remove("show"), 3000);
         }
+
+        document.getElementById("importForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    let fileInput = document.getElementById("importFile");
+    if (!fileInput.files.length) {
+        alert("Pilih file terlebih dahulu!");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    try {
+        let res = await fetch("/api/subdivisi/import", {
+            method: "POST",
+            body: formData
+        });
+
+        if (res.ok) {
+            showToast("Data subdivisi berhasil diimport");
+            loadSubdivisi();
+        } else {
+            let err = await res.text();
+            console.error(err);
+            showToast("Gagal import data");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Terjadi kesalahan");
+    }
+});
+
 
         // Load pertama kali
         loadSubdivisi();
