@@ -36,7 +36,7 @@
   </a>
 
   <!-- Dropdown Master -->
-  <div class="relative mt-2">
+  <div id="masterWrapper" class="hidden relative mt-2">
     <button id="masterBtn" 
       class="w-full flex justify-between items-center font-semibold px-3 py-2 rounded-md hover:bg-blue-200">
       <span>MASTER</span>
@@ -48,14 +48,14 @@
       </svg>
     </button>
 
-    <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
-      <a href="/user" class="block px-3 py-2 rounded-md hover:bg-blue-200">User</a>
-      <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Divisi</a>
-      <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Subdivisi</a>
-      <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Role</a>
-      <a href="/terminal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Terminal</a>
-      <a href="/parameter" class="block px-3 py-2 rounded-md hover:bg-blue-200">parameter</a>
-    </div>
+      <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
+        <a href="/user" class="block px-3 py-2 rounded-md hover:bg-blue-200">User</a>
+        <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Divisi</a>
+        <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Subdivisi</a>
+        <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Role</a>
+        <a href="/terminal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Terminal</a>
+        <a href="/parameter" class="block px-3 py-2 rounded-md hover:bg-blue-200">Parameter</a>
+      </div>
   </div>
 </nav>
 
@@ -131,6 +131,10 @@
       const user = await res.json();
       document.getElementById('username').textContent = user.username || 'Guest';
       document.getElementById('status').textContent = 'Logged In';
+
+      if (user.role && user.role.Nama_role === 'ADMIN') {
+        document.getElementById('masterWrapper').classList.remove('hidden');
+      }
     } else {
       document.getElementById('username').textContent = 'Guest';
       document.getElementById('status').textContent = 'Not Logged In';

@@ -46,7 +46,7 @@
   </a>
 
   <!-- Dropdown Master -->
-  <div class="relative mt-2">
+  <div id="masterWrapper" class="hidden relative mt-2">
     <button id="masterBtn" 
       class="w-full flex justify-between items-center font-semibold px-3 py-2 rounded-md hover:bg-blue-200">
       <span>MASTER</span>
@@ -60,9 +60,10 @@
 
     <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
       <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
-      <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
+      <a href="/klasifikasi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
       <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
       <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
+    </div>
   </div>
 </nav>
 
@@ -138,6 +139,10 @@
       const user = await res.json();
       document.getElementById('username').textContent = user.username || 'Guest';
       document.getElementById('status').textContent = 'Logged In';
+
+      if (user.role&&user.role.Nama_role == 'ADMIN'){
+        document.getElementById('masterWrapper').classList.remove('hidden')
+      }
     } else {
       document.getElementById('username').textContent = 'Guest';
       document.getElementById('status').textContent = 'Not Logged In';
