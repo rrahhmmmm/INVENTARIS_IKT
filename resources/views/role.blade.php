@@ -110,132 +110,159 @@
 
     
     <script>
-        const apiUrl = "/api/m_role"; 
-        const tableBody = document.getElementById("roleTableBody");
-        const loadingState = document.getElementById("loadingState");
-        const emptyState = document.getElementById("emptyState");
+    const apiUrl = "/api/m_role"; 
+    const tableBody = document.getElementById("roleTableBody");
+    const loadingState = document.getElementById("loadingState");
+    const emptyState = document.getElementById("emptyState");
 
-        const modal = document.getElementById("roleModal");
-        const addBtn = document.getElementById("addRoleBtn");
-        const closeModal = document.getElementById("closeModal");
-        const cancelBtn = document.getElementById("cancelBtn");
-        const form = document.getElementById("roleForm");
+    const modal = document.getElementById("roleModal");
+    const addBtn = document.getElementById("addRoleBtn");
+    const closeModal = document.getElementById("closeModal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const form = document.getElementById("roleForm");
 
-        const toast = document.getElementById("toast");
-        const toastMessage = document.getElementById("toastMessage");
+    const toast = document.getElementById("toast");
+    const toastMessage = document.getElementById("toastMessage");
 
-        // ==== Fetch Data ====
-        async function loadRoles() {
-            loadingState.classList.remove("hidden");
-            emptyState.classList.add("hidden");
-            tableBody.innerHTML = "";
+    // === Ambil token dari localStorage ===
+    const token = localStorage.getItem("auth_token");
 
-            try {
-                let res = await fetch(apiUrl);
-                let data = await res.json();
+    // ==== Fetch Data ====
+    async function loadRoles() {
+        loadingState.classList.remove("hidden");
+        emptyState.classList.add("hidden");
+        tableBody.innerHTML = "";
 
-                loadingState.classList.add("hidden");
-
-                if (data.length === 0) {
-                    emptyState.classList.remove("hidden");
-                    return;
+        try {
+            let res = await fetch(apiUrl, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
                 }
-
-                data.forEach((role) => {
-                    let row = `
-                        <tr>
-                            <td class="px-6 py-4">${role.ID_ROLE}</td>
-                            <td class="px-6 py-4">${role.Nama_role}</td>
-                            <td class="px-6 py-4">${role.keterangan ?? '-'}</td>
-                            <td class="px-6 py-4 text-center space-x-2">
-                                <button onclick="editRole(${role.ID_ROLE})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteRole(${role.ID_ROLE})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML("beforeend", row);
-                });
-            } catch (err) {
-                console.error("Error:", err);
-            }
-        }
-
-        // ==== Add/Edit ====
-        addBtn.addEventListener("click", () => {
-            modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Tambah Role";
-            form.reset();
-            document.getElementById("roleIdRole").value = "";
-        });
-        closeModal.addEventListener("click", () => modal.classList.remove("show"));
-        cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            let ID_ROLE = document.getElementById("roleIdRole").value;
-            let payload = {
-                Nama_role: document.getElementById("namaRole").value,
-                keterangan: document.getElementById("keteranganRole").value,
-                create_by: "admin"
-            };
-
-            try {
-                let res;
-                if (ID_ROLE) {
-                    res = await fetch(`${apiUrl}/${ID_ROLE}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                    });
-                } else {
-                    res = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                    });
-                }
-                if (res.ok) {
-                    showToast("Data berhasil disimpan");
-                    modal.classList.remove("show");
-                    loadRoles();
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        });
-
-        // ==== Edit Function ====
-        async function editRole(ID_ROLE) {
-            let res = await fetch(`${apiUrl}/${ID_ROLE}`);
+            });
             let data = await res.json();
 
-            modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Edit Role";
-            document.getElementById("roleIdRole").value = data.ID_ROLE;
-            document.getElementById("namaRole").value = data.Nama_role;
-            document.getElementById("keteranganRole").value = data.keterangan ?? '';
+            loadingState.classList.add("hidden");
+
+            if (data.length === 0) {
+                emptyState.classList.remove("hidden");
+                return;
+            }
+
+            data.forEach((role) => {
+                let row = `
+                    <tr>
+                        <td class="px-6 py-4">${role.ID_ROLE}</td>
+                        <td class="px-6 py-4">${role.Nama_role}</td>
+                        <td class="px-6 py-4">${role.keterangan ?? '-'}</td>
+                        <td class="px-6 py-4 text-center space-x-2">
+                            <button onclick="editRole(${role.ID_ROLE})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteRole(${role.ID_ROLE})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
+        } catch (err) {
+            console.error("Error:", err);
         }
+    }
 
-        // ==== Delete Function ====
-        async function deleteRole(ID_ROLE) {
-            if (!confirm("Yakin ingin menghapus data ini?")) return;
+    // ==== Add/Edit ====
+    addBtn.addEventListener("click", () => {
+        modal.classList.add("show");
+        document.getElementById("modalTitle").innerText = "Tambah Role";
+        form.reset();
+        document.getElementById("roleIdRole").value = "";
+    });
+    closeModal.addEventListener("click", () => modal.classList.remove("show"));
+    cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
 
-            let res = await fetch(`${apiUrl}/${ID_ROLE}`, { method: "DELETE" });
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        let ID_ROLE = document.getElementById("roleIdRole").value;
+        let payload = {
+            Nama_role: document.getElementById("namaRole").value,
+            keterangan: document.getElementById("keteranganRole").value,
+            create_by: "admin"
+        };
+
+        try {
+            let res;
+            if (ID_ROLE) {
+                res = await fetch(`${apiUrl}/${ID_ROLE}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload),
+                });
+            } else {
+                res = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload),
+                });
+            }
             if (res.ok) {
-                showToast("Data berhasil dihapus");
+                showToast("Data berhasil disimpan");
+                modal.classList.remove("show");
                 loadRoles();
             }
+        } catch (err) {
+            console.error(err);
         }
+    });
 
-        // ==== Toast ====
-        function showToast(msg) {
-            toastMessage.innerText = msg;
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 3000);
+    // ==== Edit Function ====
+    async function editRole(ID_ROLE) {
+        let res = await fetch(`${apiUrl}/${ID_ROLE}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/json"
+            }
+        });
+        let data = await res.json();
+
+        modal.classList.add("show");
+        document.getElementById("modalTitle").innerText = "Edit Role";
+        document.getElementById("roleIdRole").value = data.ID_ROLE;
+        document.getElementById("namaRole").value = data.Nama_role;
+        document.getElementById("keteranganRole").value = data.keterangan ?? '';
+    }
+
+    // ==== Delete Function ====
+    async function deleteRole(ID_ROLE) {
+        if (!confirm("Yakin ingin menghapus data ini?")) return;
+
+        let res = await fetch(`${apiUrl}/${ID_ROLE}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/json"
+            }
+        });
+        if (res.ok) {
+            showToast("Data berhasil dihapus");
+            loadRoles();
         }
+    }
 
-        // Load pertama kali
-        loadRoles();
-    </script>
+    // ==== Toast ====
+    function showToast(msg) {
+        toastMessage.innerText = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    // Load pertama kali
+    loadRoles();
+</script>
 </body>
 </html>

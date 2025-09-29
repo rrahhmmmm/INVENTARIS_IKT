@@ -23,7 +23,7 @@ Route::get('/ping', function () {
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
 Route::apiResource('m_subdivisi', M_subdivisiController::class);
@@ -34,9 +34,8 @@ Route::apiResource('m_model', M_modelController::class);
 Route::apiResource('m_status', M_statusController::class);
 Route::apiResource('m_indeks', M_indeksController::class);
 Route::apiResource('m_klasifikasi', M_klasifikasiController::class);
-Route::apiResource('m_role', M_roleController::class);
 Route::apiResource('m_retensi', M_retensiController::class);
-Route::apiResource('m_user', M_userController::class);
+
 Route::apiResource('m_parameter', M_parameterController::class);
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -60,7 +59,7 @@ Route::get('/m_subdivisi/divisi/{id}', [M_SUBDIVISICONTROLLER::class, 'getByDivi
 Route::get('/role/export', [M_ROLECONTROLLER::class,'exportExcel']);
 
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum', 'role:ADMIN')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     // terminal
     Route::apiResource('m_terminal', M_TERMINALCONTROLLER::class);
@@ -71,4 +70,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // subdivisi
     Route::apiResource('m_subdivisi', M_subdivisiController::class);
     Route::post('/subdivisi/import', [M_SUBDIVISICONTROLLER::class, 'importExcel']);
+    // user
+    Route::apiResource('m_user', M_userController::class);
+    // role
+    Route::apiResource('m_role', M_roleController::class);
 });
