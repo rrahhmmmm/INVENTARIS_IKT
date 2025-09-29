@@ -196,7 +196,13 @@
                 if (keyword && keyword.trim() !== "") {
                     url += `?search=${encodeURIComponent(keyword)}`;
                 }
-                let res = await fetch(url);
+                let res = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
                 let data = await res.json();
 
                 loadingState.classList.add("hidden");

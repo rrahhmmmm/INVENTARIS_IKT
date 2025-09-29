@@ -31,6 +31,11 @@
                         <i class="fas fa-plus"></i>
                         <span>Tambah Role</span>
                     </button>
+
+                    <a href="{{ url('/api/role/export') }}" 
+               class="rounded bg-green-600 hover:bg-green-700 text-white px-4 py-2 flex items-center space-x-2">
+                Export Excel <i class="fas fa-file-excel"></i>
+            </a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <input type="text" id="searchInput" placeholder="Cari role..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">

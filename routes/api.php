@@ -24,7 +24,7 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::apiResource('m_divisi', M_divisiController::class);
+
 
 Route::apiResource('m_subdivisi', M_subdivisiController::class);
 Route::get('/m_subdivisi/divisi/{id}', [M_SUBDIVISICONTROLLER::class, 'getByDivisi']);
@@ -41,20 +41,34 @@ Route::apiResource('m_parameter', M_parameterController::class);
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+// export api
 Route::get('/terminal/export-template', [M_TERMINALCONTROLLER::class, 'exportTemplate']);
 Route::get('/terminal/export', [M_TERMINALCONTROLLER::class, 'exportExcel']);
 Route::get('/user/export', [M_USERCONTROLLER::class, 'exportExcel']);
+
 Route::get('/divisi/export', [M_DIVISICONTROLLER::class,'exportExcel']);
 Route::get('/divisi/export-template', [M_DIVISICONTROLLER::class, 'exportTemplate']);
-Route::post('/divisi/import', [M_DIVISICONTROLLER::class, 'importExcel']);
+
 Route::get('/subdivisi/export', [M_SUBDIVISICONTROLLER::class,'exportExcel']);
 Route::get('/subdivisi/export-template', [M_SUBDIVISICONTROLLER::class,'exportTemplate']);
-Route::post('/subdivisi/import', [M_SUBDIVISICONTROLLER::class, 'importExcel']);
+
+// id divisi for subdiv
+Route::get('/m_subdivisi/divisi/{id}', [M_SUBDIVISICONTROLLER::class, 'getByDivisi']);
+
+
+
+Route::get('/role/export', [M_ROLECONTROLLER::class,'exportExcel']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
+    // terminal
     Route::apiResource('m_terminal', M_TERMINALCONTROLLER::class);
     Route::post('/terminal/import', [M_TERMINALCONTROLLER::class, 'importExcel']);
+    // divisi
     Route::post('/divisi/import', [M_DIVISICONTROLLER::class, 'importExcel']);
+    Route::apiResource('m_divisi', M_divisiController::class);
+    // subdivisi
+    Route::apiResource('m_subdivisi', M_subdivisiController::class);
+    Route::post('/subdivisi/import', [M_SUBDIVISICONTROLLER::class, 'importExcel']);
 });

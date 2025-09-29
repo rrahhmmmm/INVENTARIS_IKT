@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\M_role;
+use App\Exports\RoleExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class M_ROLECONTROLLER extends Controller
 {
@@ -64,5 +66,10 @@ class M_ROLECONTROLLER extends Controller
         $role = M_role::findOrFail($id);
         $role->delete();
         return response()->json(['message' => 'Deleted succesfully']);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new RoleExport, 'role.xlsx');
     }
 }
