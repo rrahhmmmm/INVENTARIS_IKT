@@ -22,109 +22,109 @@
 
 <main class="container mx-auto px-4 py-6">
 
-    <!-- Controls -->
-    <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-            <button id="addTerminalBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                <i class="fas fa-plus"></i> <span>Tambah Terminal</span>
-            </button>
-            <a href="{{ url('/api/terminal/export') }}" id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                Export Excel <i class="fas fa-file-excel"></i>
-            </a>
-            
-        </div>
-        <input id="searchInput" type="text" placeholder="Cari..." class="border px-2 py-1" />
+  <!-- Controls -->
+  <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <button id="addTerminalBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <i class="fas fa-plus"></i> <span>Tambah Terminal</span>
+      </button>
+      <a href="{{ url('/api/terminal/export') }}" id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        Export Excel <i class="fas fa-file-excel"></i>
+      </a>
     </div>
+    <input id="searchInput" type="text" placeholder="Cari..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
+  </div>
 
-    <!-- Terminal Table -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-blue-600 text-white">
-                <tr>
-                    <th class="px-6 py-3 text-left text-sm font-medium">NO</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Kode Terminal</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Nama Terminal</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Lokasi</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium">Dibuat Oleh</th>
-                    <th class="px-6 py-3 text-center text-sm font-medium">Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="terminalTableBody" class="divide-y divide-gray-200"></tbody>
-        </table>
+  <!-- Terminal Table -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[600px]">
+        <thead class="bg-blue-600 text-white text-sm md:text-base">
+          <tr>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">NO</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Kode Terminal</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Nama Terminal</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Lokasi</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Dibuat Oleh</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="terminalTableBody" class="divide-y divide-gray-200"></tbody>
+      </table>
     </div>
+  </div>
 
-    <div id="loadingState" class="text-center py-8">
-        <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
-        <p class="mt-2 text-gray-600">Memuat data...</p>
-    </div>
-    <div id="emptyState" class="text-center py-8 hidden">
-        <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-        <p class="text-gray-600">Tidak ada data terminal</p>
-    </div>
+  <div id="loadingState" class="text-center py-8">
+    <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+    <p class="mt-2 text-gray-600">Memuat data...</p>
+  </div>
+  <div id="emptyState" class="text-center py-8 hidden">
+    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+    <p class="text-gray-600">Tidak ada data terminal</p>
+  </div>
 </main>
 
 <!-- Modal Add/Edit -->
 <div id="terminalModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <div class="flex items-center justify-between mb-4">
-            <h3 id="modalTitle" class="text-lg font-semibold">Tambah Terminal</h3>
-            <button id="closeModal" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <form id="terminalForm">
-            <input type="hidden" id="terminalId">
-            <input type="hidden" id="updateBy">
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Kode Terminal</label>
-                <input type="text" id="kodeTerminal" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Terminal</label>
-                <input type="text" id="namaTerminal" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Terminal</label>
-                <input type="text" id="lokasiTerminal" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
-                <input type="text" id="createBy" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" readonly>
-            </div>
-            <div id="formErrors" class="text-red-600 text-sm mb-3 hidden"></div>
-            <div class="flex space-x-3">
-                <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg">Batal</button>
-                <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">Simpan</button>
-            </div>
-        </form>
-
-        <!-- Import Excel -->
-        <div class="mt-8 gap-4">
-            <h4 class="text-md font-semibold mb-3">Tambah Data dengan Import Excel</h4>
-
-            <a href="{{ url('/api/terminal/export-template') }}" 
-                id="templateBtn" 
-                class="bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg flex items-center space-x-2 mb-4">
-                Download Template <i class="fas fa-download"></i>
-            </a>
-            
-            <form id="importForm">
-                <input type="file" name="file" id="importFile" class="border px-2 py-1 mb-2">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded ml-2">Import</button>
-            </form>
-        </div>
+  <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-screen overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="modalTitle" class="text-lg font-semibold">Tambah Terminal</h3>
+      <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
+
+    <form id="terminalForm">
+      <input type="hidden" id="terminalId">
+      <input type="hidden" id="updateBy">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Kode Terminal</label>
+        <input type="text" id="kodeTerminal" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Terminal</label>
+        <input type="text" id="namaTerminal" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi Terminal</label>
+        <input type="text" id="lokasiTerminal" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
+        <input type="text" id="createBy" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" readonly>
+      </div>
+      <div id="formErrors" class="text-red-600 text-sm mb-3 hidden"></div>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg">Batal</button>
+        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">Simpan</button>
+      </div>
+    </form>
+
+    <!-- Import Excel -->
+    <div class="mt-8 gap-4">
+      <h4 class="text-md font-semibold mb-3">Tambah Data dengan Import Excel</h4>
+
+      <a href="{{ url('/api/terminal/export-template') }}" 
+        id="templateBtn" 
+        class="bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg flex items-center space-x-2 mb-4 text-sm md:text-base">
+        Download Template <i class="fas fa-download"></i>
+      </a>
+      
+      <form id="importForm" class="flex flex-col sm:flex-row gap-2">
+        <input type="file" name="file" id="importFile" class="border px-2 py-1">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Import</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
-<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-    <div class="flex items-center space-x-2">
-        <i id="toastIcon" class="fas fa-check-circle"></i>
-        <span id="toastMessage">Pesan berhasil</span>
-    </div>
+<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
+  <div class="flex items-center space-x-2">
+    <i id="toastIcon" class="fas fa-check-circle"></i>
+    <span id="toastMessage">Pesan berhasil</span>
+  </div>
 </div>
-
 <script>
 const apiUrl = "/api/m_terminal"; 
 const tableBody = document.getElementById("terminalTableBody");

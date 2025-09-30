@@ -16,110 +16,99 @@
 </head>
 <body class="bg-gray-100">
 
-    @include ('components.A_navbar')
-    <header class="bg-white shadow-lg h-20">
-</header>
+   @include('components.A_navbar')
+<header class="bg-white shadow-lg h-20"></header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6">
-        <!-- Controls -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex item-center gap-4">
-                <button id="addDivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 pr-4">
-                    <i class="fas fa-plus"></i>
-                    <span>Tambah Divisi</span>
-                </button>
-                <a href = " {{ url ('/api/divisi/export') }}" id=""exportbtn
-                class = " rounded bg-green-600 hove:bg-green-700 text-white px-4 py-2 flex item-center space-x-2" >
-                Export Excel <i class = "fas fa-file-excel"></i>
-
-                </a>
-                </div>
-
-                <div class="flex items-center space-x-4">
-                    <input type="text" id="searchInput" placeholder="Cari divisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
-                </div>
-            </div>
-        </div>
-
-        <!-- Divisi Table -->
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-blue-600 text-white">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium">NO</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium">Nama Divisi</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium">Dibuat Oleh</th>
-                        <th class="px-6 py-3 text-center text-sm font-medium">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="divisiTableBody" class="divide-y divide-gray-200"></tbody>
-            </table>
-        </div>
-
-        <!-- Loading & Empty State -->
-        <div id="loadingState" class="text-center py-8">
-            <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
-            <p class="mt-2 text-gray-600">Memuat data...</p>
-        </div>
-        <div id="emptyState" class="text-center py-8 hidden">
-            <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-            <p class="text-gray-600">Tidak ada data divisi</p>
-        </div>
-    </main>
-
-    <!-- Modal Add/Edit -->
-    <div id="divisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <div class="flex items-center justify-between mb-4">
-                <h3 id="modalTitle" class="text-lg font-semibold">Tambah Divisi</h3>
-                <button id="closeModal" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <form id="divisiForm">
-                <input type="hidden" id="divisiId">
-                <input type="hidden" id="updateBy">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
-                    <input type="text" id="namaDivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
-                    <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100" readonly>
-                </div>
-                <div class="flex space-x-3">
-                    <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
-                    <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
-                </div>
-            </form>
-
-
-            <!-- import excel -->
-            <div class="mt-8 gap-4">
-                <h4 class="text-md font-semo=ibold mb-3"> Tambah Data Dengan Excel</h4>
-
-                <a href = "{{url('/api/divisi/export-template')  }}"
-                id="templateBTn"
-                class="bg-green-600 hover:-bg-green-700 text-white px-2 py-2 rounded-lg flex items-center spaca-x-2 mb-4">
-                Download Template <i class="fas fa-download"></i> 
-                </a>
-                <form id="importForm">
-                    <input type="file" name="file" id="importFile" class="border px-2 py-1 mb-2">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded ml-2"> Import</button>
-                </form>
-            </div>
-        </div>
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-6">
+  <!-- Controls -->
+  <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <button id="addDivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <i class="fas fa-plus"></i> <span>Tambah Divisi</span>
+      </button>
+      <a href="{{ url('/api/divisi/export') }}" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        Export Excel <i class="fas fa-file-excel"></i>
+      </a>
     </div>
+    <input type="text" id="searchInput" placeholder="Cari divisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-full md:w-64 text-sm md:text-base" />
+  </div>
 
-    <!-- Toast -->
-    <div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-        <div class="flex items-center space-x-2">
-            <span id="toastMessage">Pesan berhasil</span>
-        </div>
+  <!-- Divisi Table -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[500px]">
+        <thead class="bg-blue-600 text-white text-sm md:text-base">
+          <tr>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">NO</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Nama Divisi</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Dibuat Oleh</th>
+            <th class="px-4 md:px-6 py-2 md:py-3 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="divisiTableBody" class="divide-y divide-gray-200"></tbody>
+      </table>
     </div>
+  </div>
+
+  <!-- Loading & Empty -->
+  <div id="loadingState" class="text-center py-8">
+    <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+    <p class="mt-2 text-gray-600">Memuat data...</p>
+  </div>
+  <div id="emptyState" class="text-center py-8 hidden">
+    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+    <p class="text-gray-600">Tidak ada data divisi</p>
+  </div>
+</main>
+
+<!-- Modal Add/Edit -->
+<div id="divisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-screen overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="modalTitle" class="text-lg font-semibold">Tambah Divisi</h3>
+      <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form id="divisiForm">
+      <input type="hidden" id="divisiId">
+      <input type="hidden" id="updateBy">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
+        <input type="text" id="namaDivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
+        <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100" readonly>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
+        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
+      </div>
+    </form>
+
+    <!-- Import Excel -->
+    <div class="mt-8">
+      <h4 class="text-md font-semibold mb-3">Tambah Data Dengan Excel</h4>
+      <a href="{{ url('/api/divisi/export-template') }}" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base mb-4">
+        Download Template <i class="fas fa-download"></i>
+      </a>
+      <form id="importForm" class="flex flex-col sm:flex-row gap-2">
+        <input type="file" name="file" id="importFile" class="border px-2 py-1 text-sm md:text-base">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded text-sm md:text-base">Import</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
+  <div class="flex items-center space-x-2">
+    <span id="toastMessage">Pesan berhasil</span>
+  </div>
+</div>
 
     <script>
 const apiUrl = "/api/m_divisi"; 

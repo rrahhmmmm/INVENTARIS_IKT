@@ -21,19 +21,21 @@
 <!-- Main Content -->
 <main class="container mx-auto px-4 py-6">
   <!-- Controls -->
-  <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex justify-between items-center">
-    <div class="flex space-x-2">
-      <input type="text" id="searchInput" placeholder="Cari user..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
-      <a href="{{ url('/api/user/export') }}" id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                Export Excel <i class="fas fa-file-excel"></i>
-            </a>
+  <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+    <div class="flex flex-col sm:flex-row sm:space-x-2 gap-2">
+      <input type="text" id="searchInput" placeholder="Cari user..." 
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-64">
+      <a href="{{ url('/api/user/export') }}" id="exportBtn" 
+         class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2">
+        <span>Export Excel</span> <i class="fas fa-file-excel"></i>
+      </a>
     </div>
     <!-- Tombol tambah user dihapus -->
   </div>
 
   <!-- User Table -->
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <table class="w-full">
+  <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+    <table class="w-full min-w-[800px]">
       <thead class="bg-blue-600 text-white">
         <tr>
           <th class="px-6 py-3 text-left">ID</th>
@@ -70,33 +72,34 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    <form id="userForm">
+    <form id="userForm" class="space-y-4">
       <input type="hidden" id="userId">
-      <div class="mb-4">
+      <div>
         <label class="block text-sm font-medium">Username</label>
-        <input type="text" id="username" required class="w-full border rounded-lg px-3 py-2">
+        <input type="text" id="username" required readonly 
+              class="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed">
       </div>
-      <div class="mb-4">
+      <div>
         <label class="block text-sm font-medium">Email</label>
         <input type="email" id="email" required class="w-full border rounded-lg px-3 py-2">
       </div>
-      <div class="mb-4">
+      <div>
         <label class="block text-sm font-medium">Nama Lengkap</label>
         <input type="text" id="full_name" class="w-full border rounded-lg px-3 py-2">
       </div>
-      <div class="mb-4">
+      <div>
         <label class="block text-sm font-medium">Divisi</label>
         <select id="ID_DIVISI" class="w-full border rounded-lg px-3 py-2"></select>
       </div>
-      <div class="mb-4">
+      <div>
         <label class="block text-sm font-medium">Subdivisi</label>
         <select id="ID_SUBDIVISI" class="w-full border rounded-lg px-3 py-2"></select>
       </div>
-      <div class="mb-4">
+      <div>
         <label class="block text-sm font-medium">Role</label>
         <select id="ID_ROLE" class="w-full border rounded-lg px-3 py-2"></select>
       </div>
-      <div class="flex space-x-2 mt-6">
+      <div class="flex flex-col sm:flex-row gap-2 pt-4">
         <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded-lg">Batal</button>
         <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">Simpan</button>
       </div>
@@ -126,21 +129,23 @@ const cancelBtn = document.getElementById("cancelBtn");
 const form = document.getElementById("userForm");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
+const token = localStorage.getItem("auth_token");
 
 // ==== SEARCH ====
 let searchTimeout = null;
 document.getElementById("searchInput").addEventListener("input", function() {
   clearTimeout(searchTimeout);
   let keyword = this.value;
-  searchTimeout = setTimeout(() => {
-    loadUsers(keyword);
-  }, 500);
+  searchTimeout = setTimeout(() => loadUsers(keyword), 500);
 });
 
 // Load Roles
 async function loadRolesSelect(selected = "") {
-  let res = await fetch(roleApi);
-  let roles = await res.json();
+  const res = await fetch(roleApi, {
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+  });
+  const json = await res.json();
+  const roles = json.data ?? json;
   let select = document.getElementById("ID_ROLE");
   select.innerHTML = `<option value="">-- Pilih Role --</option>`;
   roles.forEach(r => {
@@ -150,8 +155,11 @@ async function loadRolesSelect(selected = "") {
 
 // Load Divisi
 async function loadDivisiSelect(selected = "") {
-  let res = await fetch(divisiApi);
-  let divisi = await res.json();
+  const res = await fetch(divisiApi, {
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+  });
+  const json = await res.json();
+  const divisi = json.data ?? json;
   let select = document.getElementById("ID_DIVISI");
   select.innerHTML = `<option value="">-- Pilih Divisi --</option>`;
   divisi.forEach(d => {
@@ -166,31 +174,42 @@ async function loadSubdivisiSelect(divisiId, selected = "") {
     select.innerHTML = `<option value="">-- Pilih Subdivisi --</option>`;
     return;
   }
-  let res = await fetch(`${subdivisiApi}/divisi/${divisiId}`);
-  let subdivisi = await res.json();
+  const res = await fetch(`${subdivisiApi}/divisi/${divisiId}`, {
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+  });
+  const json = await res.json();
+  const subdivisi = json.data ?? json;
   select.innerHTML = `<option value="">-- Pilih Subdivisi --</option>`;
   subdivisi.forEach(s => {
     select.innerHTML += `<option value="${s.ID_SUBDIVISI}" ${selected == s.ID_SUBDIVISI ? "selected" : ""}>${s.NAMA_SUBDIVISI}</option>`;
   });
 }
 
-// Load Users (tambahkan parameter keyword)
+// Load Users
 async function loadUsers(keyword = "") {
   loadingState.classList.remove("hidden");
   emptyState.classList.add("hidden");
   tableBody.innerHTML = "";
+
   try {
     let url = apiUrl;
     if (keyword && keyword.trim() !== "") {
       url += `?search=${encodeURIComponent(keyword)}`;
     }
-    let res = await fetch(url);
-    let data = await res.json();
+
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    const json = await res.json();
+    const data = json.data ?? json;
+
     loadingState.classList.add("hidden");
-    if (data.length === 0) {
+
+    if (!Array.isArray(data) || data.length === 0) {
       emptyState.classList.remove("hidden");
       return;
     }
+
     data.forEach(user => {
       let row = `<tr>
         <td class="px-6 py-4">${user.ID_USER}</td>
@@ -222,7 +241,7 @@ document.getElementById("ID_DIVISI").addEventListener("change", async (e) => {
   await loadSubdivisiSelect(e.target.value);
 });
 
-// Save (hanya update, tidak tambah baru)
+// Save (Update)
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   let ID_USER = document.getElementById("userId").value;
@@ -234,44 +253,69 @@ form.addEventListener("submit", async (e) => {
     ID_DIVISI: document.getElementById("ID_DIVISI").value,
     ID_SUBDIVISI: document.getElementById("ID_SUBDIVISI").value,
   };
+  
   try {
     if (ID_USER) {
       let res = await fetch(`${apiUrl}/${ID_USER}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
       if (res.ok) {
         showToast("Data berhasil diperbarui");
         modal.classList.remove("show");
         loadUsers();
+      } else {
+        showToast("Gagal update data");
       }
     }
-  } catch (err) { console.error(err); }
+  } catch (err) { 
+    console.error(err); 
+  }
 });
 
 // Edit
 async function editUser(ID_USER) {
-  let res = await fetch(`${apiUrl}/${ID_USER}`);
-  let data = await res.json();
-  await loadDivisiSelect(data.ID_DIVISI);
-  await loadRolesSelect(data.ID_ROLE);
-  await loadSubdivisiSelect(data.ID_DIVISI, data.ID_SUBDIVISI);
-  modal.classList.add("show");
-  document.getElementById("modalTitle").innerText = "Edit User";
-  document.getElementById("userId").value = data.ID_USER;
-  document.getElementById("username").value = data.username;
-  document.getElementById("email").value = data.email;
-  document.getElementById("full_name").value = data.full_name ?? '';
+  try {
+    const res = await fetch(`${apiUrl}/${ID_USER}`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error("Gagal fetch user");
+
+    const json = await res.json();
+    const data = json.data ?? json;
+
+    await loadDivisiSelect(data.ID_DIVISI);
+    await loadRolesSelect(data.ID_ROLE);
+    await loadSubdivisiSelect(data.ID_DIVISI, data.ID_SUBDIVISI);
+
+    modal.classList.add("show");
+    document.getElementById("modalTitle").innerText = "Edit User";
+    document.getElementById("userId").value = data.ID_USER;
+    document.getElementById("username").value = data.username;
+    document.getElementById("email").value = data.email;
+    document.getElementById("full_name").value = data.full_name ?? '';
+  } catch(err) {
+    console.error(err);
+    showToast("Gagal memuat data user");
+  }
 }
 
 // Delete
 async function deleteUser(ID_USER) {
   if (!confirm("Yakin ingin menghapus data ini?")) return;
-  let res = await fetch(`${apiUrl}/${ID_USER}`, { method: "DELETE" });
+  const res = await fetch(`${apiUrl}/${ID_USER}`, {
+    method: "DELETE",
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   if (res.ok) {
     showToast("Data berhasil dihapus");
     loadUsers();
+  } else {
+    showToast("Gagal menghapus data");
   }
 }
 
@@ -285,5 +329,6 @@ function showToast(msg) {
 // Load awal
 loadUsers();
 </script>
+
 </body>
 </html>
