@@ -23,7 +23,7 @@
       
       <!-- Logo -->
       <div class="p-4 border-b">
-        <img src="/storage/iktinven.png" alt="PELINDO Logo" class="h-30 mx-auto">
+        <img src="{{ asset('images/iktinven.png') }}" class="h-30 mx-auto">
       </div>
 
       <!-- Menu -->
@@ -61,8 +61,8 @@
     <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
       <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
       <a href="/klasifikasi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
-      <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
-      <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
+      <a href="/status" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
+      <a href="/index" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
     </div>
   </div>
 </nav>
@@ -71,7 +71,7 @@
       <!-- Logout -->
       <div class="p-4 border-t">
       <div class="flex items-center space-x-3 p-4">
-        <img src="storage/user.png" alt="User Avatar" 
+        <img src="{{ asset('images/user.png') }}" alt="User Avatar" 
              class="w-12 h-12 rounded-full border-">
         <div>
         <p id="username" class="font-semibold text-gray-800">Guest</p>

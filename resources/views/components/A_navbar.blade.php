@@ -23,7 +23,7 @@
       
       <!-- Logo -->
       <div class="p-4 border-b">
-        <img src="/storage/iktinven.png" alt="PELINDO Logo" class="h-30 mx-auto">
+        <img src="{{ asset('images/iktinven.png') }}" alt="PELINDO Logo" class="h-30 mx-auto">
       </div>
 
       <!-- Menu -->
@@ -63,7 +63,7 @@
       <!-- Logout -->
       <div class="p-4 border-t">
       <div class="flex items-center space-x-3 p-4">
-        <img src="storage/user.png" alt="User Avatar" 
+        <img src="{{ asset('images/user.png') }}" alt="User Avatar" 
              class="w-12 h-12 rounded-full border-">
         <div>
         <p id="username" class="font-semibold text-gray-800">Guest</p>
@@ -132,17 +132,24 @@
       document.getElementById('username').textContent = user.username || 'Guest';
       document.getElementById('status').textContent = 'Logged In';
 
-      if (user.role && user.role.Nama_role === 'ADMIN') {
+      const roleName = (user.role?.Nama_role || user.role?.nama_role || '').toUpperCase();
+      if (roleName === 'ADMIN') {
         document.getElementById('masterWrapper').classList.remove('hidden');
       }
+      
     } else {
       document.getElementById('username').textContent = 'Guest';
       document.getElementById('status').textContent = 'Not Logged In';
     }
+    
   } catch (err) {
     console.error(err);
     document.getElementById('username').textContent = 'Guest';
   }
+  const roleName = (user.role?.Nama_role || user.role?.nama_role || '').toUpperCase();
+      if (roleName === 'ADMIN') {
+        document.getElementById('masterWrapper').classList.remove('hidden');
+      }
 }
 
 loadUsername();
