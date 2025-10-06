@@ -4,15 +4,31 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\M_klasifikasi;
+use App\Exports\KlasifikasiExport;
+use App\Exports\KlasifikasiExportTemplate;
+use App\Imports\KlasifikasiImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class M_KLASIFIKASICONTROLLER extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return M_klasifikasi::all();
+        $query = M_klasifikasi::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('KODE_KLASIFIKASI', 'like', '%' . $search . '%')
+                ->orWhere('KATEGORI', 'like', '%' . $search . '%')
+                ->orWhere('DESKRIPSI', 'like', '%' . $search . '%')
+                ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+            });
+        }
+
+        return $query->get();
     }
 
     /**
@@ -72,4 +88,27 @@ class M_KLASIFIKASICONTROLLER extends Controller
         $klasifikasi->delete();
         return response()->json(["message" => "Deleted succesfully"]);
     }
+
+    public function exportExcel()
+    {
+        return Excel::download(new KlasifikasiExport, 'klasifikasi.xlsx');
+    }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new KlasifikasiExportTemplate, 'template_import_klasifikasi.xlsx');
+    }   
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'  
+        ]);
+
+        Excel::import(new KlasifikasiImport, $request -> file('file'));
+        
+        return response()->json(['message' => 'Data berhasil diimport']);
+    }
+
+    
 }
