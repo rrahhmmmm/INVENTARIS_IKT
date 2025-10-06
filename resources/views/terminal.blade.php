@@ -232,7 +232,6 @@ form.addEventListener("submit", async function(e) {
         NAMA_TERMINAL: document.getElementById("namaTerminal").value,
         LOKASI: document.getElementById("lokasiTerminal").value,
         CREATE_BY: document.getElementById("createBy").value,
-        UPDATE_BY: document.getElementById("updateBy").value
     };
 
     try {
