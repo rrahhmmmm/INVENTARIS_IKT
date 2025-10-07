@@ -17,19 +17,20 @@
 <body class="min-h-screen flex flex-col">
 
   @include('components.A_navbar')
-  <header class="bg-white shadow-lg h-20">
-</header>
+
 
 
   <!-- Main Portal -->
-  <main class="flex-1 bg- relative">
-    <div class="absolute inset-0 bg-white bg-opacity-30"></div>
+  <main class="flex-1 relative">
+    <div class="absolute inset-0 bg-white bg-opacity-30"
+      style="background: url('{{ asset('images/bghome.jpg') }}') center center / cover no-repeat;">
+    </div>
 
     
     <div class="relative z-10 min-h-full flex items-center justify-center p-6">
       
     
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full mt-32">
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full mt-[13rem]">
 
       
 
@@ -69,9 +70,9 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white text-[#357ABD] p-6 text-center">
+  <!-- <footer class=" text-[#357ABD] p-6 text-center">
     <p class="text-sm">© PT Indonesia Kendaraan Terminal Tbk</p>
-  </footer>
+  </footer> -->
 
 </body>
 </html>

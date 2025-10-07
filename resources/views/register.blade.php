@@ -6,8 +6,8 @@
   <title>Registrasi Akun</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-blue-800 min-h-screen flex items-center justify-center"
-      style="background-image: url('/storage/bglogin.png');">
+<body class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat bg-fixed"
+      style="background-image: url('{{ asset('images/bglogin.png') }}');">
 
   <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 m-8 ">
     <!-- Logo -->
@@ -16,7 +16,7 @@
       <!-- <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" /> -->
     </div>
     <div class="flex justify-center items-center">
-      <img src="/storage/iktinven.png" alt="IKT Logo" class="h-48 " />
+      <img src="{{ asset('images/iktinven.png') }}" alt="IKT Logo" class="h-48 " />
     </div>
 
     <!-- Alert -->
