@@ -31,7 +31,7 @@ class M_USERCONTROLLER extends Controller
     public function show(string $id)
     {
         $user = M_user::with(['role','divisi','subdivisi'])->findOrFail($id);
-        return response()->json($user);
+    return response()->json(['data' => $user]);
     }
 
     public function update(Request $request, string $id)

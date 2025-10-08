@@ -27,6 +27,8 @@ class M_user extends Authenticatable
         'password',
     ];
 
+    protected $with = ['role', 'divisi', 'subdivisi'];
+
     // Relasi ke Role
     public function role()
     {
