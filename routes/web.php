@@ -8,6 +8,9 @@ Route::get('/', function () {
 Route::get('/register', function () {
     return view('register');
 });
+Route::get('arsip', function () {
+    return view('arsip');
+})->name('arsip');
 
 
     Route::get('/home', function () {
@@ -38,10 +41,19 @@ Route::get('/register', function () {
         return view('subdivisi');
     })->name('subdivisi');
 
-    Route::get('parameter', function () {
+    Route::get('/parameter', function () {
         return view('parameter');
     })->name('parameter');
 
-    Route::get('arsip', function () {
-        return view('arsip');
-    })->name('arsip');
+    Route::get('/klasifikasi', function () {
+        return view('klasifikasi');
+    })->name('klasifikasi');
+
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::get('/indeks', function () {
+        return view('indeks');
+    })->name('indeks');
+

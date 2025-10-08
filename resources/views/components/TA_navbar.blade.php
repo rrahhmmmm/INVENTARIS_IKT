@@ -57,7 +57,7 @@
       <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
       <a href="/klasifikasi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
       <a href="/status" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
-      <a href="/index" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
+      <a href="/indeks" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
     </div>
   </div>
 </nav>

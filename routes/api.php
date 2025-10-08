@@ -52,6 +52,8 @@ Route::get('/user/export', [M_USERCONTROLLER::class, 'exportExcel']);
 Route::get('/divisi/export', [M_DIVISICONTROLLER::class,'exportExcel']);
 Route::get('/divisi/export-template', [M_DIVISICONTROLLER::class, 'exportTemplate']);
 
+Route::get('/indeks/export', [M_indeksController::class,'exportExcel']);
+
 Route::get('/subdivisi/export', [M_SUBDIVISICONTROLLER::class,'exportExcel']);
 Route::get('/subdivisi/export-template', [M_SUBDIVISICONTROLLER::class,'exportTemplate']);
 

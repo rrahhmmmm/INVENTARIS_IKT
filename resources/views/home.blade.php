@@ -50,7 +50,7 @@
         </a>
 
         <!-- Card Arsip -->
-        <a href="/arsip" 
+        <a href="/dashboard" 
           class="group relative bg-[#224E9F] rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center transition transform hover:-translate-y-2 hover:shadow-2xl hover:bg-[#1b3f80]">
           
           <div class="bg-white text-[#224E9F] rounded-full p-6 mb-4 group-hover:bg-[#1b3f80] group-hover:text-white transition">
