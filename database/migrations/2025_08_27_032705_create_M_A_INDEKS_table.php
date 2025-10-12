@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('ID_INDEKS', true);
             $table->string('NO_INDEKS', 100);
             $table->string('WILAYAH', 100);
-            $table->string('NAMA_INDEKS', 250);
+            $table->string('NAMA_INDEKS', 1000);
             $table->date('START_DATE')->nullable();
             $table->date('END_DATE')->nullable();
             $table->string('CREATE_BY', 50);
