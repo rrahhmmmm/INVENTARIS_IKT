@@ -4,16 +4,29 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\M_indeks;
-
+use App\Exports\IndeksExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\IndeksExportTemplate;
+use App\Imports\IndeksImport;
+;
 class M_indekscontroller extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return M_indeks::all();
+    public function index(Request $request)
+{
+    $query = M_indeks::query();
+
+    if ($request->has('search')) {
+        $search = $request->input('search');
+        $query->where('NO_INDEKS', 'like', "%{$search}%")
+              ->orWhere('WILAYAH', 'like', "%{$search}%")
+              ->orWhere('NAMA_INDEKS', 'like', "%{$search}%");
     }
+
+    return $query->get();
+}
 
     /**
      * Store a newly created resource in storage.
@@ -50,7 +63,7 @@ class M_indekscontroller extends Controller
         $indeks = M_indeks::findOrFail($id);
 
         $validated = $request->validate([
-            "NO_INDEKS"=> "sometimes|string|max:100|uniqie:M_INDEKS,NO_INDEKS",
+            "NO_INDEKS"=> "sometimes|string|max:100|unique:M_INDEKS,NO_INDEKS",
             "WILAYAH"=> "nullable|string|max:100",
             "NAMA_INDEKS" => "nullable|string|max:250",
             "START_DATE"=> "nullable|date",
@@ -70,4 +83,26 @@ class M_indekscontroller extends Controller
         $indeks->delete();
         return response()->json(["message"=> "Deleted succesfully"]);
     }
+
+    public function exportExcel()
+    {
+        return Excel::download(new IndeksExport, 'indeks.xlsx');
+    }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new IndeksExportTemplate, 'indeks-template.xlsx');   
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'  
+        ]);
+
+        Excel::import(new IndeksImport, $request -> file('file'));
+        
+        return response()->json(['message' => 'Data berhasil diimport']);
+    }
+
 }
