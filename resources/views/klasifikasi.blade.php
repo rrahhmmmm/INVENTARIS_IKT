@@ -29,8 +29,8 @@
                 <i class="fas fa-plus"></i> <span>Tambah Klasifikasi</span>
             </button>
 
-            <!-- FIX: perbaiki <a<a> -->
-            <a href="{{ url('/klasifikasi/export-template') }}" id="exportBtn" 
+            <!-- export excel -->
+            <a href="{{ url('api/klasifikasi/export') }}" id="exportBtn" 
                 class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
                 <span>Export Excel</span> <i class="fas fa-file-excel"></i>
             </a>
@@ -144,9 +144,11 @@
                 <span>Download Template</span> <i class="fas fa-download"></i>
             </a>
             <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
-                <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Import</button>
-            </form>
+                <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+            Import
+        </button>
+    </form>
         </div>
     </div>
 </div>
@@ -349,6 +351,7 @@ async function deleteKlasifikasi(id) {
         showToast("Gagal menghapus data");
     }
 }
+
 
 // ==== Import Excel (Placeholder) ====
 document.getElementById("importForm").addEventListener("submit", async function(e) {
