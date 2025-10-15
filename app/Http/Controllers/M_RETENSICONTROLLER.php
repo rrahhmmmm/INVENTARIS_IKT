@@ -22,15 +22,15 @@ class M_RETENSICONTROLLER extends Controller
     {
         $validated = $request->validate([
 
-            "jenis_arsip"=> "required|string|max:150",
-            "bidang_arsip"=> "required|string|max:150",
-            "tipe_arsip"=> "required|string|max:150",
-            "detail_tipe_arsip"=> "required|string|max:500",
-            "masa_aktif"=> "required|integer",
+            "JENIS_ARSIP"=> "required|string|max:150",
+            "BIDANG_ARSIP"=> "required|string|max:150",
+            "TIPE_ARSIP"=> "required|string|max:150",
+            "DETAIL_TIPE_ARSIP"=> "required|string|max:500",
+            "MASA_AKTIF"=> "required|integer",
             "DESC_AKTIF"=> "nullable|string|max:150",
-            "masa_inaktif"=> "required|integer",
+            "MASA_INAKTIF"=> "required|integer",
             "DESC_INAKTIF"=> "nullable|string|max:150",
-            "keterangan"=> "nullable|string|max:250",
+            "KETERANGAN"=> "nullable|string|max:250",
             "CREATE_BY"=> "nullable|string|max:100"
         ]);
 
@@ -56,15 +56,15 @@ class M_RETENSICONTROLLER extends Controller
         $retensi = M_retensi::findOrFail($id);
 
         $validated = $request->validate([
-            "jenis_arsip"=> "sometimes|string|max:150",
-            "bidang_arsip"=> "sometimes|string|max:150",
-            "tipe_arsip"=> "sometimes|string|max:150",
-            "detail_tipe_arsip"=> "sometimes|string|max:500",
-            "masa_aktif"=> "sometimes|integer",
+            "JENIS_ARSIP"=> "sometimes|string|max:150",
+            "BIDANG_ARSIP"=> "sometimes|string|max:150",
+            "TIPE_ARSIP"=> "sometimes|string|max:150",
+            "DETAIL_TIPE_ARSIP"=> "sometimes|string|max:500",
+            "MASA_AKTIF"=> "sometimes|integer",
             "DESC_AKTIF"=> "nullable|string|max:150",
-            "masa_inaktif"=> "sometimes|integer",
+            "MASA_INAKTIF"=> "sometimes|integer",
             "DESC_INAKTIF"=> "nullable|string|max:150",
-            "keterangan"=> "nullable|string|max:250",
+            "KETERANGAN"=> "nullable|string|max:250",
             "CREATE_BY"=> "nullable|string|max:100"
 
         ]);

@@ -15,15 +15,15 @@ class M_retensi extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        "jenis_arsip",
-        "bidang_arsip",
-        "tipe_arsip",
-        "detail_tipe_arsip",
-        "masa_aktif",
+        "JENIS_ARSIP",
+        "BIDANG_ARSIP",
+        "TIPE_ARSIP",
+        "DETAIL_TIPE_ARSIP",
+        "MASA_AKTIF",
         "DESC_AKTIF",
-        "masa_inaktif",
+        "MASA_INAKTIF",
         "DESC_INAKTIF",
-        "keterangan",
+        "KETERANGAN",
         "CREATE_BY"
     ];
 }
