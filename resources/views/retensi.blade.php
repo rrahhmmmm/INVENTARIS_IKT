@@ -109,7 +109,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Masa Aktif (tahun)</label>
-                    <input type="number" id="masaAktif" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="text" id="masaAktif" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Aktif</label>
@@ -117,7 +117,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Masa Inaktif (tahun)</label>
-                    <input type="number" id="masaInaktif" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="text" id="masaInaktif" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Inaktif</label>
@@ -208,16 +208,16 @@ async function loadRetensi(keyword = "") {
         data.forEach((item, i) => {
             const row = `
                 <tr>
-                    <td class="px-6 py-4">${i + 1}</td>
-                    <td class="px-6 py-4">${item.JENIS_ARSIP}</td>
-                    <td class="px-6 py-4">${item.BIDANG_ARSIP}</td>
-                    <td class="px-6 py-4">${item.TIPE_ARSIP}</td>
-                    <td class="px-6 py-4">${item.DETAIL_TIPE_ARSIP}</td>
-                    <td class="px-6 py-4">${item.MASA_AKTIF} th</td>
-                    <td class="px-6 py-4">${item.MASA_INAKTIF} th</td>
-                    <td class="px-6 py-4 whitespace-normal break-words max-w-xs">${item.KETERANGAN ?? '-'}</td>
-                    <td class="px-6 py-4">${item.CREATE_BY ?? '-'}</td>
-                    <td class="px-6 py-4 text-center space-x-2">
+                    <td class="px-4 py-3">${i + 1}</td>
+                    <td class="px-4 py-3">${item.JENIS_ARSIP}</td>
+                    <td class="px-4 py-3">${item.BIDANG_ARSIP}</td>
+                    <td class="px-4 py-3 w-64 whitespace-normal break-words">${item.TIPE_ARSIP}</td>
+                    <td class="px-4 py-3 w-64 whitespace-normal break-words">${item.DETAIL_TIPE_ARSIP}</td>
+                    <td class="px-4 py-3 w-24 text-center whitespace-nowrap">${item.MASA_AKTIF} </td>
+                    <td class="px-4 py-3 w-24 text-center whitespace-nowrap">${item.MASA_INAKTIF} </td>
+                    <td class="px-4 py-3 whitespace-normal break-words max-w-xs">${item.KETERANGAN ?? '-'}</td>
+                    <td class="px-4 py-3">${item.CREATE_BY ?? '-'}</td>
+                    <td class="px-4 py-3 text-center space-x-2">
                         <button onclick="editRetensi(${item.ID_RETENSI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteRetensi(${item.ID_RETENSI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                     </td>

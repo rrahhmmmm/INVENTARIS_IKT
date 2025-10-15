@@ -26,9 +26,9 @@ class M_RETENSICONTROLLER extends Controller
             "BIDANG_ARSIP"=> "required|string|max:150",
             "TIPE_ARSIP"=> "required|string|max:150",
             "DETAIL_TIPE_ARSIP"=> "required|string|max:500",
-            "MASA_AKTIF"=> "required|integer",
+            "MASA_AKTIF"=> "required|string",
             "DESC_AKTIF"=> "nullable|string|max:150",
-            "MASA_INAKTIF"=> "required|integer",
+            "MASA_INAKTIF"=> "required|string",
             "DESC_INAKTIF"=> "nullable|string|max:150",
             "KETERANGAN"=> "nullable|string|max:250",
             "CREATE_BY"=> "nullable|string|max:100"
@@ -60,9 +60,9 @@ class M_RETENSICONTROLLER extends Controller
             "BIDANG_ARSIP"=> "sometimes|string|max:150",
             "TIPE_ARSIP"=> "sometimes|string|max:150",
             "DETAIL_TIPE_ARSIP"=> "sometimes|string|max:500",
-            "MASA_AKTIF"=> "sometimes|integer",
+            "MASA_AKTIF"=> "sometimes|string",
             "DESC_AKTIF"=> "nullable|string|max:150",
-            "MASA_INAKTIF"=> "sometimes|integer",
+            "MASA_INAKTIF"=> "sometimes|string",
             "DESC_INAKTIF"=> "nullable|string|max:150",
             "KETERANGAN"=> "nullable|string|max:250",
             "CREATE_BY"=> "nullable|string|max:100"

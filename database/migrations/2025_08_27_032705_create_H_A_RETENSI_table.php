@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('bidang_arsip', 150);
             $table->string('tipe_arsip', 150);
             $table->string('detail_tipe_arsip')->nullable();
-            $table->text('masa_aktif');
+            $table->string('masa_aktif',100);
             $table->string('DESC_AKTIF',150)->nullable();
-            $table->integer('masa_inaktif');
+            $table->integer('masa_inaktif',100);
             $table->string('DESC_INAKTIF',150)->nullable();
             $table->text('keterangan')->nullable();
             $table->string('CREATE_BY', 50);
