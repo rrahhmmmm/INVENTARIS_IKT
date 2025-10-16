@@ -6,8 +6,9 @@ use App\Models\M_subdivisi;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class SubdivisiExport implements FromCollection, WithHeadings, WithMapping
+class SubdivisiExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
     /**
      * Ambil data subdivisi dengan relasi divisi
