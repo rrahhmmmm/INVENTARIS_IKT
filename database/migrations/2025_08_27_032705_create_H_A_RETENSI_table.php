@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('detail_tipe_arsip')->nullable();
             $table->string('masa_aktif',100);
             $table->string('DESC_AKTIF',150)->nullable();
-            $table->integer('masa_inaktif',100);
+            $table->string('masa_inaktif',100);
             $table->string('DESC_INAKTIF',150)->nullable();
             $table->text('keterangan')->nullable();
             $table->string('CREATE_BY', 50);

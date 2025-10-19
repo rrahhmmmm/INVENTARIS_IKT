@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('full_name', 150)->nullable();
             $table->integer('ID_DIVISI');
             $table->integer('ID_SUBDIVISI');
-            $table->integer('ID_ROLE');->nullable();
-            $table->string('create_by', 100);->nullable();  
+            $table->integer('ID_ROLE')->nullable();
+            $table->string('create_by', 100)->nullable();  
             $table->timestamp('create_date')->useCurrent();
             $table->string('update_by', 100)->nullable();
             $table->timestamp('update_date')->useCurrentOnUpdate()->nullable()->useCurrent();
