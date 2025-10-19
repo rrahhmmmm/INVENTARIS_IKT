@@ -144,18 +144,17 @@
         </form>
         <div class="border-t mt-6 pt-4">
             <h4 class="text-md font-semibold mb-3">Tambah Data dengan Import Excel</h4>
-            <a href="{{ url('/api/klasifikasi/export-template') }}" id="templateBtn" 
+            <a href="{{ url('/api/retensi/export-template') }}" id="templateBtn" 
                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
                 <span>Download Template</span> <i class="fas fa-download"></i>
             </a>
-            <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
-                <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
+                    <form id="importRetensiForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
+                <input type="file" name="file" id="importRetensiFile" class="border px-2 py-1 rounded" required>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-            Import
-        </button>
-    </form>
+                    Import
+                </button>
+            </form>
         </div>
-        
     </div>
 </div>
 
@@ -349,6 +348,43 @@ async function deleteRetensi(id) {
         showToast("Terjadi kesalahan saat menghapus");
     }
 }
+
+// import
+document.getElementById("importRetensiForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById("importRetensiFile").files[0];
+    if (!fileInput) {
+        showToast("Pilih file terlebih dahulu");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput);
+
+    try {
+        const res = await fetch("/api/retensi/import", {
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            showToast(data.message || "Data retensi berhasil diimport");
+            modal.classList.remove("show");
+            loadRetensi(); 
+        } else {
+            showToast(data.message || "Gagal import data retensi");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Terjadi error saat import data retensi");
+    }
+});
 
 // ==== Toast ====
 function showToast(msg) {

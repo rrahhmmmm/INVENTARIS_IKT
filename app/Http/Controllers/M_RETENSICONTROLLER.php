@@ -4,15 +4,35 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\M_retensi;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\RetensiImport;
+use App\Exports\RetensiExport;
+use App\Exports\RetensiExportTemplate;
 
 class M_RETENSICONTROLLER extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return M_retensi::all();
+        $query = M_retensi::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('JENIS_ARSIP', 'like', '%' . $search . '%')
+                ->orWhere('BIDANG_ARSIP', 'like', '%' . $search . '%')
+                ->orWhere('TIPE_ARSIP', 'like', '%' . $search . '%')
+                ->orWhere('DETAIL_TIPE_ARSIP', 'like', '%' . $search . '%')
+                ->orWhere('MASA_AKTIF', 'like', '%' . $search . '%')
+                ->orWhere('MASA_INAKTIF', 'like', '%' . $search . '%')
+                ->orWhere('KETERANGAN', 'like', '%' . $search . '%')
+                ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+            });
+        }
+
+        return $query->get();
     }
 
     /**
@@ -81,5 +101,26 @@ class M_RETENSICONTROLLER extends Controller
         $retensi = M_retensi::findOrFail($id);
         $retensi->delete();
         return response()->json(['message ' => 'Deleted successfully']);
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        Excel::import(new RetensiImport, $request->file('file'));
+
+        return response()->json(['message' => 'Import data retensi berhasil'], 200);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new RetensiExport, 'Retensi.xlsx');
+    }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new RetensiExportTemplate,'template_import_retensi.xlsx');
     }
 }
