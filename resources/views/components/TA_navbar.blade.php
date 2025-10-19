@@ -17,70 +17,84 @@
 
   <!-- Sidebar -->
   <aside id="sidebar" 
-    class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl transform -translate-x-full 
-           transition-transform duration-300 z-40 border-r-8">
-    <div class="flex flex-col h-full">
-      
-      <!-- Logo -->
-      <div class="p-4 border-b">
-        <img src="{{ asset('images/iktinven.png') }}" class="h-30 mx-auto">
-      </div>
+  class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl transform -translate-x-full 
+         transition-transform duration-300 z-40 border-r-8 flex flex-col">
 
-      <!-- Menu -->
-      <nav class="flex-1 p-4">
-
-  <!-- HOME -->
-  <a href="home" 
-     class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
-    <span>HOME</span>
-  </a>
-
-  <a href="/dashboard" 
-     class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
-    <span>DASHBOARD</span>
-  </a>
-
-  <!-- Dropdown Master -->
-  <div id="masterWrapper" class="hidden relative mt-2">
-    <button id="masterBtn" 
-      class="w-full flex justify-between items-center font-semibold px-3 py-2 rounded-md hover:bg-blue-200">
-      <span>MASTER</span>
-      <svg id="masterIcon" xmlns="http://www.w3.org/2000/svg" 
-        class="h-4 w-4 transform transition-transform duration-200" 
-        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" 
-          stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-
-    <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
-      <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
-      <a href="/klasifikasi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
-      <a href="/status" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
-      <a href="/indeks" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
-    </div>
+  <!-- Logo -->
+  <div class="p-4 border-b flex-shrink-0">
+    <img src="{{ asset('images/iktinven.png') }}" class="h-30 mx-auto">
   </div>
-</nav>
 
+  <!-- Menu Scrollable -->
+  <nav class="flex-1 p-4 overflow-y-auto">
+    <!-- HOME -->
+    <a href="home" 
+      class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
+      <span>HOME</span>
+    </a>
 
-      <!-- Logout -->
-      <div class="p-4 border-t">
-      <div class="flex items-center space-x-3 p-4">
-        <img src="{{ asset('images/user.png') }}" alt="User Avatar" 
-             class="w-12 h-12 rounded-full border-">
-        <div>
-        <p id="username" class="font-semibold text-gray-800">Guest</p>
-<small id="status" class="text-gray-500">Not Logged In</small>
-        </div>
+    <a href="/dashboard" 
+      class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
+      <span>DASHBOARD</span>
+    </a>
+
+    <!-- Dropdown Master -->
+    <div id="masterWrapper" class="hidden relative mt-2">
+      <button id="masterBtn" 
+        class="w-full flex justify-between items-center font-semibold px-3 py-2 rounded-md hover:bg-blue-200">
+        <span>MASTER</span>
+        <svg id="masterIcon" xmlns="http://www.w3.org/2000/svg" 
+          class="h-4 w-4 transform transition-transform duration-200" 
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+            stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
+        <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
+        <a href="/klasifikasi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
+        <a href="/status" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
+        <a href="/indeks" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
       </div>
-        <button onclick="logoutUser()" 
-          class="w-full text-left px-3 py-2 rounded-md hover:bg-red-50 text-red-600">
-          Logout
-        </button>
-      </div>
-
     </div>
-  </aside>
+  </nav>
+
+  <!-- Logout -->
+  <div class="p-4 border-t flex-shrink-0 bg-white">
+    <div class="flex items-center space-x-3 p-4">
+      <img src="{{ asset('images/user.png') }}" alt="User Avatar" 
+           class="w-12 h-12 rounded-full">
+      <div>
+        <p id="username" class="font-semibold text-gray-800">Guest</p>
+        <small id="status" class="text-gray-500">Not Logged In</small>
+      </div>
+    </div>
+    <button onclick="logoutUser()" 
+      class="w-full text-left px-3 py-2 rounded-md hover:bg-red-50 text-red-600">
+      Logout
+    </button>
+  </div>
+
+  <!-- Scrollbar Style -->
+  <style>
+    nav::-webkit-scrollbar {
+      width: 8px;
+    }
+    nav::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    nav::-webkit-scrollbar-thumb {
+      background-color: #2563eb; /* Tailwind blue-600 */
+      border-radius: 6px;
+    }
+    nav::-webkit-scrollbar-thumb:hover {
+      background-color: #1d4ed8; /* blue-700 */
+    }
+  </style>
+
+</aside>
+
 
   <script>
     let sidebarOpen = false;
