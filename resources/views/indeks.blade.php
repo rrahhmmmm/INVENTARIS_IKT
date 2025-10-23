@@ -333,6 +333,7 @@ document.getElementById("searchInput").addEventListener("input", function() {
     searchTimeout = setTimeout(() => loadIndeks(keyword), 500);
 });
 
+// import
 document.getElementById("importForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const fileInput = document.getElementById("importFile").files[0];

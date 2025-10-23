@@ -35,7 +35,7 @@
 
     <a href="/dashboard" 
       class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
-      <span>DASHBOARD</span>
+      <span>TRANSAKSI</span>
     </a>
 
     <!-- Dropdown Master -->

@@ -28,26 +28,26 @@
                 <i class="fas fa-plus"></i>
                 <span>Tambah Parameter</span>
             </button>
-            <div class="flex items-center space-x-4">
-    <input 
-        id="searchInput" 
-        type="text" 
-        placeholder="Cari..." 
-        class="border px-2 py-1" 
-    />
-</div>
+            <!-- <div class="flex items-center space-x-4">
+                <input 
+                    id="searchInput" 
+                    type="text" 
+                    placeholder="Cari..." 
+                    class="border px-2 py-1" 
+                />
+            </div>
 
-<script>
-let searchTimeout = null;
+            <script>
+            let searchTimeout = null;
 
-document.getElementById("searchInput").addEventListener("input", function() {
-    clearTimeout(searchTimeout);
-    let keyword = this.value;
-    searchTimeout = setTimeout(() => {
-        loadParameters(keyword);
-    }, 500); 
-});
-</script>
+            document.getElementById("searchInput").addEventListener("input", function() {
+                clearTimeout(searchTimeout);
+                let keyword = this.value;
+                searchTimeout = setTimeout(() => {
+                    loadParameters(keyword);
+                }, 500); 
+            });
+            </script> -->
         </div>
     </div>
 

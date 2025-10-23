@@ -37,12 +37,12 @@
                 Export Excel <i class="fas fa-file-excel"></i>
             </a>
                 </div>
-                <div class="flex items-center space-x-4">
+                <!-- <div class="flex items-center space-x-4">
                     <input type="text" id="searchInput" placeholder="Cari role..." class="border border-gray-300 rounded-lg px-3 py-2 w-64">
                     <button id="searchBtn" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg">
                         <i class="fas fa-search text-gray-600"></i>
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
 
