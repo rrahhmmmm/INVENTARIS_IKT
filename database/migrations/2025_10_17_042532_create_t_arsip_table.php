@@ -25,9 +25,13 @@ return new class extends Migration
             $table->date('TANGGAL_BERKAS');
             $table->string('PERIHAL',100);
             $table->string('TINGKAT_PENGEMBANGAN', 50);
+            $table->string('KONDISI', 100)->nullable();
             $table->integer('RAK_BAK_URUTAN');
-            $table->string('KETERANGAN_SIMPAN',15);
+            $table->string('KETERANGAN_SIMPAN', 15);
             $table->string('TIPE_RETENSI', 150)->nullable();
+            $table->date('TANGGAL_RETENSI')->nullable();
+            $table->string('KETERANGAN', 255)->nullable();
+            $table->string('FILE',255)->nullable();
             $table->string('CREATE_BY', 50);
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 50)->nullable();

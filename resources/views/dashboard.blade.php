@@ -3,231 +3,381 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Arsip</title>
+  <title>Manajemen Arsip</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <style>
+    .modal { display: none; }
+    .modal.show { display: flex; }
+    .toast { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
+    .toast.show { transform: translateX(0); }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen py-10 px-6">
-  @include('components.TA_navbar')
+<body class="bg-gray-100">
 
-  <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">📊 Dashboard</h1>
+@include('components.TA_navbar')
 
-      <!-- Notification Bell -->
-      <div class="relative">
-        <button id="notifBtn" class="relative bg-white p-3 rounded-full shadow hover:bg-gray-100 transition">
-          🔔
-          <span id="notifCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 hidden"></span>
-        </button>
+<header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>
 
-        <!-- Dropdown Notifikasi -->
-        <!-- ganti bos jadi untuk balikin ke master -->
-        <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-          <div class="p-3 border-b font-semibold">Notifikasi Pemusnahan Arsip</div>
-          <ul id="notifList" class="max-h-64 overflow-y-auto"></ul>
-        </div>
-      </div>
+<main class="container mx-auto px-4 py-6">
+
+  <!-- Kontrol -->
+  <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <button id="addArsipBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <i class="fas fa-plus"></i> <span>Tambah Arsip</span>
+      </button>
     </div>
+    <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
+  </div>
 
-
-    <!-- Charts -->
-    <div class="grid md:grid-cols-2 gap-6 mb-8">
-      <!-- Pie Chart -->
-      <div class="bg-white p-6 rounded-2xl shadow">
-      <div>
-        <label for="filterDivisi" class="block text-sm font-semibold text-gray-700 mb-1">
-          Filter Berdasarkan Divisi
-        </label>
-        <select id="filterDivisi" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
-          <option value="">Semua Divisi</option>
-        </select>
-      </div>
-        <h2 class="text-lg font-semibold mb-4 text-center">Persentase Arsip Aktif vs Non-Aktif</h2>
-        <canvas id="pieChart"></canvas>
-      </div>
-
-      <!-- Bar Chart -->
-      <div class="bg-white p-6 rounded-2xl shadow">
-        <h2 class="text-lg font-semibold mb-4 text-center">Jumlah Arsip per Divisi</h2>
-        <canvas id="barChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Tabel Arsip -->
-    <div class="flex flex-wrap items-end justify-end mb-4">
-  <button class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition" id="btnTambah">
-    + Tambah Arsip / Transaksi
-  </button>
-</div>
-
-    <div class="bg-white p-6 rounded-2xl shadow">
-      
-      <h2 class="text-lg font-semibold mb-4">📁 Data Arsip</h2>
-      <div class="overflow-x-auto">
-        <table class="w-full border border-gray-200 rounded-lg overflow-hidden">
-          <thead class="bg-blue-600 text-white">
-            <tr>
-              <th class="py-2 px-3 text-left">#</th>
-              <th class="py-2 px-3 text-left">Nomor Berkas</th>
-              <th class="py-2 px-3 text-left">Judul</th>
-              <th class="py-2 px-3 text-left">Divisi</th>
-              <th class="py-2 px-3 text-left">Rak / BAK / No Urut</th>
-              <th class="py-2 px-3 text-left">Status</th>
-              <th class="py-2 px-3 text-left">Tanggal Dokumen</th>
-              <th class="py-2 px-3 text-left">File</th>
-            </tr>
-          </thead>
-          <tbody id="tabelArsip" class="divide-y divide-gray-200">
-            <!-- Data arsip akan dimuat via JS -->
-          </tbody>
-        </table>
-      </div>
+  <!-- Tabel Arsip -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[1100px]">
+        <thead class="bg-blue-600 text-white text-sm md:text-base">
+        <tr>
+          <th class="px-4 py-3">NO</th>
+          <th class="px-4 py-3">No Indeks</th>
+          <th class="px-4 py-3">No Berkas</th>
+          <th class="px-4 py-3">Judul Berkas</th>
+          <th class="px-4 py-3">No Isi Berkas</th>
+          <th class="px-4 py-3">Jenis Arsip</th>
+          <th class="px-4 py-3">Kode Klasifikasi</th>
+          <th class="px-4 py-3">No Nota Dinas</th>
+          <th class="px-4 py-3">Tanggal Berkas</th>
+          <th class="px-4 py-3">Perihal</th>
+          <th class="px-4 py-3">Tingkat Pengembangan</th>
+          <th class="px-4 py-3">Kondisi</th>
+          <th class="px-4 py-3">Lokasi Simpan</th>
+          <th class="px-4 py-3">Keterangan Simpan</th>
+          <th class="px-4 py-3">Tipe Retensi</th>
+          <th class="px-4 py-3">Tanggal Retensi</th>
+          <th class="px-4 py-3">Keterangan</th>
+          <th class="px-4 py-3">File Arsip</th>
+          <th class="px-4 py-3 text-center">Aksi</th>
+        </tr>
+        </thead>
+        <tbody id="arsipTableBody" class="divide-y divide-gray-200"></tbody>
+      </table>
     </div>
   </div>
 
-  <script>
-    const filterDivisi = document.getElementById('filterDivisi');
-    const tabelArsip = document.getElementById('tabelArsip');
-    const notifBtn = document.getElementById('notifBtn');
-    const notifDropdown = document.getElementById('notifDropdown');
-    const notifList = document.getElementById('notifList');
-    const notifCount = document.getElementById('notifCount');
+  <div id="loadingState" class="text-center py-8">
+    <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+    <p class="mt-2 text-gray-600">Memuat data...</p>
+  </div>
+  <div id="emptyState" class="text-center py-8 hidden">
+    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+    <p class="text-gray-600">Tidak ada data arsip</p>
+  </div>
+</main>
 
-    // Dummy Divisi
-    let divisiData = [
-      { ID_DIVISI: 1, NAMA_DIVISI: "Keuangan" },
-      { ID_DIVISI: 2, NAMA_DIVISI: "SDM" },
-      { ID_DIVISI: 3, NAMA_DIVISI: "Operasional" },
-      { ID_DIVISI: 4, NAMA_DIVISI: "Teknologi Informasi" },
-      { ID_DIVISI: 5, NAMA_DIVISI: "Hukum & Umum" },
-    ];
+<!-- Modal Arsip -->
+<div id="arsipModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-3xl mx-4 max-h-screen overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="modalTitle" class="text-lg font-semibold">Tambah Arsip</h3>
+      <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
 
-    // Dummy Arsip (mengikuti struktur tabel sebenarnya)
-    let arsipData = [
-      { ID_ARSIP: 1, ID_DIVISI: 1, NAMA_DIVISI: "Keuangan", NOMOR_BERKAS: "A001", JUDUL: "Laporan Keuangan 2024", RAK_ARSIP: 1, BAK_ARSIP: 1, NO_URUT: 1, STATUS: "Aktif", TANGGAL: "2025-01-10", FILE_PDF: "laporan_keuangan.pdf", RETENSI_TGL: "2025-12-01" },
-      { ID_ARSIP: 2, ID_DIVISI: 2, NAMA_DIVISI: "SDM", NOMOR_BERKAS: "B014", JUDUL: "Data Karyawan", RAK_ARSIP: 2, BAK_ARSIP: 1, NO_URUT: 2, STATUS: "Aktif", TANGGAL: "2024-08-15", FILE_PDF: "data_karyawan.pdf", RETENSI_TGL: "2025-08-01" },
-      { ID_ARSIP: 3, ID_DIVISI: 3, NAMA_DIVISI: "Operasional", NOMOR_BERKAS: "C007", JUDUL: "Rencana Operasi", RAK_ARSIP: 3, BAK_ARSIP: 2, NO_URUT: 3, STATUS: "Non-Aktif", TANGGAL: "2023-11-30", FILE_PDF: "rencana_operasi.pdf", RETENSI_TGL: "2024-12-01" },
-      { ID_ARSIP: 4, ID_DIVISI: 4, NAMA_DIVISI: "Teknologi Informasi", NOMOR_BERKAS: "D009", JUDUL: "Dokumentasi Sistem", RAK_ARSIP: 4, BAK_ARSIP: 1, NO_URUT: 1, STATUS: "Aktif", TANGGAL: "2025-03-05", FILE_PDF: "dokumentasi_sistem.pdf", RETENSI_TGL: "2026-03-01" },
-      { ID_ARSIP: 5, ID_DIVISI: 5, NAMA_DIVISI: "Hukum & Umum", NOMOR_BERKAS: "E011", JUDUL: "Peraturan Internal", RAK_ARSIP: 5, BAK_ARSIP: 1, NO_URUT: 2, STATUS: "Non-Aktif", TANGGAL: "2023-06-01", FILE_PDF: "peraturan_internal.pdf", RETENSI_TGL: "2024-06-01" },
-    ];
+    <form id="arsipForm" class="grid grid-cols-2 gap-4" enctype="multipart/form-data">
+  <input type="hidden" id="arsipId">
+  <input type="hidden" id="ID_DIVISI" value="1">
+  <input type="hidden" id="ID_SUBDIVISI" value="1">
 
-    // isi dropdown divisi
-    divisiData.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d.ID_DIVISI;
-      opt.textContent = d.NAMA_DIVISI;
-      filterDivisi.appendChild(opt);
+  <!-- Kolom Utama -->
+  <div>
+    <label class="block text-sm font-medium mb-1">No Indeks</label>
+    <input id="NO_INDEKS" name="NO_INDEKS" class="w-full border rounded-lg px-3 py-2" required>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">No Berkas</label>
+    <input id="NO_BERKAS" name="NO_BERKAS" class="w-full border rounded-lg px-3 py-2" required>
+  </div>
+
+  <div class="col-span-2">
+    <label class="block text-sm font-medium mb-1">Judul Berkas</label>
+    <input id="JUDUL_BERKAS" name="JUDUL_BERKAS" class="w-full border rounded-lg px-3 py-2" required>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">No Isi Berkas</label>
+    <input id="NO_ISI_BERKAS" name="NO_ISI_BERKAS" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Jenis Arsip</label>
+    <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Kode Klasifikasi</label>
+    <input id="KODE_KLASIFIKASI" name="KODE_KLASIFIKASI" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">No Nota Dinas</label>
+    <input id="NO_NOTA_DINAS" name="NO_NOTA_DINAS"class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Tanggal Berkas</label>
+    <input type="date" name="TANGGAL_BERKAS" id="TANGGAL_BERKAS" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Perihal</label>
+    <input id="PERIHAL" name="PERIHAL" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Tingkat Pengembangan</label>
+    <input id="TINGKAT_PENGEMBANGAN" name="TINGKAT_PENGEMBANGAN" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Kondisi</label>
+    <input id="KONDISI" name="KONDISI" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Lokasi Simpan</label>
+    <input id="RAK_BAK_URUTAN" name="RAK_BAK_URUTAN" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Tipe Retensi</label>
+    <input id="TIPE_RETENSI"name="TIPE_RETENSI" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Tanggal Retensi</label>
+    <input type="date" id="TANGGAL_RETENSI"  name="TANGGAL_RETENSI" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Keterangan</label>
+    <input id="KETERANGAN" name="KETERANGAN" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div class="col-span-2">
+    <label class="block text-sm font-medium mb-1">Keterangan Simpan</label>
+    <textarea id="KETERANGAN_SIMPAN" name="KETERANGAN_SIMPAN" class="w-full border rounded-lg px-3 py-2"></textarea>
+  </div>
+
+  <div class="col-span-2">
+    <label class="block text-sm font-medium mb-1">Upload File Arsip</label>
+    <input type="file" id="FILE" name="FILE" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full border rounded-lg px-3 py-2">
+  </div>
+
+  <div class="col-span-2 flex justify-end gap-2 mt-4">
+    <button type="button" id="cancelBtn" name="cancleBtn "class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
+    <button type="submit" id="saveBtn" name="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
+  </div>
+</form>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
+  <div class="flex items-center space-x-2">
+    <i id="toastIcon" class="fas fa-check-circle"></i>
+    <span id="toastMessage">Pesan berhasil</span>
+  </div>
+</div>
+
+<script>
+const apiUrl = "/api/t_arsip";
+const tableBody = document.getElementById("arsipTableBody");
+const loadingState = document.getElementById("loadingState");
+const emptyState = document.getElementById("emptyState");
+const modal = document.getElementById("arsipModal");
+const addBtn = document.getElementById("addArsipBtn");
+const closeModal = document.getElementById("closeModal");
+const cancelBtn = document.getElementById("cancelBtn");
+const form = document.getElementById("arsipForm");
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
+const token = localStorage.getItem("auth_token"); // ✅ pastikan gunakan key yang sama dengan login
+
+// === TOAST ===
+function showToast(msg, success = true) {
+  toastMessage.textContent = msg;
+  toast.classList.remove("bg-red-500", "bg-green-500");
+  toast.classList.add(success ? "bg-green-500" : "bg-red-500");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
+// === FUNGSI PEMBANTU FETCH (dengan header standar) ===
+async function fetchWithAuth(url, options = {}) {
+  const headers = options.headers || {};
+  headers["Authorization"] = `Bearer ${token}`;
+  headers["Accept"] = "application/json";
+
+  // Hanya tambahkan Content-Type JSON kalau bukan FormData
+  if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401) {
+    showToast("Token tidak valid atau sesi sudah berakhir", false);
+    throw new Error("Unauthenticated");
+  }
+  return res;
+}
+
+// === LOAD DATA ===
+async function loadArsip(keyword = "") {
+  loadingState.classList.remove("hidden");
+  emptyState.classList.add("hidden");
+  tableBody.innerHTML = "";
+
+  try {
+    let url = apiUrl;
+    if (keyword.trim()) url += `?search=${encodeURIComponent(keyword)}`;
+
+    const res = await fetchWithAuth(url);
+    const data = await res.json();
+
+    loadingState.classList.add("hidden");
+    if (!Array.isArray(data) || data.length === 0) {
+      emptyState.classList.remove("hidden");
+      return;
+    }
+
+    data.forEach((arsip, i) => {
+      const fileLink = arsip.FILE
+        ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">Lihat</a>`
+        : "-";
+
+      const row = `
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3">${i + 1}</td>
+          <td class="px-4 py-3">${arsip.NO_INDEKS ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.NO_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.JUDUL_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.NO_ISI_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.JENIS_ARSIP ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.NO_NOTA_DINAS ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.TANGGAL_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.PERIHAL ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.KONDISI ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.TIPE_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.TANGGAL_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3">${arsip.KETERANGAN ?? "-"}</td>
+          <td class="px-4 py-3">${fileLink}</td>
+          <td class="px-4 py-3 text-center space-x-2">
+            <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>`;
+      tableBody.insertAdjacentHTML("beforeend", row);
     });
+  } catch (err) {
+    console.error(err);
+    loadingState.classList.add("hidden");
+    showToast("Gagal memuat data", false);
+  }
+}
 
-    // Render semua
-    function renderAll() {
-      const selectedDiv = filterDivisi.value;
-      const filtered = selectedDiv ? arsipData.filter(a => a.ID_DIVISI == selectedDiv) : arsipData;
+// === MODAL ===
+addBtn.addEventListener("click", () => {
+  modal.classList.add("show");
+  form.reset();
+  document.getElementById("arsipId").value = "";
+  document.getElementById("modalTitle").innerText = "Tambah Arsip";
+});
+closeModal.addEventListener("click", () => modal.classList.remove("show"));
+cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
 
-      renderTable(filtered);
-      renderCharts(filtered);
-      renderNotif();
-    }
+// === SIMPAN / UPDATE ===
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    // Render tabel arsip
-    function renderTable(data) {
-      tabelArsip.innerHTML = '';
-      if (data.length === 0) {
-        tabelArsip.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-gray-500">Tidak ada data</td></tr>`;
-        return;
-      }
+  const id = document.getElementById("arsipId").value;
+  const method = "POST";
+  const url = id ? `${apiUrl}/${id}?_method=PUT` : apiUrl;
 
-      data.forEach((a, i) => {
-        const row = `
-          <tr>
-            <td class="py-2 px-3">${i + 1}</td>
-            <td class="py-2 px-3">${a.NOMOR_BERKAS}</td>
-            <td class="py-2 px-3">${a.JUDUL}</td>
-            <td class="py-2 px-3">${a.NAMA_DIVISI}</td>
-            <td class="py-2 px-3">${a.RAK_ARSIP}/${a.BAK_ARSIP}/${a.NO_URUT}</td>
-            <td class="py-2 px-3">
-              <span class="px-2 py-1 rounded text-white text-xs ${a.STATUS === 'Aktif' ? 'bg-green-500' : 'bg-gray-400'}">
-                ${a.STATUS}
-              </span>
-            </td>
-            <td class="py-2 px-3">${a.TANGGAL}</td>
-            <td class="py-2 px-3">
-              <a href="#" class="text-blue-600 underline hover:text-blue-800">📄 PDF</a>
-            </td>
-          </tr>`;
-        tabelArsip.insertAdjacentHTML('beforeend', row);
-      });
-    }
+  const formData = new FormData(form);
+  formData.append("ID_DIVISI", document.getElementById("ID_DIVISI").value);
+  formData.append("ID_SUBDIVISI", document.getElementById("ID_SUBDIVISI").value);
+  formData.append("CREATE_BY", "system");
 
-    // Render chart
-    let pieChart, barChart;
-    function renderCharts(data) {
-      const aktif = data.filter(a => a.STATUS === 'Aktif').length;
-      const nonAktif = data.filter(a => a.STATUS !== 'Aktif').length;
-      const perDivisi = {};
-      data.forEach(a => {
-        perDivisi[a.NAMA_DIVISI] = (perDivisi[a.NAMA_DIVISI] || 0) + 1;
-      });
+  try {
+    const res = await fetchWithAuth(url, { method, body: formData });
+    if (!res.ok) throw new Error("Gagal menyimpan data");
 
-      const divisiLabels = Object.keys(perDivisi);
-      const divisiCounts = Object.values(perDivisi);
+    modal.classList.remove("show");
+    showToast("Data berhasil disimpan");
+    loadArsip();
+  } catch (err) {
+    console.error(err);
+    showToast("Gagal menyimpan data", false);
+  }
+});
 
-      if (pieChart) pieChart.destroy();
-      pieChart = new Chart(document.getElementById('pieChart'), {
-        type: 'pie',
-        data: {
-          labels: ['Aktif', 'Non-Aktif'],
-          datasets: [{ data: [aktif, nonAktif], backgroundColor: ['#3b82f6', '#9ca3af'] }]
-        }
-      });
+// === EDIT ===
+async function editArsip(id) {
+  try {
+    const res = await fetchWithAuth(`${apiUrl}/${id}`);
+    const data = await res.json();
 
-      if (barChart) barChart.destroy();
-      barChart = new Chart(document.getElementById('barChart'), {
-        type: 'bar',
-        data: {
-          labels: divisiLabels,
-          datasets: [{ label: 'Jumlah Arsip', data: divisiCounts, backgroundColor: '#3b82f6' }]
-        },
-        options: { scales: { y: { beginAtZero: true } } }
-      });
-    }
+    modal.classList.add("show");
+    document.getElementById("modalTitle").innerText = "Edit Arsip";
+    document.getElementById("arsipId").value = data.ID_ARSIP ?? "";
 
-    // Render notifikasi arsip yang waktunya dimusnahkan
-    function renderNotif() {
-      const today = new Date();
-      const due = arsipData.filter(a => new Date(a.RETENSI_TGL) <= today);
-
-      notifList.innerHTML = '';
-      if (due.length === 0) {
-        notifList.innerHTML = `<li class="p-3 text-gray-500 text-sm">Belum ada arsip yang harus dimusnahkan.</li>`;
-        notifCount.classList.add('hidden');
-      } else {
-        notifCount.textContent = due.length;
-        notifCount.classList.remove('hidden');
-
-        due.forEach(a => {
-          notifList.insertAdjacentHTML('beforeend', `
-            <li class="p-3 border-b hover:bg-gray-50 cursor-pointer text-sm">
-              <div class="font-semibold">${a.NOMOR_BERKAS}</div>
-              <div class="text-gray-600 text-xs">Lokasi: ${a.RAK_ARSIP}/${a.BAK_ARSIP}/${a.NO_URUT}</div>
-              <div class="text-red-600 text-xs mt-1">Tanggal Retensi: ${a.RETENSI_TGL}</div>
-            </li>
-          `);
-        });
+    for (const key of [
+      "NO_INDEKS","NO_BERKAS","JUDUL_BERKAS","NO_ISI_BERKAS","JENIS_ARSIP",
+      "KODE_KLASIFIKASI","NO_NOTA_DINAS","TANGGAL_BERKAS","PERIHAL",
+      "TINGKAT_PENGEMBANGAN","KONDISI","RAK_BAK_URUTAN","KETERANGAN_SIMPAN",
+      "TIPE_RETENSI","TANGGAL_RETENSI","KETERANGAN"
+    ]) {
+      if (document.getElementById(key)) {
+        document.getElementById(key).value = data[key] ?? "";
       }
     }
+  } catch (err) {
+    console.error(err);
+    showToast("Gagal memuat data edit", false);
+  }
+}
 
-    // Event
-    filterDivisi.addEventListener('change', renderAll);
-    notifBtn.addEventListener('click', () => notifDropdown.classList.toggle('hidden'));
-    document.addEventListener('click', e => {
-      if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) notifDropdown.classList.add('hidden');
-    });
+// === HAPUS ===
+async function deleteArsip(id) {
+  if (!confirm("Yakin ingin menghapus arsip ini?")) return;
 
-    renderAll();
-  </script>
+  try {
+    const res = await fetchWithAuth(`${apiUrl}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Gagal menghapus");
+    showToast("Data berhasil dihapus");
+    loadArsip();
+  } catch (err) {
+    console.error(err);
+    showToast("Gagal menghapus data", false);
+  }
+}
+
+// === PENCARIAN ===
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  clearTimeout(window.searchDelay);
+  window.searchDelay = setTimeout(() => loadArsip(e.target.value), 400);
+});
+
+loadArsip();
+</script>
+
 
 </body>
 </html>
