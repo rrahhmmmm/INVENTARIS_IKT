@@ -36,7 +36,7 @@
     <i class="fas fa-bell text-xl text-gray-700"></i>
     <span id="notificationCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
   </button>
-  <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
+  <div id="notificationDropdown" class="absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
     <ul id="notificationList"></ul>
   </div>
 </div>
@@ -115,10 +115,11 @@
         </div>
         <input type="hidden" id="ID_SUBDIVISI" name="ID_SUBDIVISI">
         
-          <div>
-            <label class="block text-sm font-medium mb-1">No Indeks</label>
-            <input id="NO_INDEKS" name="NO_INDEKS" class="w-full border rounded-lg px-3 py-2" required>
-          </div>
+        <div class="relative">
+          <label class="block text-sm font-medium mb-1">No Indeks</label>
+          <input id="NO_INDEKS" name="NO_INDEKS" class="w-full border rounded-lg px-3 py-2" required autocomplete="off">
+          <ul id="indeksSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
+        </div>
 
           <div>
             <label class="block text-sm font-medium mb-1">No Berkas</label>
@@ -140,9 +141,10 @@
             <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
           </div>
 
-          <div>
+          <div class="relative">
             <label class="block text-sm font-medium mb-1">Kode Klasifikasi</label>
-            <input id="KODE_KLASIFIKASI" name="KODE_KLASIFIKASI" class="w-full border rounded-lg px-3 py-2">
+            <input id="KODE_KLASIFIKASI" name="KODE_KLASIFIKASI" class="w-full border rounded-lg px-3 py-2" required autocomplete="off">
+            <ul id="klasifikasiSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
           </div>
 
           <div>
@@ -245,6 +247,12 @@ const notificationBtn = document.getElementById("notificationBtn");
 const notificationDropdown = document.getElementById("notificationDropdown");
 const notificationCount = document.getElementById("notificationCount");
 const notificationList = document.getElementById("notificationList");
+// indeks suggest
+const indeksInput = document.getElementById("NO_INDEKS");
+const suggestionBox = document.getElementById("indeksSuggestions");
+// klasifikasi suggest
+const klasifikasiInput = document.getElementById("KODE_KLASIFIKASI");
+const suggestionKlasifikasi = document.getElementById("klasifikasiSuggestions");
 
 
 // === TOAST ===
@@ -467,10 +475,10 @@ async function loadOverdueNotifications() {
 
     data.forEach(arsip => {
       const li = document.createElement('li');
-      li.className = "p-3 hover:bg-gray-100 cursor-pointer";
+      li.className = "p-3 hover:bg-red-500 cursor-pointer";
       li.innerHTML = `
-        <div class="font-semibold text-sm">${arsip.JUDUL_BERKAS ?? '-'}</div>
-        <div class="text-xs text-gray-500">Retensi: ${arsip.TANGGAL_RETENSI ?? '-'}</div>
+        <div class="font-semibold text-white text-sm">${arsip.JUDUL_BERKAS ?? '-'}</div>
+        <div class="text-xs text-white">Retensi: ${arsip.TANGGAL_RETENSI ?? '-'}</div>
       `;
       li.addEventListener('click', () => {
         modal.classList.add("show");
@@ -486,14 +494,121 @@ async function loadOverdueNotifications() {
 }
 
 // Toggle dropdown
-notificationBtn.addEventListener("click", () => {
-  notificationDropdown.classList.toggle("hidden");
+notificationBtn.addEventListener("click", () => { notificationDropdown.classList.toggle("hidden"); });
+
+// indeks
+let indeksData = [];
+async function loadIndeksData() {
+  try {
+    const res = await fetchWithAuth("/api/m_indeks");
+    if (!res.ok) throw new Error("Gagal memuat data indeks");
+    indeksData = await res.json();
+  } catch (err) {
+    console.error("Gagal ambil data indeks:", err);
+  }
+}
+
+// Tampilkan suggestion berdasarkan ketikan
+indeksInput.addEventListener("input", () => {
+  const query = indeksInput.value.toLowerCase();
+  suggestionBox.innerHTML = "";
+
+  if (!query.trim()) {
+    suggestionBox.classList.add("hidden");
+    return;
+  }
+
+  const filtered = indeksData.filter(item =>
+    (item.NO_INDEKS?.toLowerCase().includes(query) ||
+     item.NAMA_INDEKS?.toLowerCase().includes(query))
+  );
+
+  if (filtered.length === 0) {
+    suggestionBox.classList.add("hidden");
+    return;
+  }
+
+  filtered.slice(0, 50).forEach(item => {
+    const li = document.createElement("li");
+    li.className = "px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm";
+    li.innerHTML = `<strong>${item.NO_INDEKS}</strong> - ${item.NAMA_INDEKS}`;
+    li.addEventListener("click", () => {
+      indeksInput.value = item.NO_INDEKS;
+      suggestionBox.classList.add("hidden");
+    });
+    suggestionBox.appendChild(li);
+  });
+
+  suggestionBox.classList.remove("hidden");
 });
 
-// Load notifikasi saat page load
+
+document.addEventListener("click", (e) => {
+  if (!suggestionBox.contains(e.target) && e.target !== indeksInput) {
+    suggestionBox.classList.add("hidden");
+  }
+});
+
+let klasifikasiData = [];
+
+// Ambil semua data klasifikasi
+async function loadKlasifikasiData() {
+  try {
+    const res = await fetchWithAuth("/api/m_klasifikasi");
+    if (!res.ok) throw new Error("Gagal memuat data klasifikasi");
+    klasifikasiData = await res.json();
+  } catch (err) {
+    console.error("Gagal ambil data klasifikasi:", err);
+  }
+}
+
+// Tampilkan suggestion berdasarkan ketikan
+klasifikasiInput.addEventListener("input", () => {
+  const query = klasifikasiInput.value.toLowerCase();
+  suggestionKlasifikasi.innerHTML = "";
+
+  if (!query.trim()) {
+    suggestionKlasifikasi.classList.add("hidden");
+    return;
+  }
+
+  const filtered = klasifikasiData.filter(item =>
+    (item.KODE_KLASIFIKASI?.toLowerCase().includes(query) ||
+     item.DESKRIPSI?.toLowerCase().includes(query))
+  );
+
+  if (filtered.length === 0) {
+    suggestionKlasifikasi.classList.add("hidden");
+    return;
+  }
+
+  filtered.slice(0, 50).forEach(item => {
+    const li = document.createElement("li");
+    li.className = "px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm";
+    li.innerHTML = `<strong>${item.KODE_KLASIFIKASI}</strong> - ${item.DESKRIPSI}`;
+    li.addEventListener("click", () => {
+      klasifikasiInput.value = item.KODE_KLASIFIKASI;
+      suggestionKlasifikasi.classList.add("hidden");
+    });
+    suggestionKlasifikasi.appendChild(li);
+  });
+
+  suggestionKlasifikasi.classList.remove("hidden");
+});
+
+
+document.addEventListener("click", (e) => {
+  if (!suggestionKlasifikasi.contains(e.target) && e.target !== klasifikasiInput) {
+    suggestionKlasifikasi.classList.add("hidden");
+  }
+});
+
+
+
+// Loader
 loadOverdueNotifications();
-
-
+loadKlasifikasiData();
+loadIndeksData();
 loadArsip();
 </script>
 
