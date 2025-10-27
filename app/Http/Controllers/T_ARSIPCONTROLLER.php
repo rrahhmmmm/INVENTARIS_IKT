@@ -16,7 +16,7 @@ class T_ARSIPCONTROLLER extends Controller
         $user = Auth::user();
         $query = T_arsip::with(['divisi', 'subdivisi']);
 
-        if ($user->ID_ROLE != 1) { // misal role 1 = admin
+        if ($user->ID_ROLE != 1) { 
             $query->where('ID_DIVISI', $user->ID_DIVISI);
         }
 
@@ -43,6 +43,7 @@ class T_ARSIPCONTROLLER extends Controller
      */
     public function store(Request $request)
     {
+        
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -101,8 +102,6 @@ class T_ARSIPCONTROLLER extends Controller
         $arsip = T_arsip::findOrFail($id);
 
         $validated = $request->validate([
-            'ID_DIVISI'             => 'required|integer',
-            'ID_SUBDIVISI'          => 'required|integer',
             'NO_INDEKS'             => 'required|string|max:100',
             'NO_BERKAS'             => 'required|string|max:100',
             'JUDUL_BERKAS'          => 'required|string|max:255',
@@ -124,7 +123,6 @@ class T_ARSIPCONTROLLER extends Controller
             'param2'                => 'nullable|string|max:255',
             'param3'                => 'nullable|string|max:255',
             'FILE'                  => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
-            'CREATE_BY'             => 'nullable|string|max:100',
         ]);
 
         // Jika ada file baru
@@ -139,6 +137,7 @@ class T_ARSIPCONTROLLER extends Controller
             $path = $file->store('arsip_files', 'public');
             $validated['FILE'] = 'storage/' . $path;
         }
+        $validated['UPDATE_BY'] = Auth::user()->username ?? '-';
 
         $arsip->update($validated);
 
@@ -155,4 +154,28 @@ class T_ARSIPCONTROLLER extends Controller
 
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    // notif
+    public function overdue(Request $request)
+{
+    $user = Auth::user();
+    $today = now()->format('Y-m-d');
+
+    $query = T_arsip::with(['divisi', 'subdivisi'])
+        ->whereDate('TANGGAL_RETENSI', '<', $today);
+
+    // Filter berdasarkan divisi kalau bukan admin
+    if ($user->ID_ROLE != 1) {
+        $query->where('ID_DIVISI', $user->ID_DIVISI);
+    }
+
+    // Filter tambahan jika mau support filter manual via query param
+    if ($request->filled('divisi_id')) {
+        $query->where('ID_DIVISI', $request->divisi_id);
+    }
+
+    $arsip = $query->orderBy('ID_ARSIP', 'desc')->get();
+
+    return response()->json($arsip);
+}
 }

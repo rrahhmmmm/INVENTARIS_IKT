@@ -29,40 +29,53 @@
         <i class="fas fa-plus"></i> <span>Tambah Arsip</span>
       </button>
     </div>
+    
+    <div class="relative space-x-10">
     <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
+  <button id="notificationBtn" class="relative">
+    <i class="fas fa-bell text-xl text-gray-700"></i>
+    <span id="notificationCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+  </button>
+  <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
+    <ul id="notificationList"></ul>
+  </div>
+</div>
   </div>
 
   <!-- Tabel Arsip -->
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full min-w-[1100px]">
-        <thead class="bg-blue-600 text-white text-sm md:text-base">
-        <tr>
-          <th class="px-4 py-3">NO</th>
-          <th class="px-4 py-3">No Indeks</th>
-          <th class="px-4 py-3">No Berkas</th>
-          <th class="px-4 py-3">Judul Berkas</th>
-          <th class="px-4 py-3">No Isi Berkas</th>
-          <th class="px-4 py-3">Jenis Arsip</th>
-          <th class="px-4 py-3">Kode Klasifikasi</th>
-          <th class="px-4 py-3">No Nota Dinas</th>
-          <th class="px-4 py-3">Tanggal Berkas</th>
-          <th class="px-4 py-3">Perihal</th>
-          <th class="px-4 py-3">Tingkat Pengembangan</th>
-          <th class="px-4 py-3">Kondisi</th>
-          <th class="px-4 py-3">Lokasi Simpan</th>
-          <th class="px-4 py-3">Keterangan Simpan</th>
-          <th class="px-4 py-3">Tipe Retensi</th>
-          <th class="px-4 py-3">Tanggal Retensi</th>
-          <th class="px-4 py-3">Keterangan</th>
-          <th class="px-4 py-3">File Arsip</th>
-          <th class="px-4 py-3 text-center">Aksi</th>
-        </tr>
-        </thead>
-        <tbody id="arsipTableBody" class="divide-y divide-gray-200"></tbody>
-      </table>
-    </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-[2500px] table-fixed text-sm md:text-base">
+    <thead class="bg-blue-600 text-white">
+  <tr>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[60px] z-10">NO</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Divisi</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Subdivisi</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">No Indeks</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Berkas</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">Judul Berkas</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Isi Berkas</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Jenis Arsip</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Kode Klasifikasi</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">No Nota Dinas</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Berkas</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[400px] z-10">Perihal</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Tingkat Pengembangan</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">Kondisi</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Lokasi Simpan</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[200px] z-10">Keterangan Simpan</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Tipe Retensi</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Retensi</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Keterangan</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[140px] z-10">Create By</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">File Arsip</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[100px] text-center z-10">Aksi</th>
+  </tr>
+</thead>
+      <tbody id="arsipTableBody" class="divide-y divide-gray-200 text-gray-700"></tbody>
+    </table>
   </div>
+</div>
 
   <div id="loadingState" class="text-center py-8">
     <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
@@ -86,111 +99,133 @@
 
     <form id="arsipForm" class="grid grid-cols-2 gap-4" enctype="multipart/form-data">
   <input type="hidden" id="arsipId">
-  <input type="hidden" id="ID_DIVISI" value="1">
-  <input type="hidden" id="ID_SUBDIVISI" value="1">
+
 
   <!-- Kolom Utama -->
-  <div>
-    <label class="block text-sm font-medium mb-1">No Indeks</label>
-    <input id="NO_INDEKS" name="NO_INDEKS" class="w-full border rounded-lg px-3 py-2" required>
-  </div>
+          <div>
+          <label class="block text-sm font-medium mb-1">Divisi</label>
+          <input id="DIVISI_NAME" class="w-full border rounded-lg px-3 py-2 bg-gray-100" readonly>
+        </div>
+        <input type="hidden" id="ID_DIVISI" name="ID_DIVISI">
 
-  <div>
-    <label class="block text-sm font-medium mb-1">No Berkas</label>
-    <input id="NO_BERKAS" name="NO_BERKAS" class="w-full border rounded-lg px-3 py-2" required>
-  </div>
 
-  <div class="col-span-2">
-    <label class="block text-sm font-medium mb-1">Judul Berkas</label>
-    <input id="JUDUL_BERKAS" name="JUDUL_BERKAS" class="w-full border rounded-lg px-3 py-2" required>
-  </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Subdivisi</label>
+          <input id="SUBDIVISI_NAME"  class="w-full border rounded-lg px-3 py-2 bg-gray-100" readonly>
+        </div>
+        <input type="hidden" id="ID_SUBDIVISI" name="ID_SUBDIVISI">
+        
+          <div>
+            <label class="block text-sm font-medium mb-1">No Indeks</label>
+            <input id="NO_INDEKS" name="NO_INDEKS" class="w-full border rounded-lg px-3 py-2" required>
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">No Isi Berkas</label>
-    <input id="NO_ISI_BERKAS" name="NO_ISI_BERKAS" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">No Berkas</label>
+            <input id="NO_BERKAS" name="NO_BERKAS" class="w-full border rounded-lg px-3 py-2" required>
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Jenis Arsip</label>
-    <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div class="col-span-2">
+            <label class="block text-sm font-medium mb-1">Judul Berkas</label>
+            <input id="JUDUL_BERKAS" name="JUDUL_BERKAS" class="w-full border rounded-lg px-3 py-2" required>
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Kode Klasifikasi</label>
-    <input id="KODE_KLASIFIKASI" name="KODE_KLASIFIKASI" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">No Isi Berkas</label>
+            <input id="NO_ISI_BERKAS" name="NO_ISI_BERKAS" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">No Nota Dinas</label>
-    <input id="NO_NOTA_DINAS" name="NO_NOTA_DINAS"class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Jenis Arsip</label>
+            <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Tanggal Berkas</label>
-    <input type="date" name="TANGGAL_BERKAS" id="TANGGAL_BERKAS" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Kode Klasifikasi</label>
+            <input id="KODE_KLASIFIKASI" name="KODE_KLASIFIKASI" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Perihal</label>
-    <input id="PERIHAL" name="PERIHAL" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">No Nota Dinas</label>
+            <input id="NO_NOTA_DINAS" name="NO_NOTA_DINAS"class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Tingkat Pengembangan</label>
-    <input id="TINGKAT_PENGEMBANGAN" name="TINGKAT_PENGEMBANGAN" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Tanggal Berkas</label>
+            <input type="date" name="TANGGAL_BERKAS" id="TANGGAL_BERKAS" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Kondisi</label>
-    <input id="KONDISI" name="KONDISI" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Perihal</label>
+            <input id="PERIHAL" name="PERIHAL" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Lokasi Simpan</label>
-    <input id="RAK_BAK_URUTAN" name="RAK_BAK_URUTAN" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Tingkat Pengembangan</label>
+            <input id="TINGKAT_PENGEMBANGAN" name="TINGKAT_PENGEMBANGAN" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Tipe Retensi</label>
-    <input id="TIPE_RETENSI"name="TIPE_RETENSI" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Kondisi</label>
+            <input id="KONDISI" name="KONDISI" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Tanggal Retensi</label>
-    <input type="date" id="TANGGAL_RETENSI"  name="TANGGAL_RETENSI" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Lokasi Simpan</label>
+            <div class="flex gap-2">
+              <input id="RAK_INPUT" type="text" placeholder="Rak" class="w-1/3 border rounded-lg px-3 py-2">
+              <input id="BAK_INPUT" type="text" placeholder="Bak" class="w-1/3 border rounded-lg px-3 py-2">
+              <input id="ARSIP_INPUT" type="text" placeholder="Arsip" class="w-1/3 border rounded-lg px-3 py-2">
+            </div>
+            <input type="hidden" id="RAK_BAK_URUTAN" name="RAK_BAK_URUTAN">
+          </div>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Keterangan</label>
-    <input id="KETERANGAN" name="KETERANGAN" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div class="col-span-2">
+            <label class="block text-sm font-medium mb-1">Keterangan Simpan</label>
+            <textarea id="KETERANGAN_SIMPAN" name="KETERANGAN_SIMPAN" class="w-full border rounded-lg px-3 py-2"></textarea>
+          </div>
 
-  <div class="col-span-2">
-    <label class="block text-sm font-medium mb-1">Keterangan Simpan</label>
-    <textarea id="KETERANGAN_SIMPAN" name="KETERANGAN_SIMPAN" class="w-full border rounded-lg px-3 py-2"></textarea>
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Tipe Retensi</label>
+            <input id="TIPE_RETENSI"name="TIPE_RETENSI" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div class="col-span-2">
-    <label class="block text-sm font-medium mb-1">Upload File Arsip</label>
-    <input type="file" id="FILE" name="FILE" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full border rounded-lg px-3 py-2">
-  </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Tanggal Retensi</label>
+            <input type="date" id="TANGGAL_RETENSI"  name="TANGGAL_RETENSI" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  <div class="col-span-2 flex justify-end gap-2 mt-4">
-    <button type="button" id="cancelBtn" name="cancleBtn "class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
-    <button type="submit" id="saveBtn" name="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
-  </div>
-</form>
+          <div>
+            <label class="block text-sm font-medium mb-1">Keterangan</label>
+            <input id="KETERANGAN" name="KETERANGAN" class="w-full border rounded-lg px-3 py-2">
+          </div>
 
-  </div>
-</div>
+          <div class="col-span-2">
+            <label class="block text-sm font-medium mb-1">Di Buat Oleh</label>
+            <input id="CREATE_BY" name="CREATE_BY" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100">
+          </div>
 
-<!-- Toast -->
-<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
-  <div class="flex items-center space-x-2">
-    <i id="toastIcon" class="fas fa-check-circle"></i>
-    <span id="toastMessage">Pesan berhasil</span>
-  </div>
-</div>
+          <div class="col-span-2">
+            <label class="block text-sm font-medium mb-1">Upload File Arsip</label>
+            <input type="file" id="FILE" name="FILE" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full border rounded-lg px-3 py-2">
+          </div>
+
+          <div class="col-span-2 flex justify-end gap-2 mt-4">
+            <button type="button" id="cancelBtn" name="cancleBtn "class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
+            <button type="submit" id="saveBtn" name="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
+          </div>
+        </form>
+
+          </div>
+        </div>
+
+        <!-- Toast -->
+        <div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
+          <div class="flex items-center space-x-2">
+            <i id="toastIcon" class="fas fa-check-circle"></i>
+            <span id="toastMessage">Pesan berhasil</span>
+          </div>
+        </div>
 
 <script>
 const apiUrl = "/api/t_arsip";
@@ -204,7 +239,13 @@ const cancelBtn = document.getElementById("cancelBtn");
 const form = document.getElementById("arsipForm");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
-const token = localStorage.getItem("auth_token"); // ✅ pastikan gunakan key yang sama dengan login
+const token = localStorage.getItem("auth_token"); 
+// notif
+const notificationBtn = document.getElementById("notificationBtn");
+const notificationDropdown = document.getElementById("notificationDropdown");
+const notificationCount = document.getElementById("notificationCount");
+const notificationList = document.getElementById("notificationList");
+
 
 // === TOAST ===
 function showToast(msg, success = true) {
@@ -234,6 +275,30 @@ async function fetchWithAuth(url, options = {}) {
   return res;
 }
 
+// LOAD DATA USER
+async function loadUserInfo() {
+  try {
+    const res = await fetchWithAuth('/api/me');
+    if (!res.ok) throw new Error('Gagal ambil data user');
+
+    const user = await res.json();
+
+    // Isi field hidden ID
+    document.getElementById("ID_DIVISI").value = user.ID_DIVISI ?? "";
+    document.getElementById("ID_SUBDIVISI").value = user.ID_SUBDIVISI ?? "";
+
+    // Isi field tampilan nama
+    document.getElementById("DIVISI_NAME").value = user.divisi?.NAMA_DIVISI ?? "-";
+    document.getElementById("SUBDIVISI_NAME").value = user.subdivisi?.NAMA_SUBDIVISI ?? "-";
+
+    // Isi create_by sesuai nama user
+    document.getElementById("CREATE_BY").value = user.username ?? "-";
+  } catch (err) {
+    console.error("Gagal memuat user info:", err);
+    showToast("Gagal memuat data user", false);
+  }
+}
+
 // === LOAD DATA ===
 async function loadArsip(keyword = "") {
   loadingState.classList.remove("hidden");
@@ -255,29 +320,32 @@ async function loadArsip(keyword = "") {
 
     data.forEach((arsip, i) => {
       const fileLink = arsip.FILE
-        ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">Lihat</a>`
+        ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">DOWNLOAD</a>`
         : "-";
 
       const row = `
         <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3">${i + 1}</td>
-          <td class="px-4 py-3">${arsip.NO_INDEKS ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.NO_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.JUDUL_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.NO_ISI_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.JENIS_ARSIP ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.NO_NOTA_DINAS ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.TANGGAL_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.PERIHAL ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.KONDISI ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.TIPE_RETENSI ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.TANGGAL_RETENSI ?? "-"}</td>
-          <td class="px-4 py-3">${arsip.KETERANGAN ?? "-"}</td>
-          <td class="px-4 py-3">${fileLink}</td>
+          <td class="px-4 py-3 w-[60px]">${i + 1}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${arsip.NO_INDEKS ?? "-"}</td>
+          <td class="px-4 py-3 w-[60px]">${arsip.NO_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.JUDUL_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[60px]">${arsip.NO_ISI_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[60px]">${arsip.JENIS_ARSIP ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.NO_NOTA_DINAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[200px]">${arsip.PERIHAL ?? "-"}</td>
+          <td class="px-4 py-3 w-[160px]">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${arsip.KONDISI ?? "-"}</td>
+          <td class="px-4 py-3 w-[600px]">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.TIPE_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${fileLink}</td>
           <td class="px-4 py-3 text-center space-x-2">
             <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
             <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
@@ -291,20 +359,28 @@ async function loadArsip(keyword = "") {
     showToast("Gagal memuat data", false);
   }
 }
-
-// === MODAL ===
-addBtn.addEventListener("click", () => {
+// modal
+addBtn.addEventListener("click", async () => {
   modal.classList.add("show");
   form.reset();
   document.getElementById("arsipId").value = "";
   document.getElementById("modalTitle").innerText = "Tambah Arsip";
+  await loadUserInfo(); // sekarang dijalankan beneran ✅
 });
+
+
 closeModal.addEventListener("click", () => modal.classList.remove("show"));
 cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
 
 // === SIMPAN / UPDATE ===
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  // lokasi simpan
+  const rak = document.getElementById("RAK_INPUT").value.trim();
+  const bak = document.getElementById("BAK_INPUT").value.trim();
+  const arsip = document.getElementById("ARSIP_INPUT").value.trim();
+  document.getElementById("RAK_BAK_URUTAN").value = `${rak}/${bak}/${arsip}`;
 
   const id = document.getElementById("arsipId").value;
   const method = "POST";
@@ -313,7 +389,7 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData(form);
   formData.append("ID_DIVISI", document.getElementById("ID_DIVISI").value);
   formData.append("ID_SUBDIVISI", document.getElementById("ID_SUBDIVISI").value);
-  formData.append("CREATE_BY", "system");
+  formData.append("CREATE_BY", document.getElementById("CREATE_BY").value);
 
   try {
     const res = await fetchWithAuth(url, { method, body: formData });
@@ -374,6 +450,49 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
   clearTimeout(window.searchDelay);
   window.searchDelay = setTimeout(() => loadArsip(e.target.value), 400);
 });
+
+// notif
+async function loadOverdueNotifications() {
+  try {
+    const res = await fetchWithAuth(`${apiUrl}/overdue`);
+    const data = await res.json();
+
+    notificationCount.textContent = data.length;
+
+    notificationList.innerHTML = '';
+    if (data.length === 0) {
+      notificationList.innerHTML = `<li class="p-3 text-gray-500 text-sm">Tidak ada arsip retensi lewat</li>`;
+      return;
+    }
+
+    data.forEach(arsip => {
+      const li = document.createElement('li');
+      li.className = "p-3 hover:bg-gray-100 cursor-pointer";
+      li.innerHTML = `
+        <div class="font-semibold text-sm">${arsip.JUDUL_BERKAS ?? '-'}</div>
+        <div class="text-xs text-gray-500">Retensi: ${arsip.TANGGAL_RETENSI ?? '-'}</div>
+      `;
+      li.addEventListener('click', () => {
+        modal.classList.add("show");
+        editArsip(arsip.ID_ARSIP); // Buka modal edit untuk arsip tersebut
+        notificationDropdown.classList.add('hidden');
+      });
+      notificationList.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    showToast("Gagal memuat notifikasi", false);
+  }
+}
+
+// Toggle dropdown
+notificationBtn.addEventListener("click", () => {
+  notificationDropdown.classList.toggle("hidden");
+});
+
+// Load notifikasi saat page load
+loadOverdueNotifications();
+
 
 loadArsip();
 </script>
