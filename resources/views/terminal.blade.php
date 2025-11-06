@@ -18,6 +18,29 @@
 
 @include('components.A_navbar')
 
+<script>
+(async () => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = "/";
+    return;
+  }
+  try {
+    const res = await fetch('/api/me', {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    if (res.status === 401) {
+      localStorage.removeItem('auth_token');
+      window.location.href = "/";
+      return;
+    }
+  } catch (err) {
+    console.error("Auth check failed:", err);
+    window.location.href = "/";
+  }
+})();
+</script>
+
 <header class="bg-white shadow-lg h-20"></header>
 
 <main class="container mx-auto px-4 py-6">
@@ -139,6 +162,9 @@ const formErrors = document.getElementById("formErrors");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 const token = localStorage.getItem('auth_token'); 
+
+
+
 
 // ==== Fetch Terminals ====
 async function loadTerminals(keyword = "") {

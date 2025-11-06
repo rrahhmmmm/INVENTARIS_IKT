@@ -17,6 +17,29 @@
 <body class="bg-gray-100">
 
 @include('components.A_navbar')
+
+<script>
+(async () => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = "/";
+    return;
+  }
+  try {
+    const res = await fetch('/api/me', {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    if (res.status === 401) {
+      localStorage.removeItem('auth_token');
+      window.location.href = "/";
+      return;
+    }
+  } catch (err) {
+    console.error("Auth check failed:", err);
+    window.location.href = "/";
+  }
+})();
+</script>
   <header class="bg-white shadow-lg h-20"></header>
 
   <!-- Main Content -->

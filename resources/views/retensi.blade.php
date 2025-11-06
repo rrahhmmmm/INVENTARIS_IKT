@@ -18,6 +18,29 @@
 
 @include('components.TA_navbar')
 
+<script>
+(async () => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = "/";
+    return;
+  }
+  try {
+    const res = await fetch('/api/me', {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    if (res.status === 401) {
+      localStorage.removeItem('auth_token');
+      window.location.href = "/";
+      return;
+    }
+  } catch (err) {
+    console.error("Auth check failed:", err);
+    window.location.href = "/";
+  }
+})();
+</script>
+
 <header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>
 
 <main class="container mx-auto px-3 md:px-6 py-6 flex-1">

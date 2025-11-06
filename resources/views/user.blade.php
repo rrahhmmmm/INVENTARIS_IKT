@@ -19,6 +19,29 @@
 <header class="bg-white shadow-lg h-20"></header>
 
 <!-- Main Content -->
+
+<script>
+(async () => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = "/";
+    return;
+  }
+  try {
+    const res = await fetch('/api/me', {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+    });
+    if (res.status === 401) {
+      localStorage.removeItem('auth_token');
+      window.location.href = "/";
+      return;
+    }
+  } catch (err) {
+    console.error("Auth check failed:", err);
+    window.location.href = "/";
+  }
+})();
+</script>
 <main class="container mx-auto px-4 py-6">
   <!-- Controls -->
   <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
