@@ -63,7 +63,7 @@ class M_indekscontroller extends Controller
         $indeks = M_indeks::findOrFail($id);
 
         $validated = $request->validate([
-            "NO_INDEKS"=> "sometimes|string|max:100|unique:M_INDEKS,NO_INDEKS",
+            "NO_INDEKS"=> "sometimes|string|max:100|unique:M_INDEKS,NO_INDEKS," . $id . ",ID_INDEKS",
             "WILAYAH"=> "nullable|string|max:100",
             "NAMA_INDEKS" => "nullable|string|max:250",
             "START_DATE"=> "nullable|date",
