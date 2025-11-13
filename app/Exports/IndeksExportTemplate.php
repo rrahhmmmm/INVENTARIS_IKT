@@ -16,8 +16,7 @@ class IndeksExportTemplate implements WithHeadings
             'WILAYAH',
             'NAMA_INDEKS',
             'START_DATE',
-            'END_DATE',
-            'CREATE_BY'
+            'END_DATE'
         ];
     }
 }

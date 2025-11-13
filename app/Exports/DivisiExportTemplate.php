@@ -9,8 +9,7 @@ class DivisiExportTemplate implements WithHeadings
     public function headings(): array
     {
         return [
-            'NAMA_DIVISI',
-            'CREATE_BY'
+            'NAMA_DIVISI'
         ];
     }
 }

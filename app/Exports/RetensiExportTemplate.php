@@ -18,8 +18,7 @@ class RetensiExportTemplate implements WithHeadings
             'DESKRIPSI AKTIF',
             'MASA INAKTIF',
             'DESKRIPSI INAKTIF',
-            'KETERANGAN',
-            'DIBUAT OLEH'
+            'KETERANGAN'
         ];
     }
 }

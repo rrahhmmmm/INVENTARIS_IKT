@@ -11,8 +11,7 @@ class TerminalExportTemplate implements WithHeadings
         return [
             'KODE_TERMINAL',
             'NAMA_TERMINAL',
-            'LOKASI',
-            'CREATE_BY'
+            'LOKASI'
         ];
     }
 }
