@@ -54,16 +54,18 @@
     </div>
     
     <div class="relative space-x-10">
-    <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
-  <button id="notificationBtn" class="relative">
-    <i class="fas fa-bell text-xl text-gray-700"></i>
-    <span id="notificationCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
-  </button>
-  <div id="notificationDropdown" class="absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
-    <ul id="notificationList"></ul>
+      <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
+        <button id="notificationBtn" class="relative">
+          <i class="fas fa-bell text-xl text-gray-700"></i>
+          <span id="notificationCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+        </button>
+      <div id="notificationDropdown" class="absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
+        <ul id="notificationList"></ul>
+      </div>
   </div>
 </div>
-  </div>
+
+  
 
   <!-- Tabel Arsip -->
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -198,9 +200,9 @@
           <div>
             <label class="block text-sm font-medium mb-1">Lokasi Simpan</label>
             <div class="flex gap-2">
-              <input id="RAK_INPUT" type="text" placeholder="Rak" class="w-1/3 border rounded-lg px-3 py-2">
-              <input id="BAK_INPUT" type="text" placeholder="Bak" class="w-1/3 border rounded-lg px-3 py-2">
-              <input id="ARSIP_INPUT" type="text" placeholder="Arsip" class="w-1/3 border rounded-lg px-3 py-2">
+              <input id="RAK_INPUT" type="text" placeholder="Lemari" class="w-1/3 border rounded-lg px-3 py-2">
+              <input id="BAK_INPUT" type="text" placeholder="Baris" class="w-1/3 border rounded-lg px-3 py-2">
+              <input id="ARSIP_INPUT" type="text" placeholder="Box" class="w-1/3 border rounded-lg px-3 py-2">
             </div>
             <input type="hidden" id="RAK_BAK_URUTAN" name="RAK_BAK_URUTAN">
           </div>
@@ -396,7 +398,7 @@ addBtn.addEventListener("click", async () => {
   form.reset();
   document.getElementById("arsipId").value = "";
   document.getElementById("modalTitle").innerText = "Tambah Arsip";
-  await loadUserInfo(); // sekarang dijalankan beneran ✅
+  await loadUserInfo(); 
 });
 
 
