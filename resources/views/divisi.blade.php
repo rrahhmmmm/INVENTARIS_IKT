@@ -102,6 +102,9 @@
         <label class="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
         <input type="text" id="namaDivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
       </div>
+      <div id="namaError" class="text-red-600 text-sm mt-1 hidden">
+        Nama divisi hanya boleh berisi huruf dan spasi.
+      </div>
       <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
         <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100" readonly>
@@ -133,7 +136,7 @@
   </div>
 </div>
 
-    <script>
+<script>
 const apiUrl = "/api/m_divisi"; 
 const tableBody = document.getElementById("divisiTableBody");
 const loadingState = document.getElementById("loadingState");
@@ -145,7 +148,28 @@ const cancelBtn = document.getElementById("cancelBtn");
 const form = document.getElementById("divisiForm");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
-const token = localStorage.getItem('auth_token'); // samakan dengan terminal
+const token = localStorage.getItem('auth_token');
+
+// ==== Tambahkan variabel untuk validasi ====
+const namaInput = document.getElementById("namaDivisi");
+const namaError = document.createElement("div");
+namaError.id = "namaError";
+namaError.className = "text-red-600 text-sm mt-1 hidden";
+namaError.innerText = "Nama divisi hanya boleh berisi huruf dan spasi.";
+namaInput.insertAdjacentElement("afterend", namaError);
+
+// ==== Real-time Validasi Input ====
+namaInput.addEventListener("input", function () {
+    const regex = /^[A-Za-z\s]*$/;
+
+    if (!regex.test(this.value)) {
+        namaError.classList.remove("hidden");
+        this.classList.add("border-red-500");
+    } else {
+        namaError.classList.add("hidden");
+        this.classList.remove("border-red-500");
+    }
+});
 
 // ==== Fetch Divisi ====
 async function loadDivisi(keyword = "") {
@@ -196,6 +220,7 @@ async function loadDivisi(keyword = "") {
         showToast("Gagal memuat data");
     }
 }
+
 async function loadUsername(forField = 'createBy') {
     try {
         const res = await fetch('/api/me', {
@@ -204,10 +229,13 @@ async function loadUsername(forField = 'createBy') {
                 'Accept': 'application/json'
             }
         });
+
         if (!res.ok) throw new Error('Gagal memuat user');
+
         const data = await res.json();
+
         if (forField === 'createBy') document.getElementById('createBy').value = data.username || '';
-        // if (forField === 'updateBy') document.getElementById('updateBy').value = data.username || '';
+
     } catch(err) {
         console.error(err);
     }
@@ -219,8 +247,11 @@ addBtn.addEventListener("click", () => {
     document.getElementById("modalTitle").innerText = "Tambah Divisi";
     form.reset();
     document.getElementById("divisiId").value = "";
-    loadUsername('createBy'); // otomatis isi CREATE_BY
+    namaError.classList.add("hidden");
+    namaInput.classList.remove("border-red-500");
+    loadUsername('createBy');
 });
+
 closeModal.addEventListener("click", () => modal.classList.remove("show"));
 cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
 
@@ -228,14 +259,27 @@ cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
 form.addEventListener("submit", async function(e) {
     e.preventDefault();
 
+    const namaValue = namaInput.value.trim();
+    const regex = /^[A-Za-z\s]+$/;
+
+    // VALIDASI STRICT HANYA HURUF
+    if (!regex.test(namaValue)) {
+        namaError.classList.remove("hidden");
+        namaInput.classList.add("border-red-500");
+        showToast("Nama divisi hanya boleh huruf");
+        return;
+    }
+
     const id = document.getElementById("divisiId").value;
+
     const payload = {
-        NAMA_DIVISI: document.getElementById("namaDivisi").value,
+        NAMA_DIVISI: namaValue,
         CREATE_BY: document.getElementById("createBy").value
     };
 
     try {
         let res;
+
         if (id) {
             res = await fetch(`${apiUrl}/${id}`, {
                 method: "PUT",
@@ -284,6 +328,10 @@ async function editDivisi(id) {
         document.getElementById("divisiId").value = data.ID_DIVISI;
         document.getElementById("namaDivisi").value = data.NAMA_DIVISI;
         document.getElementById("createBy").value = data.CREATE_BY ?? "";
+
+        namaError.classList.add("hidden");
+        namaInput.classList.remove("border-red-500");
+
     } catch(err) {
         console.error(err);
         showToast("Gagal memuat data edit");
@@ -293,10 +341,12 @@ async function editDivisi(id) {
 // ==== Delete Divisi ====
 async function deleteDivisi(id) {
     if (!confirm("Yakin ingin menghapus data ini?")) return;
+
     const res = await fetch(`${apiUrl}/${id}`, {
         method: "DELETE",
         headers: { 'Authorization': `Bearer ${token}` }
     });
+
     if (res.ok) {
         showToast("Data berhasil dihapus");
         loadDivisi();
@@ -308,8 +358,12 @@ async function deleteDivisi(id) {
 // ==== Import Excel ====
 document.getElementById("importForm").addEventListener("submit", async function(e) {
     e.preventDefault();
+
     const fileInput = document.getElementById("importFile").files[0];
-    if (!fileInput) { showToast("Pilih file terlebih dahulu"); return; }
+    if (!fileInput) { 
+        showToast("Pilih file terlebih dahulu"); 
+        return; 
+    }
 
     const formData = new FormData();
     formData.append("file", fileInput);
@@ -320,7 +374,9 @@ document.getElementById("importForm").addEventListener("submit", async function(
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
+
         const data = await res.json();
+
         if (res.ok) {
             showToast(data.message || "Import berhasil");
             modal.classList.remove("show");
@@ -351,6 +407,3 @@ document.getElementById("searchInput").addEventListener("input", function() {
 
 loadDivisi();
 </script>
-
-</body>
-</html>
