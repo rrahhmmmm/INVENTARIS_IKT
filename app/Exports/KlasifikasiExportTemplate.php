@@ -3,10 +3,11 @@
 namespace App\Exports;
 
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class KlasifikasiExportTemplate implements FromCollection, WithHeadings
+class KlasifikasiExportTemplate implements FromCollection, WithHeadings,ShouldAutoSize
 {
     /**
      * Contoh template kosong untuk user isi

@@ -3,8 +3,9 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class IndeksExportTemplate implements WithHeadings
+class IndeksExportTemplate implements WithHeadings,ShouldAutoSize
 {
     /**
  

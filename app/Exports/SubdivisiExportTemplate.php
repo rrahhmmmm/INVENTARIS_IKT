@@ -5,8 +5,8 @@ namespace App\Exports;
 use App\Models\M_divisi;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\NamedRange;
 
 class SubdivisiExportTemplate implements WithHeadings, WithEvents
 {
@@ -14,13 +14,9 @@ class SubdivisiExportTemplate implements WithHeadings, WithEvents
 
     public function __construct()
     {
-        // ambil daftar divisi dari DB
         $this->divisi = M_divisi::pluck('NAMA_DIVISI')->toArray();
     }
 
-    /**
-     * Header kolom Excel
-     */
     public function headings(): array
     {
         return [
@@ -29,40 +25,42 @@ class SubdivisiExportTemplate implements WithHeadings, WithEvents
         ];
     }
 
-    /**
-     * Event untuk set dropdown
-     */
     public function registerEvents(): array
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
+                $workbook = $sheet->getParent();
+                $sheetName = $sheet->getTitle();
 
-                // Buat daftar divisi (misal di kolom Z untuk hidden)
+                // tulis daftar divisi di kolom Z
                 $row = 1;
                 foreach ($this->divisi as $namaDivisi) {
                     $sheet->setCellValue("Z{$row}", $namaDivisi);
                     $row++;
                 }
 
-                // Definisikan named range (Z1:Z{jumlah_divisi})
-                $highest = count($this->divisi);
-                $sheet->getParent()->addNamedRange(
-                    new \PhpOffice\PhpSpreadsheet\NamedRange(
+                // pastikan sheet aktif
+                $sheet->setSelectedCell('A1');
+
+                // buat formula OFFSET (tanpa tanda =)
+                $formula = "OFFSET('{$sheetName}'!\$Z\$1,0,0,COUNTA('{$sheetName}'!\$Z:\$Z),1)";
+
+                // definisikan named range dinamis (kompatibel semua versi)
+                $workbook->addNamedRange(
+                    new NamedRange(
                         'DivisiList',
                         $sheet,
-                        "Z1:Z{$highest}"
+                        $formula
                     )
                 );
 
-                // Terapkan data validation ke kolom A (Divisi)
-                for ($i = 2; $i <= 100; $i++) { // batas 100 baris, bisa disesuaikan
+                // dropdown validasi untuk kolom A
+                for ($i = 2; $i <= 100; $i++) {
                     $validation = $sheet->getCell("A{$i}")->getDataValidation();
                     $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
                     $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
                     $validation->setAllowBlank(false);
-                    $validation->setShowInputMessage(true);
-                    $validation->setShowErrorMessage(true);
                     $validation->setShowDropDown(true);
                     $validation->setErrorTitle('Input salah');
                     $validation->setError('Pilih divisi dari daftar');
@@ -71,7 +69,6 @@ class SubdivisiExportTemplate implements WithHeadings, WithEvents
                     $validation->setFormula1('=DivisiList');
                 }
 
-                // Sembunyikan kolom Z (tempat daftar divisi)
                 $sheet->getColumnDimension('Z')->setVisible(false);
             }
         ];

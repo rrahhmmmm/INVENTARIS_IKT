@@ -3,8 +3,9 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class DivisiExportTemplate implements WithHeadings
+class DivisiExportTemplate implements WithHeadings,ShouldAutoSize
 {
     public function headings(): array
     {
