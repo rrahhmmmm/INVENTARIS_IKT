@@ -27,7 +27,7 @@
       <!-- Username -->
       <div>
         <label class="block text-sm font-medium">Username</label>
-        <input type="text" name="username" required placeholder="NIP / NRPP"
+        <input type="text" name="username" required placeholder="NIPP/NRP"
           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ">
       </div>
 
@@ -205,6 +205,21 @@ divisiSelect.addEventListener("change", (e) => {
       alertBox.className = `p-3 mb-4 rounded-lg text-sm ${classes}`;
       alertBox.classList.remove("hidden");
     }
+
+    const usernameInput = document.getElementById('username');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+
+      // validasi angka
+      if (!/^[0-9]+$/.test(data.username)) {
+        showAlert("Username hanya boleh diisi dengan NIPP / NRP!", "bg-red-100 text-red-600");
+        return;
+      }
+    });
   </script>
 
 </body>
