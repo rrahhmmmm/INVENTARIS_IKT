@@ -80,7 +80,7 @@
     <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Berkas</th>
     <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">Judul Berkas</th>
     <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Isi Berkas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Jenis Arsip</th>
+    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Naskah Dinas</th>
     <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Kode Klasifikasi</th>
     <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">No Nota Dinas</th>
     <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Berkas</th>
@@ -162,7 +162,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">Jenis Arsip</label>
+            <label class="block text-sm font-medium mb-1">Naskah Dinas</label>
             <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
           </div>
 
