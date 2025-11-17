@@ -35,7 +35,8 @@ class T_ARSIPCONTROLLER extends Controller
             });
         }
 
-        return response()->json($query->orderBy('ID_ARSIP', 'desc')->get());
+        $perPage = $request->input('per_page', 10);
+        return response()->json($query->orderBy('ID_ARSIP', 'desc')->paginate($perPage));
     }
 
     /**

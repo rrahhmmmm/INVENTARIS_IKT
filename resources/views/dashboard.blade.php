@@ -53,12 +53,17 @@
       </button>
     </div>
     
-    <div class="relative space-x-10">
+    <div class="relative space-x-2">
+      
       <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
-        <button id="notificationBtn" class="relative">
+      
+      <button id="notificationBtn" class="relative">
           <i class="fas fa-bell text-xl text-gray-700"></i>
           <span id="notificationCount" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
         </button>
+
+
+
       <div id="notificationDropdown" class="absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
         <ul id="notificationList"></ul>
       </div>
@@ -68,49 +73,88 @@
   
 
   <!-- Tabel Arsip -->
+    <div class="pb-2">
+      <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+      </select>
+    </div>
+
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
   <div class="overflow-x-auto">
     <table class="min-w-[2500px] table-fixed text-sm md:text-base">
-    <thead class="bg-blue-600 text-white">
-  <tr>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[60px] z-10">NO</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Divisi</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Subdivisi</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">No Indeks</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Berkas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">Judul Berkas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Isi Berkas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Naskah Dinas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Kode Klasifikasi</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">No Nota Dinas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Berkas</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[400px] z-10">Perihal</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Tingkat Pengembangan</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">Kondisi</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Lokasi Simpan</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[200px] z-10">Keterangan Simpan</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Tipe Retensi</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Retensi</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Keterangan</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[140px] z-10">Create By</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">File Arsip</th>
-    <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[100px] text-center z-10">Aksi</th>
-  </tr>
-</thead>
-      <tbody id="arsipTableBody" class="divide-y divide-gray-200 text-gray-700"></tbody>
-    </table>
+          <thead class="bg-blue-600 text-white">
+        <tr>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[60px] z-10">NO</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Divisi</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Subdivisi</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">No Indeks</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Berkas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">Judul Berkas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Isi Berkas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Naskah Dinas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Kode Klasifikasi</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">No Nota Dinas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Berkas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[400px] z-10">Perihal</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Tingkat Pengembangan</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">Kondisi</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Lokasi Simpan</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[200px] z-10">Keterangan Simpan</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Tipe Retensi</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Retensi</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Keterangan</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[140px] z-10">Create By</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">File Arsip</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[100px] text-center z-10">Aksi</th>
+        </tr>
+      </thead>
+            <tbody id="arsipTableBody" class="divide-y divide-gray-200 text-gray-700"></tbody>
+      </table>
+    </div>
   </div>
+
+      <div id="loadingState" class="text-center py-8">
+        <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+        <p class="mt-2 text-gray-600">Memuat data...</p>
+      </div>
+      <div id="emptyState" class="text-center py-8 hidden">
+        <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+        <p class="text-gray-600">Tidak ada data arsip</p>
+      </div>
+  </main>
+
+<div id="paginationControls" class="mt-1 mb-4 hidden">
+
+<!-- pagination -->
+<div class="flex flex-col items-start mx-[100px] ">
+
+  <!-- Pagination Buttons -->
+  <div class="flex items-center gap-2  mb-2">
+    
+
+    <button id="prevPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+      <i class="fas fa-angle-left"></i> 
+    </button>
+
+    <div id="pageNumbers" class="flex gap-1"></div>
+
+    <button id="nextPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+      <i class="fas fa-angle-right"></i>
+    </button>
+  
+  </div>
+
+   <!-- Info -->
+   <div class="text-sm text-gray-600">
+        Menampilkan <span id="showingFrom">0</span> Hingga 
+        <span id="showingTo">0</span> dari 
+        <span id="totalRecords">0</span> data
+      </div>
 </div>
 
-  <div id="loadingState" class="text-center py-8">
-    <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
-    <p class="mt-2 text-gray-600">Memuat data...</p>
-  </div>
-  <div id="emptyState" class="text-center py-8 hidden">
-    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-    <p class="text-gray-600">Tidak ada data arsip</p>
-  </div>
-</main>
 
 <!-- Modal Arsip -->
 <div id="arsipModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
@@ -279,6 +323,22 @@ const suggestionBox = document.getElementById("indeksSuggestions");
 const klasifikasiInput = document.getElementById("KODE_KLASIFIKASI");
 const suggestionKlasifikasi = document.getElementById("klasifikasiSuggestions");
 
+// Pagination elements
+const paginationControls = document.getElementById("paginationControls");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageNumbers = document.getElementById("pageNumbers");
+const showingFrom = document.getElementById("showingFrom");
+const showingTo = document.getElementById("showingTo");
+const totalRecords = document.getElementById("totalRecords");
+const perPageSelect = document.getElementById("perPageSelect");
+
+// Pagination state
+let currentPage = 1;
+let perPage = 10;
+let totalPages = 1;
+let lastSearchKeyword = "";
+
 
 // === TOAST ===
 function showToast(msg, success = true) {
@@ -332,33 +392,42 @@ async function loadUserInfo() {
   }
 }
 
-// === LOAD DATA ===
-async function loadArsip(keyword = "") {
+// === LOAD DATA WITH PAGINATION ===
+async function loadArsip(keyword = "", page = 1) {
   loadingState.classList.remove("hidden");
   emptyState.classList.add("hidden");
   tableBody.innerHTML = "";
-
+  paginationControls.classList.add("hidden");
+  
+  lastSearchKeyword = keyword;
+  
   try {
-    let url = apiUrl;
-    if (keyword.trim()) url += `?search=${encodeURIComponent(keyword)}`;
-
+    let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
+    if (keyword.trim()) url += `&search=${encodeURIComponent(keyword)}`;
+    
     const res = await fetchWithAuth(url);
-    const data = await res.json();
-
+    const response = await res.json();
+    
     loadingState.classList.add("hidden");
+    
+    const data = response.data || [];
+    
     if (!Array.isArray(data) || data.length === 0) {
       emptyState.classList.remove("hidden");
       return;
     }
-
+    
+    // Render table rows
     data.forEach((arsip, i) => {
       const fileLink = arsip.FILE
         ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">DOWNLOAD</a>`
         : "-";
-
+      
+      const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+      
       const row = `
         <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3 w-[60px]">${i + 1}</td>
+          <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
           <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
           <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
           <td class="px-4 py-3 w-[120px]">${arsip.NO_INDEKS ?? "-"}</td>
@@ -386,12 +455,89 @@ async function loadArsip(keyword = "") {
         </tr>`;
       tableBody.insertAdjacentHTML("beforeend", row);
     });
+    
+    // Render pagination controls
+    renderPaginationControls({
+      current_page: response.current_page,
+      last_page: response.last_page,
+      from: response.from,
+      to: response.to,
+      total: response.total
+    });
+    
   } catch (err) {
     console.error(err);
     loadingState.classList.add("hidden");
     showToast("Gagal memuat data", false);
   }
 }
+
+// === PAGINATION RENDER ===
+function renderPaginationControls(paginationData) {
+  const { current_page, last_page, from, to, total } = paginationData;
+  
+  currentPage = current_page;
+  totalPages = last_page;
+  
+  // Hide if no data
+  if (total === 0) {
+    paginationControls.classList.add("hidden");
+    return;
+  }
+  
+  paginationControls.classList.remove("hidden");
+  
+  // Update info text
+  showingFrom.textContent = from || 0;
+  showingTo.textContent = to || 0;
+  totalRecords.textContent = total;
+  
+  // Enable/disable navigation buttons
+  prevPageBtn.disabled = current_page === 1;
+  nextPageBtn.disabled = current_page === last_page;
+
+  
+  // Generate page number buttons
+  pageNumbers.innerHTML = "";
+  const maxVisiblePages = 5;
+  let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+  
+  if (endPage - startPage < maxVisiblePages - 1) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const pageBtn = document.createElement("button");
+    pageBtn.textContent = i;
+    pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+    pageBtn.addEventListener("click", () => loadArsip(lastSearchKeyword, i));
+    pageNumbers.appendChild(pageBtn);
+  }
+}
+
+// === PAGINATION EVENT LISTENERS ===
+
+prevPageBtn.addEventListener("click", () => {
+  if (currentPage > 1) loadArsip(lastSearchKeyword, currentPage - 1);
+});
+
+nextPageBtn.addEventListener("click", () => {
+  if (currentPage < totalPages) loadArsip(lastSearchKeyword, currentPage + 1);
+});
+
+perPageSelect.addEventListener("change", (e) => {
+  perPage = parseInt(e.target.value);
+  loadArsip(lastSearchKeyword, 1);
+});
+
+// === SEARCH WITH DEBOUNCE ===
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  clearTimeout(window.searchDelay);
+  window.searchDelay = setTimeout(() => {
+    loadArsip(e.target.value, 1); // Reset to page 1 on new search
+  }, 400);
+});
 // modal
 addBtn.addEventListener("click", async () => {
   modal.classList.add("show");
@@ -627,6 +773,44 @@ document.addEventListener("click", (e) => {
     suggestionKlasifikasi.classList.add("hidden");
   }
 });
+//  pagination
+    function renderPaginationControls(paginationData) {
+      const { current_page, last_page, from, to, total } = paginationData;
+      
+      currentPage = current_page;
+      totalPages = last_page;
+      
+      if (total > 0) {
+        paginationControls.classList.remove("hidden");
+      } else {
+        paginationControls.classList.add("hidden");
+        return;
+      }
+      
+      showingFrom.textContent = from || 0;
+      showingTo.textContent = to || 0;
+      totalRecords.textContent = total;
+      
+      prevPageBtn.disabled = current_page === 1;
+      nextPageBtn.disabled = current_page === last_page;
+      
+      pageNumbers.innerHTML = "";
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+        pageBtn.addEventListener("click", () => loadArsip(lastSearchKeyword, i));
+        pageNumbers.appendChild(pageBtn);
+      }
+    }
 
 
 
