@@ -15,18 +15,21 @@ class M_indekscontroller extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $query = M_indeks::query();
-
-    if ($request->has('search')) {
-        $search = $request->input('search');
-        $query->where('NO_INDEKS', 'like', "%{$search}%")
-              ->orWhere('WILAYAH', 'like', "%{$search}%")
-              ->orWhere('NAMA_INDEKS', 'like', "%{$search}%");
+    {
+        $perPage = $request->input('per_page', 10); 
+        $query = M_indeks::query();
+    
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('NO_INDEKS', 'like', "%{$search}%")
+                  ->orWhere('WILAYAH', 'like', "%{$search}%")
+                  ->orWhere('NAMA_INDEKS', 'like', "%{$search}%");
+            });
+        }
+    
+        return $query->paginate($perPage);
     }
-
-    return $query->get();
-}
 
     /**
      * Store a newly created resource in storage.
