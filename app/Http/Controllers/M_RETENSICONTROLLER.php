@@ -36,6 +36,11 @@ class M_RETENSICONTROLLER extends Controller
         return $query->paginate($perPage);
     }
 
+    public function all()
+    {
+        return M_retensi::all();
+    }
+
     /**
      * Store a newly created resource in storage.
      */

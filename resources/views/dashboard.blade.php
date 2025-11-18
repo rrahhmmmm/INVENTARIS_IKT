@@ -256,9 +256,10 @@
             <textarea id="KETERANGAN_SIMPAN" name="KETERANGAN_SIMPAN" class="w-full border rounded-lg px-3 py-2"></textarea>
           </div>
 
-          <div>
+          <div class="relative">
             <label class="block text-sm font-medium mb-1">Tipe Retensi</label>
-            <input id="TIPE_RETENSI"name="TIPE_RETENSI" class="w-full border rounded-lg px-3 py-2">
+            <input id="TIPE_RETENSI" name="TIPE_RETENSI" class="w-full border rounded-lg px-3 py-2" autocomplete="off">
+            <ul id="retensiSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
           </div>
 
           <div>
@@ -322,6 +323,10 @@ const suggestionBox = document.getElementById("indeksSuggestions");
 // klasifikasi suggest
 const klasifikasiInput = document.getElementById("KODE_KLASIFIKASI");
 const suggestionKlasifikasi = document.getElementById("klasifikasiSuggestions");
+
+// retensi suggest
+const retensiInput = document.getElementById("TIPE_RETENSI");
+const suggestionRetensi = document.getElementById("retensiSuggestions");
 
 // Pagination elements
 const paginationControls = document.getElementById("paginationControls");
@@ -720,6 +725,75 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// === RETENSI AUTOCOMPLETE ===
+let retensiData = [];
+
+// Ambil semua data retensi
+async function loadRetensiData() {
+  try {
+    const res = await fetchWithAuth("/api/m_retensi/all");
+    if (!res.ok) throw new Error("Gagal memuat data retensi");
+    retensiData = await res.json();
+  } catch (err) {
+    console.error("Gagal ambil data retensi:", err);
+  }
+}
+
+// Tampilkan suggestion berdasarkan ketikan
+retensiInput.addEventListener("input", () => {
+  const query = retensiInput.value.toLowerCase();
+  suggestionRetensi.innerHTML = "";
+
+  if (!query.trim()) {
+    suggestionRetensi.classList.add("hidden");
+    return;
+  }
+
+  const filtered = retensiData.filter(item =>
+    (item.JENIS_ARSIP?.toLowerCase().includes(query) ||
+     item.BIDANG_ARSIP?.toLowerCase().includes(query) ||
+     item.TIPE_ARSIP?.toLowerCase().includes(query) ||
+     item.DETAIL_TIPE_ARSIP?.toLowerCase().includes(query) ||
+     item.MASA_AKTIF?.toLowerCase().includes(query))
+  );
+
+  if (filtered.length === 0) {
+    suggestionRetensi.classList.add("hidden");
+    return;
+  }
+
+  filtered.slice(0, 50).forEach(item => {
+    const li = document.createElement("li");
+    li.className = "px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm border-b last:border-b-0";
+    
+    // Format tampilan suggestion dengan semua field
+    let displayText = '';
+    if (item.JENIS_ARSIP) displayText += `<div class="font-semibold text-blue-600">${item.JENIS_ARSIP}</div>`;
+    if (item.BIDANG_ARSIP) displayText += `<div class="text-gray-700">Bidang: ${item.BIDANG_ARSIP}</div>`;
+    if (item.TIPE_ARSIP) displayText += `<div class="text-gray-600">Tipe: ${item.TIPE_ARSIP}</div>`;
+    if (item.DETAIL_TIPE_ARSIP) displayText += `<div class="text-gray-600">Detail: ${item.DETAIL_TIPE_ARSIP}</div>`;
+    if (item.MASA_AKTIF) displayText += `<div class="text-green-600 font-medium">Masa Aktif: ${item.MASA_AKTIF}</div>`;
+    
+    li.innerHTML = displayText;
+    
+    li.addEventListener("click", () => {
+      // Isi field TIPE_RETENSI dengan MASA_AKTIF
+      retensiInput.value = item.MASA_AKTIF || '';
+      suggestionRetensi.classList.add("hidden");
+    });
+    suggestionRetensi.appendChild(li);
+  });
+
+  suggestionRetensi.classList.remove("hidden");
+});
+
+// Tutup dropdown saat klik di luar
+document.addEventListener("click", (e) => {
+  if (!suggestionRetensi.contains(e.target) && e.target !== retensiInput) {
+    suggestionRetensi.classList.add("hidden");
+  }
+});
+
 let klasifikasiData = [];
 
 // Ambil semua data klasifikasi
@@ -815,6 +889,7 @@ document.addEventListener("click", (e) => {
 
 
 // Loader
+loadRetensiData();
 loadOverdueNotifications();
 loadKlasifikasiData();
 loadIndeksData();
