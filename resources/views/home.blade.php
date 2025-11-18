@@ -50,7 +50,7 @@
     </div>
 
     <div class="relative z-10 min-h-full flex items-center justify-center p-6">
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full mt-[13rem]">
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full mt-52">
 
         <!-- Card Inventaris -->
         <a 
