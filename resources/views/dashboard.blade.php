@@ -671,7 +671,7 @@ notificationBtn.addEventListener("click", () => { notificationDropdown.classList
 let indeksData = [];
 async function loadIndeksData() {
   try {
-    const res = await fetchWithAuth("/api/m_indeks");
+    const res = await fetchWithAuth("/api/m_indeks/all");
     if (!res.ok) throw new Error("Gagal memuat data indeks");
     indeksData = await res.json();
   } catch (err) {
@@ -725,7 +725,7 @@ let klasifikasiData = [];
 // Ambil semua data klasifikasi
 async function loadKlasifikasiData() {
   try {
-    const res = await fetchWithAuth("/api/m_klasifikasi");
+    const res = await fetchWithAuth("/api/m_klasifikasi/all");
     if (!res.ok) throw new Error("Gagal memuat data klasifikasi");
     klasifikasiData = await res.json();
   } catch (err) {

@@ -32,6 +32,12 @@ class M_KLASIFIKASICONTROLLER extends Controller
         return $query->paginate($perPage);
     }
 
+    public function all()
+    {
+            // Return semua data tanpa pagination untuk suggestion
+            return M_klasifikasi::all();
+    }
+
     /**
      * Store a newly created resource in storage.
      */

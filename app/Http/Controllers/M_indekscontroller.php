@@ -31,6 +31,12 @@ class M_indekscontroller extends Controller
         return $query->paginate($perPage);
     }
 
+    public function all()
+    {
+            // Return semua data tanpa pagination untuk suggestion
+            return M_indeks::all();
+    }
+
     /**
      * Store a newly created resource in storage.
      */
