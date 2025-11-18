@@ -62,6 +62,16 @@
             class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
     </div>
 
+    <!-- Per Page Selection -->
+    <div class="pb-2">
+        <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+
     <!-- Table -->
     <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
         <table class="w-full min-w-[900px]">
@@ -83,8 +93,6 @@
         </table>
     </div>
 
-    <div id="pagination" class="mt-6 flex justify-center"></div>
-
     <!-- States -->
     <div id="loadingState" class="text-center py-8">
         <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
@@ -96,6 +104,31 @@
         <p class="text-gray-600">Tidak ada data retensi</p>
     </div>
 </main>
+
+<!-- Pagination Controls -->
+<div id="paginationControls" class="mt-1 mb-4 hidden">
+    <div class="flex flex-col items-start mx-[100px]">
+        <!-- Pagination Buttons -->
+        <div class="flex items-center gap-2 mb-2">
+            <button id="prevPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-angle-left"></i> 
+            </button>
+
+            <div id="pageNumbers" class="flex gap-1"></div>
+
+            <button id="nextPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-angle-right"></i>
+            </button>
+        </div>
+
+        <!-- Info -->
+        <div class="text-sm text-gray-600">
+            Menampilkan <span id="showingFrom">0</span> Hingga 
+            <span id="showingTo">0</span> dari 
+            <span id="totalRecords">0</span> data
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div id="retensiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 px-2">
@@ -171,7 +204,7 @@
                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
                 <span>Download Template</span> <i class="fas fa-download"></i>
             </a>
-                    <form id="importRetensiForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <form id="importRetensiForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
                 <input type="file" name="file" id="importRetensiFile" class="border px-2 py-1 rounded" required>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                     Import
@@ -204,23 +237,48 @@ const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 const token = localStorage.getItem('auth_token');
 
-// ==== Fetch Data ====
-async function loadRetensi(keyword = "") {
+// Pagination elements
+const paginationControls = document.getElementById("paginationControls");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageNumbers = document.getElementById("pageNumbers");
+const showingFrom = document.getElementById("showingFrom");
+const showingTo = document.getElementById("showingTo");
+const totalRecords = document.getElementById("totalRecords");
+const perPageSelect = document.getElementById("perPageSelect");
+
+// Pagination state
+let currentPage = 1;
+let perPage = 10;
+let totalPages = 1;
+let lastSearchKeyword = "";
+
+// ==== Fetch Data with Pagination ====
+async function loadRetensi(keyword = "", page = 1) {
     loadingState.classList.remove("hidden");
     emptyState.classList.add("hidden");
     tableBody.innerHTML = "";
+    paginationControls.classList.add("hidden");
+    
+    lastSearchKeyword = keyword;
 
     try {
-        let url = apiUrl;
+        let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
         if (keyword && keyword.trim() !== "") {
-            url += `?search=${encodeURIComponent(keyword)}`;
+            url += `&search=${encodeURIComponent(keyword)}`;
         }
 
-        const res = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        let res = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
         });
-        const data = await res.json();
+
+        const response = await res.json();
         loadingState.classList.add("hidden");
+
+        const data = response.data || [];
 
         if (!Array.isArray(data) || data.length === 0) {
             emptyState.classList.remove("hidden");
@@ -228,15 +286,17 @@ async function loadRetensi(keyword = "") {
         }
 
         data.forEach((item, i) => {
+            const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+            
             const row = `
-                <tr>
-                    <td class="px-4 py-3">${i + 1}</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">${rowNumber}</td>
                     <td class="px-4 py-3">${item.JENIS_ARSIP}</td>
                     <td class="px-4 py-3">${item.BIDANG_ARSIP}</td>
                     <td class="px-4 py-3 w-64 whitespace-normal break-words">${item.TIPE_ARSIP}</td>
                     <td class="px-4 py-3 w-64 whitespace-normal break-words">${item.DETAIL_TIPE_ARSIP}</td>
-                    <td class="px-4 py-3 w-24 text-center whitespace-nowrap">${item.MASA_AKTIF} </td>
-                    <td class="px-4 py-3 w-24 text-center whitespace-nowrap">${item.MASA_INAKTIF} </td>
+                    <td class="px-4 py-3 w-24 text-center whitespace-nowrap">${item.MASA_AKTIF}</td>
+                    <td class="px-4 py-3 w-24 text-center whitespace-nowrap">${item.MASA_INAKTIF}</td>
                     <td class="px-4 py-3 whitespace-normal break-words max-w-xs">${item.KETERANGAN ?? '-'}</td>
                     <td class="px-4 py-3">${item.CREATE_BY ?? '-'}</td>
                     <td class="px-4 py-3 text-center space-x-2">
@@ -246,12 +306,79 @@ async function loadRetensi(keyword = "") {
                 </tr>`;
             tableBody.insertAdjacentHTML("beforeend", row);
         });
-    } catch (err) {
+
+        // Render pagination controls
+        renderPaginationControls({
+            current_page: response.current_page,
+            last_page: response.last_page,
+            from: response.from,
+            to: response.to,
+            total: response.total
+        });
+
+    } catch(err) {
         console.error(err);
         loadingState.classList.add("hidden");
         showToast("Gagal memuat data");
     }
 }
+
+// ===== PAGINATION RENDER =====
+function renderPaginationControls(paginationData) {
+    const { current_page, last_page, from, to, total } = paginationData;
+    
+    currentPage = current_page;
+    totalPages = last_page;
+    
+    // Hide if no data
+    if (total === 0) {
+        paginationControls.classList.add("hidden");
+        return;
+    }
+    
+    paginationControls.classList.remove("hidden");
+    
+    // Update info text
+    showingFrom.textContent = from || 0;
+    showingTo.textContent = to || 0;
+    totalRecords.textContent = total;
+    
+    // Enable/disable navigation buttons
+    prevPageBtn.disabled = current_page === 1;
+    nextPageBtn.disabled = current_page === last_page;
+    
+    // Generate page number buttons
+    pageNumbers.innerHTML = "";
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+        pageBtn.addEventListener("click", () => loadRetensi(lastSearchKeyword, i));
+        pageNumbers.appendChild(pageBtn);
+    }
+}
+
+// ===== PAGINATION EVENT LISTENERS =====
+prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) loadRetensi(lastSearchKeyword, currentPage - 1);
+});
+
+nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) loadRetensi(lastSearchKeyword, currentPage + 1);
+});
+
+perPageSelect.addEventListener("change", (e) => {
+    perPage = parseInt(e.target.value);
+    loadRetensi(lastSearchKeyword, 1);
+});
 
 // ==== Load Username ====
 async function loadUsername() {
@@ -284,7 +411,6 @@ form.addEventListener("submit", async e => {
     e.preventDefault();
     const id = document.getElementById("retensiId").value;
 
-    // Payload pakai huruf besar biar cocok dengan database/API
     const payload = {
         JENIS_ARSIP: jenisArsip.value,
         BIDANG_ARSIP: bidangArsip.value,
@@ -311,7 +437,7 @@ form.addEventListener("submit", async e => {
         if (res.ok) {
             showToast("Data berhasil disimpan");
             modal.classList.remove("show");
-            loadRetensi();
+            loadRetensi(lastSearchKeyword, currentPage);
         } else if (res.status === 422) {
             const err = await res.json();
             const msgs = [];
@@ -366,13 +492,13 @@ async function deleteRetensi(id) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         showToast(res.ok ? "Data berhasil dihapus" : "Gagal menghapus data");
-        loadRetensi();
+        loadRetensi(lastSearchKeyword, currentPage);
     } catch {
         showToast("Terjadi kesalahan saat menghapus");
     }
 }
 
-// import
+// ==== Import Excel ====
 document.getElementById("importRetensiForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
@@ -399,7 +525,7 @@ document.getElementById("importRetensiForm").addEventListener("submit", async fu
         if (res.ok) {
             showToast(data.message || "Data retensi berhasil diimport");
             modal.classList.remove("show");
-            loadRetensi(); 
+            loadRetensi(lastSearchKeyword, currentPage);
         } else {
             showToast(data.message || "Gagal import data retensi");
         }
@@ -416,18 +542,16 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
-
+// ==== Search with Debounce ====
 let searchTimeout;
 document.getElementById("searchInput").addEventListener("input", function() {
     clearTimeout(searchTimeout);
     const keyword = this.value;
-    searchTimeout = setTimeout(() => loadRetensi(keyword), 400);
+    searchTimeout = setTimeout(() => loadRetensi(keyword, 1), 500);
 });
-
 
 loadRetensi();
 </script>
-
 
 </body>
 </html>

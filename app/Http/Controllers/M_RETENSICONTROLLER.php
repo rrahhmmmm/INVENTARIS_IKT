@@ -16,10 +16,11 @@ class M_RETENSICONTROLLER extends Controller
      */
     public function index(Request $request)
     {
+        $perPage = $request->input('per_page',10);
         $query = M_retensi::query();
 
-        if ($request->filled('search')) {
-            $search = $request->search;
+        if ($request->has('search')) {
+            $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('JENIS_ARSIP', 'like', '%' . $search . '%')
                 ->orWhere('BIDANG_ARSIP', 'like', '%' . $search . '%')
@@ -32,7 +33,7 @@ class M_RETENSICONTROLLER extends Controller
             });
         }
 
-        return $query->get();
+        return $query->paginate($perPage);
     }
 
     /**
