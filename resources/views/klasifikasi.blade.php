@@ -63,6 +63,16 @@
             class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
     </div>
 
+    <!-- Per Page Selection -->
+    <div class="pb-2">
+        <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+
     <!-- Table -->
     <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
         <table class="w-full min-w-[700px]">
@@ -81,8 +91,6 @@
             <tbody id="klasifikasiTableBody" class="divide-y divide-gray-200 text-sm md:text-base"></tbody>
         </table>
     </div>
-    
-    <div id="pagination" class="mt-6 flex justify-center"></div>
 
     <!-- States -->
     <div id="loadingState" class="text-center py-8">
@@ -95,6 +103,31 @@
         <p class="text-gray-600">Tidak ada data klasifikasi</p>
     </div>
 </main>
+
+<!-- Pagination Controls -->
+<div id="paginationControls" class="mt-1 mb-4 hidden">
+    <div class="flex flex-col items-start mx-[100px]">
+        <!-- Pagination Buttons -->
+        <div class="flex items-center gap-2 mb-2">
+            <button id="prevPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-angle-left"></i> 
+            </button>
+
+            <div id="pageNumbers" class="flex gap-1"></div>
+
+            <button id="nextPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-angle-right"></i>
+            </button>
+        </div>
+
+        <!-- Info -->
+        <div class="text-sm text-gray-600">
+            Menampilkan <span id="showingFrom">0</span> Hingga 
+            <span id="showingTo">0</span> dari 
+            <span id="totalRecords">0</span> data
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div id="klasifikasiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 px-2">
@@ -169,9 +202,9 @@
             <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
                 <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-            Import
-        </button>
-    </form>
+                    Import
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -199,16 +232,35 @@ const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 const token = localStorage.getItem('auth_token'); 
 
-// ==== Fetch Data ====
-async function loadKlasifikasi(keyword = "") {
+// Pagination elements
+const paginationControls = document.getElementById("paginationControls");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageNumbers = document.getElementById("pageNumbers");
+const showingFrom = document.getElementById("showingFrom");
+const showingTo = document.getElementById("showingTo");
+const totalRecords = document.getElementById("totalRecords");
+const perPageSelect = document.getElementById("perPageSelect");
+
+// Pagination state
+let currentPage = 1;
+let perPage = 10;
+let totalPages = 1;
+let lastSearchKeyword = "";
+
+// ==== Fetch Data with Pagination ====
+async function loadKlasifikasi(keyword = "", page = 1) {
     loadingState.classList.remove("hidden");
     emptyState.classList.add("hidden");
     tableBody.innerHTML = "";
+    paginationControls.classList.add("hidden");
+    
+    lastSearchKeyword = keyword;
 
     try {
-        let url = apiUrl;
+        let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
         if (keyword && keyword.trim() !== "") {
-            url += `?search=${encodeURIComponent(keyword)}`;
+            url += `&search=${encodeURIComponent(keyword)}`;
         }
 
         let res = await fetch(url, {
@@ -218,8 +270,10 @@ async function loadKlasifikasi(keyword = "") {
             }
         });
 
-        let data = await res.json();
+        const response = await res.json();
         loadingState.classList.add("hidden");
+
+        const data = response.data || [];
 
         if (!Array.isArray(data) || data.length === 0) {
             emptyState.classList.remove("hidden");
@@ -227,9 +281,11 @@ async function loadKlasifikasi(keyword = "") {
         }
 
         data.forEach((item, i) => {
+            const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+            
             let row = `
-                <tr>
-                    <td class="px-6 py-4">${i+1}</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">${rowNumber}</td>
                     <td class="px-6 py-4">${item.KODE_KLASIFIKASI}</td>
                     <td class="px-6 py-4">${item.KATEGORI}</td>
                     <td class="px-6 py-4 whitespace-normal break-words max-w-xs">${item.DESKRIPSI}</td>
@@ -244,12 +300,79 @@ async function loadKlasifikasi(keyword = "") {
             `;
             tableBody.insertAdjacentHTML("beforeend", row);
         });
+
+        // Render pagination controls
+        renderPaginationControls({
+            current_page: response.current_page,
+            last_page: response.last_page,
+            from: response.from,
+            to: response.to,
+            total: response.total
+        });
+
     } catch(err) {
         console.error(err);
         loadingState.classList.add("hidden");
         showToast("Gagal memuat data");
     }
 }
+
+// ===== PAGINATION RENDER =====
+function renderPaginationControls(paginationData) {
+    const { current_page, last_page, from, to, total } = paginationData;
+    
+    currentPage = current_page;
+    totalPages = last_page;
+    
+    // Hide if no data
+    if (total === 0) {
+        paginationControls.classList.add("hidden");
+        return;
+    }
+    
+    paginationControls.classList.remove("hidden");
+    
+    // Update info text
+    showingFrom.textContent = from || 0;
+    showingTo.textContent = to || 0;
+    totalRecords.textContent = total;
+    
+    // Enable/disable navigation buttons
+    prevPageBtn.disabled = current_page === 1;
+    nextPageBtn.disabled = current_page === last_page;
+    
+    // Generate page number buttons
+    pageNumbers.innerHTML = "";
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+        pageBtn.addEventListener("click", () => loadKlasifikasi(lastSearchKeyword, i));
+        pageNumbers.appendChild(pageBtn);
+    }
+}
+
+// ===== PAGINATION EVENT LISTENERS =====
+prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) loadKlasifikasi(lastSearchKeyword, currentPage - 1);
+});
+
+nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) loadKlasifikasi(lastSearchKeyword, currentPage + 1);
+});
+
+perPageSelect.addEventListener("change", (e) => {
+    perPage = parseInt(e.target.value);
+    loadKlasifikasi(lastSearchKeyword, 1);
+});
 
 // ==== Load Username ====
 async function loadUsername() {
@@ -318,7 +441,7 @@ form.addEventListener("submit", async function(e) {
         if (res.ok) {
             showToast("Data berhasil disimpan");
             modal.classList.remove("show");
-            loadKlasifikasi();
+            loadKlasifikasi(lastSearchKeyword, currentPage);
         } else if (res.status === 422) {
             const err = await res.json();
             const messages = [];
@@ -369,14 +492,13 @@ async function deleteKlasifikasi(id) {
     });
     if (res.ok) {
         showToast("Data berhasil dihapus");
-        loadKlasifikasi();
+        loadKlasifikasi(lastSearchKeyword, currentPage);
     } else {
         showToast("Gagal menghapus data");
     }
 }
 
-
-// ==== Import Excel (Placeholder) ====
+// ==== Import Excel ====
 document.getElementById("importForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const fileInput = document.getElementById("importFile").files[0];
@@ -395,7 +517,7 @@ document.getElementById("importForm").addEventListener("submit", async function(
         if (res.ok) {
             showToast(data.message || "Data berhasil diimport");
             modal.classList.remove("show");
-            loadKlasifikasi();
+            loadKlasifikasi(lastSearchKeyword, currentPage);
         } else {
             showToast(data.message || "Gagal import data");
         }
@@ -412,12 +534,12 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
-// ==== Search ====
+// ==== Search with Debounce ====
 let searchTimeout = null;
 document.getElementById("searchInput").addEventListener("input", function() {
     clearTimeout(searchTimeout);
     let keyword = this.value;
-    searchTimeout = setTimeout(() => loadKlasifikasi(keyword), 500);
+    searchTimeout = setTimeout(() => loadKlasifikasi(keyword, 1), 500);
 });
 
 loadKlasifikasi();

@@ -8,7 +8,7 @@ use App\Exports\IndeksExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IndeksExportTemplate;
 use App\Imports\IndeksImport;
-;
+
 class M_indekscontroller extends Controller
 {
     /**

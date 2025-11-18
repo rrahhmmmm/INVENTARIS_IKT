@@ -16,10 +16,11 @@ class M_KLASIFIKASICONTROLLER extends Controller
      */
     public function index(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $query = M_klasifikasi::query();
 
-        if ($request->filled('search')) {
-            $search = $request->search;
+        if ($request->has('search')) {
+            $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('KODE_KLASIFIKASI', 'like', '%' . $search . '%')
                 ->orWhere('KATEGORI', 'like', '%' . $search . '%')
@@ -28,7 +29,7 @@ class M_KLASIFIKASICONTROLLER extends Controller
             });
         }
 
-        return $query->get();
+        return $query->paginate($perPage);
     }
 
     /**
