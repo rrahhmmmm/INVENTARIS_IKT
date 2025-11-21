@@ -94,7 +94,7 @@
           <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Berkas</th>
           <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">Judul Berkas</th>
           <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Isi Berkas</th>
-          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Naskah Dinas</th>
+          <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Jenis Naskah Dinas</th>
           <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Kode Klasifikasi</th>
           <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">No Nota Dinas</th>
           <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Berkas</th>
@@ -206,7 +206,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1">Naskah Dinas</label>
+            <label class="block text-sm font-medium mb-1">Jenis Naskah Dinas</label>
             <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
           </div>
 
@@ -238,7 +238,9 @@
 
           <div>
             <label class="block text-sm font-medium mb-1">Kondisi</label>
-            <input id="KONDISI" name="KONDISI" class="w-full border rounded-lg px-3 py-2">
+            <select id="KONDISI" name="KONDISI" class="w-full border rounded-lg px-3 py-2">
+              <option value="">-- Pilih Kondisi --</option>
+            </select>
           </div>
 
           <div>
@@ -327,6 +329,9 @@ const suggestionKlasifikasi = document.getElementById("klasifikasiSuggestions");
 // retensi suggest
 const retensiInput = document.getElementById("TIPE_RETENSI");
 const suggestionRetensi = document.getElementById("retensiSuggestions");
+
+// kondisi select
+const kondisiSelect = document.getElementById("KONDISI");
 
 // Pagination elements
 const paginationControls = document.getElementById("paginationControls");
@@ -847,6 +852,33 @@ document.addEventListener("click", (e) => {
     suggestionKlasifikasi.classList.add("hidden");
   }
 });
+
+// === KONDISI DROPDOWN ===
+async function loadKondisiData() {
+  try {
+    const res = await fetchWithAuth("/api/m_kondisi/all", {
+      method: "GET"  // ← Tambahkan ini
+    });
+    if (!res.ok) {
+      console.error("Response status:", res.status); // ← Tambahkan log
+      throw new Error("Gagal memuat data kondisi");
+    }
+    kondisiData = await res.json();
+    
+    // Populate select options
+    kondisiSelect.innerHTML = '<option value="">-- Pilih Kondisi --</option>';
+    kondisiData.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.NAMA_KONDISI;
+      option.textContent = item.NAMA_KONDISI;
+      kondisiSelect.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Gagal ambil data kondisi:", err);
+    console.error("Full error:", err.message); // ← Tambahkan log detail
+  }
+}
+
 //  pagination
     function renderPaginationControls(paginationData) {
       const { current_page, last_page, from, to, total } = paginationData;
@@ -893,6 +925,7 @@ loadRetensiData();
 loadOverdueNotifications();
 loadKlasifikasiData();
 loadIndeksData();
+loadKondisiData();
 loadArsip();
 </script>
 
