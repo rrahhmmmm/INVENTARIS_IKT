@@ -405,7 +405,7 @@ form.addEventListener("submit", async function(e) {
 async function editJenisPengembangan(id) {
     try {
         const res = await fetch(`${apiUrl}/${id}`, {
-            method: "GET",
+            method: "put",
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         const data = await res.json();
