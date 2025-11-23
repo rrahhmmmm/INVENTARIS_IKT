@@ -205,9 +205,12 @@
             <input id="NO_ISI_BERKAS" name="NO_ISI_BERKAS" class="w-full border rounded-lg px-3 py-2">
           </div>
 
+         
           <div>
             <label class="block text-sm font-medium mb-1">Jenis Naskah Dinas</label>
-            <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
+            <select id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
+              <option value="">-- Pilih Jenis Naskah Dinas --</option>
+            </select>
           </div>
 
           <div class="relative">
@@ -233,7 +236,9 @@
 
           <div>
             <label class="block text-sm font-medium mb-1">Tingkat Pengembangan</label>
-            <input id="TINGKAT_PENGEMBANGAN" name="TINGKAT_PENGEMBANGAN" class="w-full border rounded-lg px-3 py-2">
+            <select id="TINGKAT_PENGEMBANGAN" name="TINGKAT_PENGEMBANGAN" class="w-full border rounded-lg px-3 py-2">
+              <option value="">-- Pilih Tingkat Pengembangan</option>
+            </select>
           </div>
 
           <div>
@@ -332,6 +337,11 @@ const suggestionRetensi = document.getElementById("retensiSuggestions");
 
 // kondisi select
 const kondisiSelect = document.getElementById("KONDISI");
+
+// pengembangan select
+const pengembangan = document.getElementById("TINGKAT_PENGEMBANGAN")
+// 
+const jenisNaskahDinas = document.getElementById('JENIS_ARSIP')
 
 // Pagination elements
 const paginationControls = document.getElementById("paginationControls");
@@ -879,6 +889,63 @@ async function loadKondisiData() {
   }
 }
 
+async function loadTingkatpengembanganData() {
+  try {
+    const res = await fetchWithAuth("/api/m_tingkatpengembangan/all", {
+      method: "GET"  
+    });
+    if (!res.ok) {
+      console.error("Response status:", res.status);
+      throw new Error("Gagal memuat data tingkat pengembangan");
+    }
+    const pengembanganData = await res.json();
+    
+    // Populate select options untuk tingkat pengembangan
+    pengembangan.innerHTML = '<option value="">-- Pilih Tingkat Pengembangan</option>';
+    pengembanganData.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.NAMA_PENGEMBANGAN;
+      option.textContent = item.NAMA_PENGEMBANGAN;
+      pengembangan.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Gagal ambil data tingkat pengembangan:", err);
+    console.error("Full error:", err.message);
+  }
+}
+
+async function loadJenisNaskahDinasData() {
+  try {
+    const res = await fetchWithAuth("/api/m_jenisnaskah/all", {
+      method: "GET"
+    });
+    
+    if (!res.ok) {
+      console.error("Response status:", res.status);
+      throw new Error("Gagal memuat data jenis naskah dinas");
+    }
+    
+    const jenisNaskahData = await res.json();
+    
+    // Populate select options untuk jenis naskah dinas
+    jenisNaskahDinas.innerHTML = '<option value="">-- Pilih Jenis Naskah Dinas --</option>';
+    
+    jenisNaskahData.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.NAMA_JENIS;
+      option.textContent = item.NAMA_JENIS;
+      jenisNaskahDinas.appendChild(option);
+    });
+    
+    console.log("Data Jenis Naskah Dinas berhasil dimuat:", jenisNaskahData.length);
+  } catch (err) {
+    console.error("Gagal ambil data jenis naskah dinas:", err);
+    console.error("Full error:", err.message);
+  }
+}
+
+
+
 //  pagination
     function renderPaginationControls(paginationData) {
       const { current_page, last_page, from, to, total } = paginationData;
@@ -926,6 +993,8 @@ loadOverdueNotifications();
 loadKlasifikasiData();
 loadIndeksData();
 loadKondisiData();
+loadTingkatpengembanganData();
+loadJenisNaskahDinasData();
 loadArsip();
 </script>
 
