@@ -14,10 +14,11 @@
         .toast.show { transform: translateX(0); }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-   @include('components.A_navbar')
-   <script>
+@include('components.A_navbar')
+
+<script>
 (async () => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
@@ -40,38 +41,46 @@
 })();
 </script>
 
-<header class="bg-white shadow-lg h-20"></header>
+<header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>
 
 <!-- Main Content -->
-<main class="container mx-auto px-4 py-6">
+<main class="container mx-auto px-3 md:px-6 py-6 flex-1">
   <!-- Controls -->
-  <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <div class="flex flex-wrap items-center gap-2">
+  <div class="bg-white rounded-lg shadow-lg p-3 md:p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
+    <div class="flex flex-wrap items-center gap-3">
       <button id="addDivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
         <i class="fas fa-plus"></i> <span>Tambah Divisi</span>
       </button>
       <a href="{{ url('/api/divisi/export') }}" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
-        Export Excel <i class="fas fa-file-excel"></i>
+        <span>Export Excel</span> <i class="fas fa-file-excel"></i>
       </a>
     </div>
-    <input type="text" id="searchInput" placeholder="Cari divisi..." class="border border-gray-300 rounded-lg px-3 py-2 w-full md:w-64 text-sm md:text-base" />
+    <input type="text" id="searchInput" placeholder="Cari divisi..." class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+  </div>
+
+  <!-- Per Page Selection -->
+  <div class="pb-2">
+    <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
   </div>
 
   <!-- Divisi Table -->
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full min-w-[500px]">
-        <thead class="bg-blue-600 text-white text-sm md:text-base">
-          <tr>
-            <th class="px-4 md:px-6 py-2 md:py-3 text-left">NO</th>
-            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Nama Divisi</th>
-            <th class="px-4 md:px-6 py-2 md:py-3 text-left">Dibuat Oleh</th>
-            <th class="px-4 md:px-6 py-2 md:py-3 text-center">Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="divisiTableBody" class="divide-y divide-gray-200"></tbody>
-      </table>
-    </div>
+  <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+    <table class="w-full min-w-[600px]">
+      <thead class="bg-blue-600 text-white text-sm md:text-base">
+        <tr>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">NO</th>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">Nama Divisi</th>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">Dibuat Oleh</th>
+          <th class="px-4 md:px-6 py-3 text-center font-medium">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="divisiTableBody" class="divide-y divide-gray-200 text-sm md:text-base"></tbody>
+    </table>
   </div>
 
   <!-- Loading & Empty -->
@@ -85,59 +94,96 @@
   </div>
 </main>
 
+<!-- Pagination Controls -->
+<div id="paginationControls" class="mt-1 mb-4 hidden">
+  <div class="flex flex-col items-start mx-[100px]">
+    <!-- Pagination Buttons -->
+    <div class="flex items-center gap-2 mb-2">
+      <button id="prevPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-angle-left"></i> 
+      </button>
+
+      <div id="pageNumbers" class="flex gap-1"></div>
+
+      <button id="nextPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-angle-right"></i>
+      </button>
+    </div>
+
+    <!-- Info -->
+    <div class="text-sm text-gray-600">
+      Menampilkan <span id="showingFrom">0</span> Hingga 
+      <span id="showingTo">0</span> dari 
+      <span id="totalRecords">0</span> data
+    </div>
+  </div>
+</div>
+
 <!-- Modal Add/Edit -->
-<div id="divisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-  <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-screen overflow-y-auto">
+<div id="divisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 px-2">
+  <div class="bg-white rounded-lg p-5 md:p-8 w-full max-w-md md:max-w-4xl mx-auto max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between mb-4">
-      <h3 id="modalTitle" class="text-lg font-semibold">Tambah Divisi</h3>
+      <h3 id="modalTitle" class="text-lg md:text-xl font-semibold">Tambah Divisi</h3>
       <button id="closeModal" class="text-gray-400 hover:text-gray-600">
-        <i class="fas fa-times"></i>
+        <i class="fas fa-times text-xl"></i>
       </button>
     </div>
     
-    <form id="divisiForm">
+    <form id="divisiForm" class="bg-white rounded-xl space-y-5">
       <input type="hidden" id="divisiId">
       <input type="hidden" id="updateBy">
-      <div class="mb-4">
+      
+      <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
-        <input type="text" id="namaDivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="namaDivisi" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <div id="namaError" class="text-red-600 text-sm mt-1 hidden">
+          Nama divisi hanya boleh berisi huruf dan spasi.
+        </div>
       </div>
-      <div id="namaError" class="text-red-600 text-sm mt-1 hidden">
-        Nama divisi hanya boleh berisi huruf dan spasi.
-      </div>
-      <div class="mb-6">
+
+      <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
-        <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-100" readonly>
+        <input type="text" id="createBy" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100 text-gray-600">
       </div>
-      <div class="flex flex-col sm:flex-row gap-2">
-        <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
-        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
+
+      <div class="flex flex-col md:flex-row gap-3 mt-4">
+        <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg">
+          Batal
+        </button>
+        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
+          Simpan
+        </button>
       </div>
     </form>
 
     <!-- Import Excel -->
-    <div class="mt-8">
+    <div class="border-t mt-6 pt-4">
       <h4 class="text-md font-semibold mb-3">Tambah Data Dengan Excel</h4>
-      <a href="{{ url('/api/divisi/export-template') }}" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base mb-4">
-        Download Template <i class="fas fa-download"></i>
+      <a href="{{ url('/api/divisi/export-template') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
+        <span>Download Template</span> <i class="fas fa-download"></i>
       </a>
-      <form id="importForm" class="flex flex-col sm:flex-row gap-2">
-        <input type="file" name="file" id="importFile" class="border px-2 py-1 text-sm md:text-base">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded text-sm md:text-base">Import</button>
+      <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
+        <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          Import
+        </button>
       </form>
     </div>
   </div>
 </div>
 
 <!-- Toast -->
-<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
+<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 text-sm md:text-base">
   <div class="flex items-center space-x-2">
+    <i id="toastIcon" class="fas fa-check-circle"></i>
     <span id="toastMessage">Pesan berhasil</span>
   </div>
 </div>
 
 <script>
-const apiUrl = "/api/m_divisi"; 
+// ✅ PENTING: Ganti endpoint ke /paginated
+const apiUrl = "/api/m_divisi/paginated"; 
+const apiUrlCRUD = "/api/m_divisi"; // untuk create, update, delete tetap pakai endpoint lama
 const tableBody = document.getElementById("divisiTableBody");
 const loadingState = document.getElementById("loadingState");
 const emptyState = document.getElementById("emptyState");
@@ -150,18 +196,29 @@ const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 const token = localStorage.getItem('auth_token');
 
-// ==== Tambahkan variabel untuk validasi ====
+// Pagination elements
+const paginationControls = document.getElementById("paginationControls");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageNumbers = document.getElementById("pageNumbers");
+const showingFrom = document.getElementById("showingFrom");
+const showingTo = document.getElementById("showingTo");
+const totalRecords = document.getElementById("totalRecords");
+const perPageSelect = document.getElementById("perPageSelect");
+
+// Pagination state
+let currentPage = 1;
+let perPage = 10;
+let totalPages = 1;
+let lastSearchKeyword = "";
+
+// Validasi elements
 const namaInput = document.getElementById("namaDivisi");
-const namaError = document.createElement("div");
-namaError.id = "namaError";
-namaError.className = "text-red-600 text-sm mt-1 hidden";
-namaError.innerText = "Nama divisi hanya boleh berisi huruf dan spasi.";
-namaInput.insertAdjacentElement("afterend", namaError);
+const namaError = document.getElementById("namaError");
 
 // ==== Real-time Validasi Input ====
 namaInput.addEventListener("input", function () {
     const regex = /^[A-Za-z\s]*$/;
-
     if (!regex.test(this.value)) {
         namaError.classList.remove("hidden");
         this.classList.add("border-red-500");
@@ -171,16 +228,20 @@ namaInput.addEventListener("input", function () {
     }
 });
 
-// ==== Fetch Divisi ====
-async function loadDivisi(keyword = "") {
+// ==== Fetch Divisi with Pagination ====
+async function loadDivisi(keyword = "", page = 1) {
     loadingState.classList.remove("hidden");
     emptyState.classList.add("hidden");
     tableBody.innerHTML = "";
+    paginationControls.classList.add("hidden");
+    
+    lastSearchKeyword = keyword;
 
     try {
-        let url = apiUrl;
+        // ✅ Pakai endpoint paginated untuk fetch data
+        let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
         if (keyword && keyword.trim() !== "") {
-            url += `?search=${encodeURIComponent(keyword)}`;
+            url += `&search=${encodeURIComponent(keyword)}`;
         }
 
         const res = await fetch(url, {
@@ -190,10 +251,10 @@ async function loadDivisi(keyword = "") {
             }
         });
 
-        let json = await res.json();
-        const data = json.data ?? json;
-
+        const response = await res.json();
         loadingState.classList.add("hidden");
+
+        const data = response.data || [];
 
         if (!Array.isArray(data) || data.length === 0) {
             emptyState.classList.remove("hidden");
@@ -201,9 +262,11 @@ async function loadDivisi(keyword = "") {
         }
 
         data.forEach((divisi, i) => {
+            const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+            
             let row = `
-                <tr>
-                    <td class="px-6 py-4">${i+1}</td>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">${rowNumber}</td>
                     <td class="px-6 py-4">${divisi.NAMA_DIVISI}</td>
                     <td class="px-6 py-4">${divisi.CREATE_BY ?? '-'}</td>
                     <td class="px-6 py-4 text-center space-x-2">
@@ -214,6 +277,16 @@ async function loadDivisi(keyword = "") {
             `;
             tableBody.insertAdjacentHTML("beforeend", row);
         });
+
+        // Render pagination controls
+        renderPaginationControls({
+            current_page: response.current_page,
+            last_page: response.last_page,
+            from: response.from,
+            to: response.to,
+            total: response.total
+        });
+
     } catch(err) {
         console.error(err);
         loadingState.classList.add("hidden");
@@ -221,6 +294,60 @@ async function loadDivisi(keyword = "") {
     }
 }
 
+// ===== PAGINATION RENDER =====
+function renderPaginationControls(paginationData) {
+    const { current_page, last_page, from, to, total } = paginationData;
+    
+    currentPage = current_page;
+    totalPages = last_page;
+    
+    if (total === 0) {
+        paginationControls.classList.add("hidden");
+        return;
+    }
+    
+    paginationControls.classList.remove("hidden");
+    
+    showingFrom.textContent = from || 0;
+    showingTo.textContent = to || 0;
+    totalRecords.textContent = total;
+    
+    prevPageBtn.disabled = current_page === 1;
+    nextPageBtn.disabled = current_page === last_page;
+    
+    pageNumbers.innerHTML = "";
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+        pageBtn.addEventListener("click", () => loadDivisi(lastSearchKeyword, i));
+        pageNumbers.appendChild(pageBtn);
+    }
+}
+
+// ===== PAGINATION EVENT LISTENERS =====
+prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) loadDivisi(lastSearchKeyword, currentPage - 1);
+});
+
+nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) loadDivisi(lastSearchKeyword, currentPage + 1);
+});
+
+perPageSelect.addEventListener("change", (e) => {
+    perPage = parseInt(e.target.value);
+    loadDivisi(lastSearchKeyword, 1);
+});
+
+// ==== Load Username ====
 async function loadUsername(forField = 'createBy') {
     try {
         const res = await fetch('/api/me', {
@@ -231,11 +358,9 @@ async function loadUsername(forField = 'createBy') {
         });
 
         if (!res.ok) throw new Error('Gagal memuat user');
-
         const data = await res.json();
 
         if (forField === 'createBy') document.getElementById('createBy').value = data.username || '';
-
     } catch(err) {
         console.error(err);
     }
@@ -262,7 +387,6 @@ form.addEventListener("submit", async function(e) {
     const namaValue = namaInput.value.trim();
     const regex = /^[A-Za-z\s]+$/;
 
-    // VALIDASI STRICT HANYA HURUF
     if (!regex.test(namaValue)) {
         namaError.classList.remove("hidden");
         namaInput.classList.add("border-red-500");
@@ -271,7 +395,6 @@ form.addEventListener("submit", async function(e) {
     }
 
     const id = document.getElementById("divisiId").value;
-
     const payload = {
         NAMA_DIVISI: namaValue,
         CREATE_BY: document.getElementById("createBy").value
@@ -279,9 +402,9 @@ form.addEventListener("submit", async function(e) {
 
     try {
         let res;
-
+        // ✅ Pakai apiUrlCRUD untuk create/update
         if (id) {
-            res = await fetch(`${apiUrl}/${id}`, {
+            res = await fetch(`${apiUrlCRUD}/${id}`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',
@@ -290,7 +413,7 @@ form.addEventListener("submit", async function(e) {
                 body: JSON.stringify(payload)
             });
         } else {
-            res = await fetch(apiUrl, {
+            res = await fetch(apiUrlCRUD, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -303,7 +426,7 @@ form.addEventListener("submit", async function(e) {
         if (res.ok) {
             showToast("Data berhasil disimpan");
             modal.classList.remove("show");
-            loadDivisi();
+            loadDivisi(lastSearchKeyword, currentPage);
         } else {
             showToast("Gagal menyimpan data");
         }
@@ -316,7 +439,9 @@ form.addEventListener("submit", async function(e) {
 // ==== Edit Divisi ====
 async function editDivisi(id) {
     try {
-        const res = await fetch(`${apiUrl}/${id}`, {
+        // ✅ Pakai apiUrlCRUD untuk show
+        const res = await fetch(`${apiUrlCRUD}/${id}`, {
+            method: "put",
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const json = await res.json();
@@ -324,14 +449,11 @@ async function editDivisi(id) {
 
         modal.classList.add("show");
         document.getElementById("modalTitle").innerText = "Edit Divisi";
-
         document.getElementById("divisiId").value = data.ID_DIVISI;
         document.getElementById("namaDivisi").value = data.NAMA_DIVISI;
         document.getElementById("createBy").value = data.CREATE_BY ?? "";
-
         namaError.classList.add("hidden");
         namaInput.classList.remove("border-red-500");
-
     } catch(err) {
         console.error(err);
         showToast("Gagal memuat data edit");
@@ -341,15 +463,16 @@ async function editDivisi(id) {
 // ==== Delete Divisi ====
 async function deleteDivisi(id) {
     if (!confirm("Yakin ingin menghapus data ini?")) return;
-
-    const res = await fetch(`${apiUrl}/${id}`, {
+    
+    // ✅ Pakai apiUrlCRUD untuk delete
+    const res = await fetch(`${apiUrlCRUD}/${id}`, {
         method: "DELETE",
         headers: { 'Authorization': `Bearer ${token}` }
     });
-
+    
     if (res.ok) {
         showToast("Data berhasil dihapus");
-        loadDivisi();
+        loadDivisi(lastSearchKeyword, currentPage);
     } else {
         showToast("Gagal menghapus data");
     }
@@ -358,7 +481,6 @@ async function deleteDivisi(id) {
 // ==== Import Excel ====
 document.getElementById("importForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
     const fileInput = document.getElementById("importFile").files[0];
     if (!fileInput) { 
         showToast("Pilih file terlebih dahulu"); 
@@ -374,13 +496,11 @@ document.getElementById("importForm").addEventListener("submit", async function(
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
-
         const data = await res.json();
-
         if (res.ok) {
             showToast(data.message || "Import berhasil");
             modal.classList.remove("show");
-            loadDivisi();
+            loadDivisi(lastSearchKeyword, currentPage);
         } else {
             showToast(data.message || "Gagal import");
         }
@@ -397,13 +517,16 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
-// ==== Search ====
+// ==== Search with Debounce ====
 let searchTimeout = null;
 document.getElementById("searchInput").addEventListener("input", function() {
     clearTimeout(searchTimeout);
     let keyword = this.value;
-    searchTimeout = setTimeout(() => loadDivisi(keyword), 500);
+    searchTimeout = setTimeout(() => loadDivisi(keyword, 1), 500);
 });
 
 loadDivisi();
 </script>
+
+</body>
+</html>

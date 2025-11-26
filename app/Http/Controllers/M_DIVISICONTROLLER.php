@@ -25,6 +25,22 @@ class M_DIVISICONTROLLER extends Controller
         return response()->json($query->get());
     }
 
+    public function indexPaginated(Request $request)
+{
+    $perPage = $request->input('per_page', 10);
+    $query = M_divisi::query();
+    
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('NAMA_DIVISI', 'like', '%' . $search . '%')
+              ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+        });
+    }
+    
+    return response()->json($query->paginate($perPage));
+}
+
     public function store(Request $request)
     {
         $validated = $request->validate([
