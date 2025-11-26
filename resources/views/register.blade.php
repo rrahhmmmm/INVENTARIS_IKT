@@ -9,14 +9,10 @@
 <body class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat bg-fixed"
       style="background-image: url('{{ asset('images/bglogin.png') }}');">
 
-  <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 m-8 ">
+  <div class="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 m-8">
     <!-- Logo -->
-    <div class="flex justify-between items-center ">
-      <!-- <img src="/storage/logopel.png" alt="PELINDO Logo" class="h-10 items-start" /> -->
-      <!-- <img src="/storage/bumn.png" alt="BUMN Logo" class="h-24 items-end" /> -->
-    </div>
     <div class="flex justify-center items-center">
-      <img src="{{ asset('images/iktinven.png') }}" alt="IKT Logo" class="h-48 " />
+      <img src="{{ asset('images/iktinven.png') }}" alt="IKT Logo" class="h-48" />
     </div>
 
     <!-- Alert -->
@@ -27,28 +23,28 @@
       <!-- Username -->
       <div>
         <label class="block text-sm font-medium">Username</label>
-        <input type="text" name="username" required placeholder="NIPP/NRP"
-          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none ">
+        <input type="text" name="username" id="usernameField" required placeholder="NIPP/NRP"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
       </div>
 
       <!-- Password -->
       <div>
         <label class="block text-sm font-medium">Password</label>
-        <input type="password" name="password" required 
+        <input type="password" name="password" id="passwordField" required 
           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
       </div>
 
       <!-- Confirm Password -->
       <div>
         <label class="block text-sm font-medium">Re-type Password</label>
-        <input type="password" name="password_confirmation" required 
+        <input type="password" name="password_confirmation" id="confirmPasswordField" required 
           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
       </div>
 
       <!-- Email -->
       <div>
         <label class="block text-sm font-medium">Email</label>
-        <input type="email" name="email" required 
+        <input type="email" name="email" id="emailField" required 
           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
       </div>
 
@@ -60,34 +56,30 @@
       </div>
 
       <!-- Divisi -->
-<div class="mb-4">
-  <label class="block text-sm font-medium text-gray-700 mb-2">
-    Divisi
-  </label>
-  <div class="relative">
-    <select name="ID_DIVISI" id="divisiSelect" required
-      class="w-full appearance-none px-4 py-2 rounded-lg border border-gray-300 
-             bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 
-             focus:border-blue-500 outline-none transition duration-200 ease-in-out">
-      <option value="">Pilih Divisi</option>
-    </select>
-  </div>
-</div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
+        <div class="relative">
+          <select name="ID_DIVISI" id="divisiSelect" required
+            class="w-full appearance-none px-4 py-2 rounded-lg border border-gray-300 
+                   bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 
+                   focus:border-blue-500 outline-none transition duration-200 ease-in-out">
+            <option value="">Pilih Divisi</option>
+          </select>
+        </div>
+      </div>
 
-<!-- Subdivisi -->
-<div class="mb-4">
-  <label class="block text-sm font-medium text-gray-700 mb-2">
-    Subdivisi
-  </label>
-  <div class="relative">
-    <select name="ID_SUBDIVISI" id="subdivisiSelect" required
-      class="w-full appearance-none px-4 py-2 rounded-lg border border-gray-300 
-             bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 
-             focus:border-blue-500 outline-none transition duration-200 ease-in-out">
-      <option value="">Pilih Subdivisi</option>
-    </select>
-  </div>
-</div>
+      <!-- Subdivisi -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Subdivisi</label>
+        <div class="relative">
+          <select name="ID_SUBDIVISI" id="subdivisiSelect" required
+            class="w-full appearance-none px-4 py-2 rounded-lg border border-gray-300 
+                   bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 
+                   focus:border-blue-500 outline-none transition duration-200 ease-in-out">
+            <option value="">Pilih Subdivisi</option>
+          </select>
+        </div>
+      </div>
 
       <!-- Submit -->
       <button type="submit" 
@@ -103,67 +95,151 @@
     </p>
   </div>
 
-
   <script>
     const form = document.getElementById('registerForm');
     const alertBox = document.getElementById('alertBox');
     const divisiSelect = document.getElementById('divisiSelect');
     const subdivisiSelect = document.getElementById('subdivisiSelect');
+    
+    // Field elements
+    const usernameField = document.getElementById('usernameField');
+    const passwordField = document.getElementById('passwordField');
+    const confirmPasswordField = document.getElementById('confirmPasswordField');
+    const emailField = document.getElementById('emailField');
 
+    // Load Divisi
     async function loadDivisi() {
-try {
-  const res = await fetch("/api/m_divisi");
-  const data = await res.json();
+      try {
+        const res = await fetch("/api/m_divisi");
+        const data = await res.json();
 
-  data.forEach(div => {
-    const option = document.createElement("option");
-    option.value = div.ID_DIVISI;   // pastikan nama kolom pk di tabel M_DIVISI
-    option.textContent = div.NAMA_DIVISI;
-    divisiSelect.appendChild(option);
-  });
-} catch (err) {
-  console.error("Gagal load divisi:", err);
-}
-}
-loadDivisi();
+        data.forEach(div => {
+          const option = document.createElement("option");
+          option.value = div.ID_DIVISI;
+          option.textContent = div.NAMA_DIVISI;
+          divisiSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Gagal load divisi:", err);
+      }
+    }
+    loadDivisi();
 
-// Load subdivisi berdasarkan divisi
-async function loadSubdivisi(idDivisi) {
-  subdivisiSelect.innerHTML = '<option value="">Pilih Subdivisi</option>'; // reset
+    // Load Subdivisi berdasarkan divisi
+    async function loadSubdivisi(idDivisi) {
+      subdivisiSelect.innerHTML = '<option value="">Pilih Subdivisi</option>';
+      if (!idDivisi) return;
 
-  if (!idDivisi) return;
+      try {
+        const res = await fetch(`/api/m_subdivisi/divisi/${idDivisi}`);
+        const data = await res.json();
 
-  try {
-    const res = await fetch(`/api/m_subdivisi/divisi/${idDivisi}`);
-    const data = await res.json();
+        data.forEach(sub => {
+          const option = document.createElement("option");
+          option.value = sub.ID_SUBDIVISI;
+          option.textContent = sub.NAMA_SUBDIVISI;
+          subdivisiSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Gagal load subdivisi:", err);
+      }
+    }
 
-    data.forEach(sub => {
-      const option = document.createElement("option");
-      option.value = sub.ID_SUBDIVISI;  // pastikan sesuai PK tabel M_SUBDIVISI
-      option.textContent = sub.NAMA_SUBDIVISI;
-      subdivisiSelect.appendChild(option);
+    divisiSelect.addEventListener("change", (e) => {
+      loadSubdivisi(e.target.value);
     });
-  } catch (err) {
-    console.error("Gagal load subdivisi:", err);
-  }
-}
-// load ulang subdiv
-divisiSelect.addEventListener("change", (e) => {
-  loadSubdivisi(e.target.value);
-});
 
+    // Show Alert Function
+    function showAlert(message, classes) {
+      alertBox.textContent = message;
+      alertBox.className = `p-3 mb-4 rounded-lg text-sm ${classes}`;
+      alertBox.classList.remove("hidden");
+    }
+
+    function hideAlert() {
+      alertBox.classList.add("hidden");
+    }
+
+    // VALIDASI REAL-TIME USERNAME - Hanya Angka
+    usernameField.addEventListener("input", function () {
+      const value = usernameField.value;
+
+      if (value && !/^[0-9]*$/.test(value)) {
+        showAlert("Username hanya NRP/NIPP!", "bg-red-100 text-red-600");
+        usernameField.value = value.replace(/[^0-9]/g, "");
+      } else {
+        hideAlert();
+      }
+    });
+
+    // VALIDASI REAL-TIME PASSWORD - Minimal 6 karakter
+    passwordField.addEventListener("input", function () {
+      const value = passwordField.value;
+
+      if (value && value.length < 6) {
+        showAlert("Password minimal 6 karakter!", "bg-red-100 text-red-600");
+      } else {
+        hideAlert();
+        // Cek ulang confirm password jika sudah diisi
+        if (confirmPasswordField.value) {
+          validateConfirmPassword();
+        }
+      }
+    });
+
+    // VALIDASI REAL-TIME CONFIRM PASSWORD - Harus sama
+    function validateConfirmPassword() {
+      const password = passwordField.value;
+      const confirmPassword = confirmPasswordField.value;
+
+      if (confirmPassword && password !== confirmPassword) {
+        showAlert("Password tidak sama!", "bg-red-100 text-red-600");
+        return false;
+      } else {
+        hideAlert();
+        return true;
+      }
+    }
+
+    confirmPasswordField.addEventListener("input", validateConfirmPassword);
+
+    // Form Submit Handler
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // ambil data dari form
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
+      // Validasi final sebelum submit
+      const username = usernameField.value;
+      const password = passwordField.value;
+      const confirmPassword = confirmPasswordField.value;
+      const email = emailField.value;
 
-      // cek konfirmasi password
-      if (data.password !== data.password_confirmation) {
-        showAlert("Password dan konfirmasi tidak sama!", "bg-red-100 text-red-600");
+      // Cek username hanya angka
+      if (!/^[0-9]+$/.test(username)) {
+        showAlert("Username hanya NRP/NIPP!", "bg-red-100 text-red-600");
         return;
       }
+
+      // Cek password minimal 6 karakter
+      if (password.length < 6) {
+        showAlert("Password minimal 6 karakter!", "bg-red-100 text-red-600");
+        return;
+      }
+
+      // Cek password sama
+      if (password !== confirmPassword) {
+        showAlert("Password tidak sama!", "bg-red-100 text-red-600");
+        return;
+      }
+
+      // Cek email ada @
+      if (!email.includes("@")) {
+        showAlert("Email harus mengandung @!", "bg-red-100 text-red-600");
+        return;
+      }
+
+      // Ambil data dari form
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
 
       try {
         const response = await fetch("/api/register", {
@@ -185,11 +261,8 @@ divisiSelect.addEventListener("change", (e) => {
           showAlert(msg, "bg-red-100 text-red-600");
         } else {
           showAlert(result.message, "bg-green-100 text-green-600");
-
-          // simpan token ke localStorage
           localStorage.setItem("token", result.token);
-
-          // redirect ke login
+          
           setTimeout(() => {
             window.location.href = "/";
           }, 1500);
@@ -199,28 +272,7 @@ divisiSelect.addEventListener("change", (e) => {
         showAlert("Terjadi kesalahan pada server.", "bg-red-100 text-red-600");
       }
     });
-
-    function showAlert(message, classes) {
-      alertBox.textContent = message;
-      alertBox.className = `p-3 mb-4 rounded-lg text-sm ${classes}`;
-      alertBox.classList.remove("hidden");
-    }
-
-    const usernameInput = document.getElementById('username');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-
-      // validasi angka
-      if (!/^[0-9]+$/.test(data.username)) {
-        showAlert("Username hanya boleh diisi dengan NIPP / NRP!", "bg-red-100 text-red-600");
-        return;
-      }
-    });
   </script>
 
 </body>
-</html>
+</html
