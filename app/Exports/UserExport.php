@@ -30,8 +30,7 @@ class UserExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
             'Full Name',
             'Divisi',
             'Subdivisi',
-            'Nama Role',
-            'Created At'
+            'Nama Role'
         ];
     }
 
@@ -47,8 +46,7 @@ class UserExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
             $user->full_name,
             $user->divisi->NAMA_DIVISI ?? '-',     
             $user->subdivisi->NAMA_SUBDIVISI ?? '-',
-            $user->role->Nama_role ?? '-',
-            $user->created_at ? $user->created_at->format('Y-m-d H:i:s') : '-'
+            $user->role->Nama_role ?? '-'
         ];
     }
 }
