@@ -18,8 +18,6 @@
 @include('components.A_navbar')
 <header class="bg-white shadow-lg h-20"></header>
 
-<!-- Main Content -->
-
 <script>
 (async () => {
   const token = localStorage.getItem('auth_token');
@@ -42,6 +40,7 @@
   }
 })();
 </script>
+
 <main class="container mx-auto px-4 py-6">
   <!-- Controls -->
   <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
@@ -53,7 +52,16 @@
         <span>Export Excel</span> <i class="fas fa-file-excel"></i>
       </a>
     </div>
-    <!-- Tombol tambah user dihapus -->
+  </div>
+
+  <!-- Per Page Selection -->
+  <div class="pb-2">
+    <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
   </div>
 
   <!-- User Table -->
@@ -61,7 +69,7 @@
     <table class="w-full min-w-[800px]">
       <thead class="bg-blue-600 text-white">
         <tr>
-          <th class="px-6 py-3 text-left">ID</th>
+          <th class="px-6 py-3 text-left">NO</th>
           <th class="px-6 py-3 text-left">Username</th>
           <th class="px-6 py-3 text-left">Email</th>
           <th class="px-6 py-3 text-left">Nama Lengkap</th>
@@ -85,6 +93,31 @@
     <p class="text-gray-600">Tidak ada data user</p>
   </div>
 </main>
+
+<!-- Pagination Controls -->
+<div id="paginationControls" class="mt-1 mb-4 hidden">
+  <div class="flex flex-col items-start mx-[100px]">
+    <!-- Pagination Buttons -->
+    <div class="flex items-center gap-2 mb-2">
+      <button id="prevPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-angle-left"></i> 
+      </button>
+
+      <div id="pageNumbers" class="flex gap-1"></div>
+
+      <button id="nextPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-angle-right"></i>
+      </button>
+    </div>
+
+    <!-- Info -->
+    <div class="text-sm text-gray-600">
+      Menampilkan <span id="showingFrom">0</span> Hingga 
+      <span id="showingTo">0</span> dari 
+      <span id="totalRecords">0</span> data
+    </div>
+  </div>
+</div>
 
 <!-- Modal Add/Edit -->
 <div id="userModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
@@ -154,12 +187,28 @@ const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 const token = localStorage.getItem("auth_token");
 
+// Pagination elements
+const paginationControls = document.getElementById("paginationControls");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageNumbers = document.getElementById("pageNumbers");
+const showingFrom = document.getElementById("showingFrom");
+const showingTo = document.getElementById("showingTo");
+const totalRecords = document.getElementById("totalRecords");
+const perPageSelect = document.getElementById("perPageSelect");
+
+// Pagination state
+let currentPage = 1;
+let perPage = 10;
+let totalPages = 1;
+let lastSearchKeyword = "";
+
 // ==== SEARCH ====
 let searchTimeout = null;
 document.getElementById("searchInput").addEventListener("input", function() {
   clearTimeout(searchTimeout);
   let keyword = this.value;
-  searchTimeout = setTimeout(() => loadUsers(keyword), 500);
+  searchTimeout = setTimeout(() => loadUsers(keyword, 1), 500);
 });
 
 // Load Roles
@@ -208,23 +257,26 @@ async function loadSubdivisiSelect(divisiId, selected = "") {
   });
 }
 
-// Load Users
-async function loadUsers(keyword = "") {
+// Load Users with Pagination
+async function loadUsers(keyword = "", page = 1) {
   loadingState.classList.remove("hidden");
   emptyState.classList.add("hidden");
   tableBody.innerHTML = "";
+  paginationControls.classList.add("hidden");
+  
+  lastSearchKeyword = keyword;
 
   try {
-    let url = apiUrl;
+    let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
     if (keyword && keyword.trim() !== "") {
-      url += `?search=${encodeURIComponent(keyword)}`;
+      url += `&search=${encodeURIComponent(keyword)}`;
     }
 
     const res = await fetch(url, {
       headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
     });
-    const json = await res.json();
-    const data = json.data ?? json;
+    const response = await res.json();
+    const data = response.data || [];
 
     loadingState.classList.add("hidden");
 
@@ -233,9 +285,11 @@ async function loadUsers(keyword = "") {
       return;
     }
 
-    data.forEach(user => {
+    data.forEach((user, i) => {
+      const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+      
       let row = `<tr>
-        <td class="px-6 py-4">${user.ID_USER}</td>
+        <td class="px-6 py-4">${rowNumber}</td>
         <td class="px-6 py-4">${user.username}</td>
         <td class="px-6 py-4">${user.email}</td>
         <td class="px-6 py-4">${user.full_name ?? '-'}</td>
@@ -249,12 +303,79 @@ async function loadUsers(keyword = "") {
       </tr>`;
       tableBody.insertAdjacentHTML("beforeend", row);
     });
+
+    // Render pagination controls
+    renderPaginationControls({
+      current_page: response.current_page,
+      last_page: response.last_page,
+      from: response.from,
+      to: response.to,
+      total: response.total
+    });
+
   } catch (err) {
     console.error(err);
     loadingState.classList.add("hidden");
     emptyState.classList.remove("hidden");
   }
 }
+
+// ===== PAGINATION RENDER =====
+function renderPaginationControls(paginationData) {
+  const { current_page, last_page, from, to, total } = paginationData;
+  
+  currentPage = current_page;
+  totalPages = last_page;
+  
+  // Hide if no data
+  if (total === 0) {
+    paginationControls.classList.add("hidden");
+    return;
+  }
+  
+  paginationControls.classList.remove("hidden");
+  
+  // Update info text
+  showingFrom.textContent = from || 0;
+  showingTo.textContent = to || 0;
+  totalRecords.textContent = total;
+  
+  // Enable/disable navigation buttons
+  prevPageBtn.disabled = current_page === 1;
+  nextPageBtn.disabled = current_page === last_page;
+  
+  // Generate page number buttons
+  pageNumbers.innerHTML = "";
+  const maxVisiblePages = 5;
+  let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+  
+  if (endPage - startPage < maxVisiblePages - 1) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const pageBtn = document.createElement("button");
+    pageBtn.textContent = i;
+    pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+    pageBtn.addEventListener("click", () => loadUsers(lastSearchKeyword, i));
+    pageNumbers.appendChild(pageBtn);
+  }
+}
+
+// ===== PAGINATION EVENT LISTENERS =====
+prevPageBtn.addEventListener("click", () => {
+  if (currentPage > 1) loadUsers(lastSearchKeyword, currentPage - 1);
+});
+
+nextPageBtn.addEventListener("click", () => {
+  if (currentPage < totalPages) loadUsers(lastSearchKeyword, currentPage + 1);
+});
+
+perPageSelect.addEventListener("change", (e) => {
+  perPage = parseInt(e.target.value);
+  loadUsers(lastSearchKeyword, 1);
+});
 
 closeModal.addEventListener("click", () => modal.classList.remove("show"));
 cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
@@ -290,7 +411,7 @@ form.addEventListener("submit", async (e) => {
       if (res.ok) {
         showToast("Data berhasil diperbarui");
         modal.classList.remove("show");
-        loadUsers();
+        loadUsers(lastSearchKeyword, currentPage);
       } else {
         showToast("Gagal update data");
       }
@@ -336,7 +457,7 @@ async function deleteUser(ID_USER) {
   });
   if (res.ok) {
     showToast("Data berhasil dihapus");
-    loadUsers();
+    loadUsers(lastSearchKeyword, currentPage);
   } else {
     showToast("Gagal menghapus data");
   }

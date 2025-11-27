@@ -12,19 +12,21 @@ class M_USERCONTROLLER extends Controller
 {
     public function index(Request $request)
     {
+        $perPage = $request->get('per_page', 10);
         $query = M_user::with(['role', 'divisi', 'subdivisi']);
-
+        
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('username', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('full_name', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('full_name', 'like', "%{$search}%");
             });
         }
-
-
-        $users = $query->get();
+        
+        // Gunakan paginate() bukan get()
+        $users = $query->paginate($perPage);
+        
         return response()->json($users);
     }
 
