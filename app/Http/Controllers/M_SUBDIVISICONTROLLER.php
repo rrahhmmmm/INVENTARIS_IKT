@@ -27,6 +27,22 @@ class M_SUBDIVISICONTROLLER extends Controller
         return response()->json($subdivisi);
     }
 
+
+
+    public function paginated(Request $request)
+    {
+        $perPage = $request->get('per_page', 10);
+        $search = $request->get('search', '');
+        
+        $query = M_subdivisi::with('divisi');
+        
+        if (!empty($search)) {
+            $query->where('NAMA_SUBDIVISI', 'like', "%{$search}%");
+        }
+        
+        return $query->paginate($perPage);
+    }
+
     public function getByDivisi($id_divisi)
     {
         $subdivisi = M_subdivisi::where('ID_DIVISI', $id_divisi)->get();

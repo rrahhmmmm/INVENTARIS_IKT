@@ -17,18 +17,17 @@ class SubdivisiImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
-        // cari divisi berdasarkan nama
-        $divisi = M_divisi::where('NAMA_DIVISI', $row['nama_divisi'] ?? '')->first();
+
+        $divisi = M_divisi::where('NAMA_DIVISI', $row['divisi'] ?? '')->first();
 
         if (!$divisi) {
-            // kalau divisi tidak ditemukan, bisa dilewati atau error
             return null;
         }
 
         return new M_subdivisi([
             'ID_DIVISI'      => $divisi->ID_DIVISI,
             'NAMA_SUBDIVISI' => $row['nama_subdivisi'] ?? null,
-            'CREATE_BY'      => Auth::check() ? Auth::user()->username : 'system'
+            'CREATE_BY'      => auth()->user()->username ?? 'system'
         ]);
     }
 }

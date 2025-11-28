@@ -14,7 +14,7 @@
         .toast.show { transform: translateX(0); }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
 @include('components.A_navbar')
 
@@ -40,359 +40,526 @@
   }
 })();
 </script>
-  <header class="bg-white shadow-lg h-20"></header>
 
-  <!-- Main Content -->
-  <main class="container mx-auto px-4 py-6">
-    <!-- Controls -->
-    <div class="bg-white rounded-lg shadow-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="addSubdivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
-          <i class="fas fa-plus"></i>
-          <span>Tambah Subdivisi</span>
-        </button>
+<header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>
 
-        <a href="{{ url('/api/subdivisi/export') }}" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
-          Export Excel <i class="fas fa-file-excel"></i>
-        </a>
-      </div>
+<!-- Main Content -->
+<main class="container mx-auto px-3 md:px-6 py-6 flex-1">
+  <!-- Controls -->
+  <div class="bg-white rounded-lg shadow-lg p-3 md:p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="addSubdivisiBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <i class="fas fa-plus"></i> <span>Tambah Subdivisi</span>
+      </button>
+      <a href="{{ url('/api/subdivisi/export') }}" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <span>Export Excel</span> <i class="fas fa-file-excel"></i>
+      </a>
+    </div>
+    <input type="text" id="searchInput" placeholder="Cari subdivisi..." class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+  </div>
 
-      <input id="searchInput" type="text" placeholder="Cari..." class="border border-gray-300 rounded-lg px-3 py-2 w-full md:w-64 text-sm md:text-base"/>
+  <!-- Per Page Selection -->
+  <div class="pb-2">
+    <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+  </div>
+
+  <!-- Subdivisi Table -->
+  <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+    <table class="w-full min-w-[600px]">
+      <thead class="bg-blue-600 text-white text-sm md:text-base">
+        <tr>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">NO</th>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">Nama Subdivisi</th>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">Divisi</th>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">Dibuat Oleh</th>
+          <th class="px-4 md:px-6 py-3 text-center font-medium">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="subdivisiTableBody" class="divide-y divide-gray-200 text-sm md:text-base"></tbody>
+    </table>
+  </div>
+
+  <!-- Loading & Empty -->
+  <div id="loadingState" class="text-center py-8">
+    <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
+    <p class="mt-2 text-gray-600">Memuat data...</p>
+  </div>
+  <div id="emptyState" class="text-center py-8 hidden">
+    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+    <p class="text-gray-600">Tidak ada data subdivisi</p>
+  </div>
+</main>
+
+<!-- Pagination Controls -->
+<div id="paginationControls" class="mt-1 mb-4 hidden">
+  <div class="flex flex-col items-start mx-[100px]">
+    <!-- Pagination Buttons -->
+    <div class="flex items-center gap-2 mb-2">
+      <button id="prevPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-angle-left"></i> 
+      </button>
+
+      <div id="pageNumbers" class="flex gap-1"></div>
+
+      <button id="nextPageBtn" class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fas fa-angle-right"></i>
+      </button>
     </div>
 
-    <!-- Subdivisi Table -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[600px]">
-          <thead class="bg-blue-600 text-white text-sm md:text-base">
-            <tr>
-              <th class="px-4 md:px-6 py-2 md:py-3 text-left">NO</th>
-              <th class="px-4 md:px-6 py-2 md:py-3 text-left">Nama Subdivisi</th>
-              <th class="px-4 md:px-6 py-2 md:py-3 text-left">Divisi</th>
-              <th class="px-4 md:px-6 py-2 md:py-3 text-left">Dibuat Oleh</th>
-              <th class="px-4 md:px-6 py-2 md:py-3 text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="subdivisiTableBody" class="divide-y divide-gray-200"></tbody>
-        </table>
-      </div>
+    <!-- Info -->
+    <div class="text-sm text-gray-600">
+      Menampilkan <span id="showingFrom">0</span> Hingga 
+      <span id="showingTo">0</span> dari 
+      <span id="totalRecords">0</span> data
     </div>
+  </div>
+</div>
 
-    <!-- Loading & Empty State -->
-    <div id="loadingState" class="text-center py-8">
-      <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
-      <p class="mt-2 text-gray-600">Memuat data...</p>
+<!-- Modal Add/Edit -->
+<div id="subdivisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 px-2">
+  <div class="bg-white rounded-lg p-5 md:p-8 w-full max-w-md md:max-w-4xl mx-auto max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="modalTitle" class="text-lg md:text-xl font-semibold">Tambah Subdivisi</h3>
+      <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times text-xl"></i>
+      </button>
     </div>
-    <div id="emptyState" class="text-center py-8 hidden">
-      <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-      <p class="text-gray-600">Tidak ada data subdivisi</p>
-    </div>
-  </main>
-
-  <!-- Modal Add/Edit -->
-  <div id="subdivisiModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-screen overflow-y-auto">
-      <div class="flex items-center justify-between mb-4">
-        <h3 id="modalTitle" class="text-lg font-semibold">Tambah Subdivisi</h3>
-        <button id="closeModal" class="text-gray-400 hover:text-gray-600">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+    
+    <form id="subdivisiForm" class="bg-white rounded-xl space-y-5">
+      <input type="hidden" id="subdivisiId">
       
-      <form id="subdivisiForm">
-        <input type="hidden" id="subdivisiId">
-
-        <!-- Dropdown Divisi -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
-          <select id="divisiSelect" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-            <option value="">-- Pilih Divisi --</option>
-          </select>
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Nama Subdivisi</label>
-          <input type="text" id="namaSubdivisi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
-          <input type="text" id="createBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 focus:ring-2 focus:ring-blue-500" readonly>
-        </div>
-
-        <div id="formErrors" class="text-red-600 text-sm mb-3 hidden"></div>
-
-        <div class="flex flex-col sm:flex-row gap-2">
-          <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
-          <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">Simpan</button>
-        </div>
-      </form>
-
-      <!-- Import Excel -->
-      <div class="mt-8">
-        <h4 class="text-md font-semibold mb-3">Tambah Data Dengan Excel</h4>
-        <a href="{{url('/api/subdivisi/export-template')}}" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base mb-4">
-          Download Template <i class="fas fa-download"></i>
-        </a>
-        <form id="importForm" class="flex flex-col sm:flex-row gap-2">
-          <input type="file" name="file" id="importFile" class="border px-2 py-1 text-sm md:text-base">
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded text-sm md:text-base">Import</button>
-        </form>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
+        <select id="divisiSelect" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <option value="">-- Pilih Divisi --</option>
+        </select>
       </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Subdivisi</label>
+        <input type="text" id="namaSubdivisi" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <div id="namaError" class="text-red-600 text-sm mt-1 hidden">
+          Nama subdivisi hanya boleh berisi huruf dan spasi.
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Dibuat Oleh</label>
+        <input type="text" id="createBy" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100 text-gray-600">
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-3 mt-4">
+        <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg">
+          Batal
+        </button>
+        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
+          Simpan
+        </button>
+      </div>
+    </form>
+
+    <!-- Import Excel -->
+    <div class="border-t mt-6 pt-4">
+      <h4 class="text-md font-semibold mb-3">Tambah Data Dengan Excel</h4>
+      <a href="{{ url('/api/subdivisi/export-template') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
+        <span>Download Template</span> <i class="fas fa-download"></i>
+      </a>
+      <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
+        <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          Import
+        </button>
+      </form>
     </div>
   </div>
+</div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-xs sm:max-w-sm">
-    <div class="flex items-center space-x-2">
-      <i id="toastIcon" class="fas fa-check-circle"></i>
-      <span id="toastMessage">Pesan berhasil</span>
-    </div>
+<!-- Toast -->
+<div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 text-sm md:text-base">
+  <div class="flex items-center space-x-2">
+    <i id="toastIcon" class="fas fa-check-circle"></i>
+    <span id="toastMessage">Pesan berhasil</span>
   </div>
+</div>
 
-    <script>
-        const apiUrl = "/api/m_subdivisi"; 
-        const apiDivisiUrl = "/api/m_divisi"; 
-        const token = localStorage.getItem('auth_token'); // ambil token login
+<script>
+// ✅ PENTING: Ganti endpoint ke /paginated
+const apiUrl = "/api/m_subdivisi/paginated"; 
+const apiUrlCRUD = "/api/m_subdivisi"; // untuk create, update, delete tetap pakai endpoint lama
+const apiDivisiUrl = "/api/m_divisi"; 
+const tableBody = document.getElementById("subdivisiTableBody");
+const loadingState = document.getElementById("loadingState");
+const emptyState = document.getElementById("emptyState");
+const modal = document.getElementById("subdivisiModal");
+const addBtn = document.getElementById("addSubdivisiBtn");
+const closeModal = document.getElementById("closeModal");
+const cancelBtn = document.getElementById("cancelBtn");
+const form = document.getElementById("subdivisiForm");
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
+const token = localStorage.getItem('auth_token');
 
-        const tableBody = document.getElementById("subdivisiTableBody");
-        const loadingState = document.getElementById("loadingState");
-        const emptyState = document.getElementById("emptyState");
+// Pagination elements
+const paginationControls = document.getElementById("paginationControls");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageNumbers = document.getElementById("pageNumbers");
+const showingFrom = document.getElementById("showingFrom");
+const showingTo = document.getElementById("showingTo");
+const totalRecords = document.getElementById("totalRecords");
+const perPageSelect = document.getElementById("perPageSelect");
 
-        const modal = document.getElementById("subdivisiModal");
-        const addBtn = document.getElementById("addSubdivisiBtn");
-        const closeModal = document.getElementById("closeModal");
-        const cancelBtn = document.getElementById("cancelBtn");
-        const form = document.getElementById("subdivisiForm");
+// Pagination state
+let currentPage = 1;
+let perPage = 10;
+let totalPages = 1;
+let lastSearchKeyword = "";
 
-        const toast = document.getElementById("toast");
-        const toastMessage = document.getElementById("toastMessage");
-        const formErrors = document.getElementById('formErrors');
+// Validasi elements
+const namaInput = document.getElementById("namaSubdivisi");
+const namaError = document.getElementById("namaError");
 
-        // ==== Ambil username dari /me ====
-        async function loadUsername() {
-            try {
-                const res = await fetch('/api/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                if (!res.ok) throw new Error("Gagal memuat user");
-                const data = await res.json();
-                document.getElementById("createBy").value = data.username || "";
-            } catch (err) {
-                console.error(err);
+// ==== Real-time Validasi Input ====
+namaInput.addEventListener("input", function () {
+    const regex = /^[A-Za-z\s]*$/;
+    if (!regex.test(this.value)) {
+        namaError.classList.remove("hidden");
+        this.classList.add("border-red-500");
+    } else {
+        namaError.classList.add("hidden");
+        this.classList.remove("border-red-500");
+    }
+});
+
+// ==== Load Divisi Options ====
+async function loadDivisiOptions() {
+    try {
+        const res = await fetch(apiDivisiUrl, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             }
-        }
-
-        // ==== Load Divisi ke Select ====
-        async function loadDivisiOptions() {
-            try {
-                let res = await fetch(apiDivisiUrl);
-                if (!res.ok) throw new Error('Gagal memuat data divisi');
-                let data = await res.json();
-                const select = document.getElementById("divisiSelect");
-                select.innerHTML = `<option value="">-- Pilih Divisi --</option>`;
-                data.forEach(div => {
-                    select.insertAdjacentHTML("beforeend", `<option value="${div.ID_DIVISI}">${div.NAMA_DIVISI}</option>`);
-                });
-            } catch (err) {
-                console.error(err);
-                showToast('Gagal memuat daftar divisi');
-            }
-        }
-
-        // ==== Fetch Subdivisi ====
-        async function loadSubdivisi(keyword = "") {
-            loadingState.classList.remove("hidden");
-            emptyState.classList.add("hidden");
-            tableBody.innerHTML = "";
-
-            try {
-                let url = apiUrl;
-                if (keyword && keyword.trim() !== "") {
-                    url += `?search=${encodeURIComponent(keyword)}`;
-                }
-                let res = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                let data = await res.json();
-
-                loadingState.classList.add("hidden");
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    emptyState.classList.remove("hidden");
-                    return;
-                }
-
-                data.forEach((sub, i) => {
-                    const divisiName = sub.divisi && sub.divisi.NAMA_DIVISI ? sub.divisi.NAMA_DIVISI : (sub.ID_DIVISI ?? '-');
-                    let row = `
-                        <tr>
-                            <td class="px-6 py-4">${i+1}</td>
-                            <td class="px-6 py-4">${sub.NAMA_SUBDIVISI}</td>
-                            <td class="px-6 py-4">${divisiName}</td>
-                            <td class="px-6 py-4">${sub.CREATE_BY ?? '-'}</td>
-                            <td class="px-6 py-4 text-center space-x-2">
-                                <button onclick="editSubdivisi(${sub.ID_SUBDIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteSubdivisi(${sub.ID_SUBDIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML("beforeend", row);
-                });
-            } catch (err) {
-                console.error("Error:", err);
-                loadingState.classList.add("hidden");
-                showToast('Terjadi kesalahan saat memuat data');
-            }
-        }
-
-        // ==== Add/Edit ====
-        addBtn.addEventListener("click", async () => {
-            modal.classList.add("show");
-            document.getElementById("modalTitle").innerText = "Tambah Subdivisi";
-            form.reset();
-            formErrors.classList.add('hidden');
-            document.getElementById("subdivisiId").value = "";
-            await loadDivisiOptions();
-            await loadUsername(); // isi otomatis createBy
         });
-        closeModal.addEventListener("click", () => modal.classList.remove("show"));
-        cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
+        if (!res.ok) throw new Error('Gagal memuat data divisi');
+        const data = await res.json();
+        const select = document.getElementById("divisiSelect");
+        select.innerHTML = `<option value="">-- Pilih Divisi --</option>`;
+        data.forEach(div => {
+            select.insertAdjacentHTML("beforeend", `<option value="${div.ID_DIVISI}">${div.NAMA_DIVISI}</option>`);
+        });
+    } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat daftar divisi');
+    }
+}
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            formErrors.classList.add('hidden');
-            let id = document.getElementById("subdivisiId").value;
-            let payload = {
-                ID_DIVISI: document.getElementById("divisiSelect").value,
-                NAMA_SUBDIVISI: document.getElementById("namaSubdivisi").value,
-                CREATE_BY: document.getElementById("createBy").value,
-            };
+// ==== Fetch Subdivisi with Pagination ====
+async function loadSubdivisi(keyword = "", page = 1) {
+    loadingState.classList.remove("hidden");
+    emptyState.classList.add("hidden");
+    tableBody.innerHTML = "";
+    paginationControls.classList.add("hidden");
+    
+    lastSearchKeyword = keyword;
 
-            try {
-                let res;
-                if (id) {
-                    res = await fetch(`${apiUrl}/${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-                        body: JSON.stringify(payload),
-                    });
-                } else {
-                    res = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-                        body: JSON.stringify(payload),
-                    });
-                }
+    try {
+        // ✅ Pakai endpoint paginated untuk fetch data
+        let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
+        if (keyword && keyword.trim() !== "") {
+            url += `&search=${encodeURIComponent(keyword)}`;
+        }
 
-                if (res.ok) {
-                    showToast("Data berhasil disimpan");
-                    modal.classList.remove("show");
-                    loadSubdivisi();
-                } else if (res.status === 422) {
-                    const err = await res.json();
-                    const messages = [];
-                    Object.values(err.errors || {}).forEach(arr => messages.push(...arr));
-                    formErrors.innerText = messages.join('\n');
-                    formErrors.classList.remove('hidden');
-                } else {
-                    showToast('Gagal menyimpan data');
-                }
-            } catch (err) {
-                console.error(err);
-                showToast('Terjadi kesalahan');
+        const res = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             }
         });
 
-        // ==== Edit Function ====
-        async function editSubdivisi(id) {
-            try {
-                let res = await fetch(`${apiUrl}/${id}`, { headers: { 'Authorization': `Bearer ${token}` }});
-                if (!res.ok) { showToast('Gagal memuat data subdivisi'); return; }
-                let data = await res.json();
+        const response = await res.json();
+        loadingState.classList.add("hidden");
 
-                modal.classList.add("show");
-                document.getElementById("modalTitle").innerText = "Edit Subdivisi";
-                document.getElementById("subdivisiId").value = data.ID_SUBDIVISI;
-                document.getElementById("namaSubdivisi").value = data.NAMA_SUBDIVISI;
-                document.getElementById("createBy").value = data.CREATE_BY ?? "";
-                await loadDivisiOptions();
-                document.getElementById("divisiSelect").value = data.ID_DIVISI;
-            } catch (err) {
-                console.error(err);
-                showToast('Terjadi kesalahan saat memuat data edit');
-            }
+        const data = response.data || [];
+
+        if (!Array.isArray(data) || data.length === 0) {
+            emptyState.classList.remove("hidden");
+            return;
         }
 
-        // ==== Delete Function ====
-        async function deleteSubdivisi(id) {
-            if (!confirm("Yakin ingin menghapus data ini?")) return;
+        data.forEach((sub, i) => {
+            const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+            const divisiName = sub.divisi && sub.divisi.NAMA_DIVISI ? sub.divisi.NAMA_DIVISI : (sub.ID_DIVISI ?? '-');
+            
+            let row = `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">${rowNumber}</td>
+                    <td class="px-6 py-4">${sub.NAMA_SUBDIVISI}</td>
+                    <td class="px-6 py-4">${divisiName}</td>
+                    <td class="px-6 py-4">${sub.CREATE_BY ?? '-'}</td>
+                    <td class="px-6 py-4 text-center space-x-2">
+                        <button onclick="editSubdivisi(${sub.ID_SUBDIVISI})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteSubdivisi(${sub.ID_SUBDIVISI})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML("beforeend", row);
+        });
 
-            let res = await fetch(`${apiUrl}/${id}`, { method: "DELETE", headers: { 'Authorization': `Bearer ${token}` } });
-            if (res.ok) {
-                showToast("Data berhasil dihapus");
-                loadSubdivisi();
-            } else {
-                showToast('Gagal menghapus data');
-            }
-        }
+        // Render pagination controls
+        renderPaginationControls({
+            current_page: response.current_page,
+            last_page: response.last_page,
+            from: response.from,
+            to: response.to,
+            total: response.total
+        });
 
-        // ==== Toast ====
-        function showToast(msg) {
-            toastMessage.innerText = msg;
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 3000);
-        }
+    } catch(err) {
+        console.error(err);
+        loadingState.classList.add("hidden");
+        showToast("Gagal memuat data");
+    }
+}
 
-        // ==== Import Excel ====
-        document.getElementById("importForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
+// ===== PAGINATION RENDER =====
+function renderPaginationControls(paginationData) {
+    const { current_page, last_page, from, to, total } = paginationData;
+    
+    currentPage = current_page;
+    totalPages = last_page;
+    
+    if (total === 0) {
+        paginationControls.classList.add("hidden");
+        return;
+    }
+    
+    paginationControls.classList.remove("hidden");
+    
+    showingFrom.textContent = from || 0;
+    showingTo.textContent = to || 0;
+    totalRecords.textContent = total;
+    
+    prevPageBtn.disabled = current_page === 1;
+    nextPageBtn.disabled = current_page === last_page;
+    
+    pageNumbers.innerHTML = "";
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, current_page - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(last_page, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        pageBtn.className = `px-3 py-1 border rounded ${i === current_page ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`;
+        pageBtn.addEventListener("click", () => loadSubdivisi(lastSearchKeyword, i));
+        pageNumbers.appendChild(pageBtn);
+    }
+}
 
-            let fileInput = document.getElementById("importFile");
-            if (!fileInput.files.length) {
-                alert("Pilih file terlebih dahulu!");
-                return;
-            }
+// ===== PAGINATION EVENT LISTENERS =====
+prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) loadSubdivisi(lastSearchKeyword, currentPage - 1);
+});
 
-            let formData = new FormData();
-            formData.append("file", fileInput.files[0]);
+nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) loadSubdivisi(lastSearchKeyword, currentPage + 1);
+});
 
-            try {
-                let res = await fetch("/api/subdivisi/import", {
-                    method: "POST",
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
+perPageSelect.addEventListener("change", (e) => {
+    perPage = parseInt(e.target.value);
+    loadSubdivisi(lastSearchKeyword, 1);
+});
 
-                if (res.ok) {
-                    showToast("Data subdivisi berhasil diimport");
-                    loadSubdivisi();
-                } else {
-                    showToast("Gagal import data");
-                }
-            } catch (err) {
-                console.error(err);
-                showToast("Terjadi kesalahan");
+// ==== Load Username ====
+async function loadUsername() {
+    try {
+        const res = await fetch('/api/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             }
         });
 
-        // ==== Search ====
-        let searchTimeout = null;
-        document.getElementById("searchInput").addEventListener("input", function() {
-            clearTimeout(searchTimeout);
-            let keyword = this.value;
-            searchTimeout = setTimeout(() => loadSubdivisi(keyword), 500);
-        });
+        if (!res.ok) throw new Error('Gagal memuat user');
+        const data = await res.json();
+        document.getElementById('createBy').value = data.username || '';
+    } catch(err) {
+        console.error(err);
+    }
+}
 
-        // Load pertama kali
-        loadSubdivisi();
-    </script>
+// ==== Add Modal ====
+addBtn.addEventListener("click", async () => {
+    modal.classList.add("show");
+    document.getElementById("modalTitle").innerText = "Tambah Subdivisi";
+    form.reset();
+    document.getElementById("subdivisiId").value = "";
+    namaError.classList.add("hidden");
+    namaInput.classList.remove("border-red-500");
+    await loadDivisiOptions();
+    await loadUsername();
+});
+
+closeModal.addEventListener("click", () => modal.classList.remove("show"));
+cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
+
+// ==== Submit Form ====
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const namaValue = namaInput.value.trim();
+    const regex = /^[A-Za-z\s]+$/;
+
+    if (!regex.test(namaValue)) {
+        namaError.classList.remove("hidden");
+        namaInput.classList.add("border-red-500");
+        showToast("Nama subdivisi hanya boleh huruf");
+        return;
+    }
+
+    const id = document.getElementById("subdivisiId").value;
+    const payload = {
+        ID_DIVISI: document.getElementById("divisiSelect").value,
+        NAMA_SUBDIVISI: namaValue,
+        CREATE_BY: document.getElementById("createBy").value
+    };
+
+    try {
+        let res;
+        // ✅ Pakai apiUrlCRUD untuk create/update
+        if (id) {
+            res = await fetch(`${apiUrlCRUD}/${id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            res = await fetch(apiUrlCRUD, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (res.ok) {
+            showToast("Data berhasil disimpan");
+            modal.classList.remove("show");
+            loadSubdivisi(lastSearchKeyword, currentPage);
+        } else {
+            showToast("Gagal menyimpan data");
+        }
+    } catch(err) {
+        console.error(err);
+        showToast("Terjadi kesalahan");
+    }
+});
+
+// ==== Edit Subdivisi ====
+async function editSubdivisi(id) {
+    try {
+        // ✅ Pakai apiUrlCRUD untuk show
+        const res = await fetch(`${apiUrlCRUD}/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        modal.classList.add("show");
+        document.getElementById("modalTitle").innerText = "Edit Subdivisi";
+        document.getElementById("subdivisiId").value = data.ID_SUBDIVISI;
+        document.getElementById("namaSubdivisi").value = data.NAMA_SUBDIVISI;
+        document.getElementById("createBy").value = data.CREATE_BY ?? "";
+        await loadDivisiOptions();
+        document.getElementById("divisiSelect").value = data.ID_DIVISI;
+        namaError.classList.add("hidden");
+        namaInput.classList.remove("border-red-500");
+    } catch(err) {
+        console.error(err);
+        showToast("Gagal memuat data edit");
+    }
+}
+
+// ==== Delete Subdivisi ====
+async function deleteSubdivisi(id) {
+    if (!confirm("Yakin ingin menghapus data ini?")) return;
+    
+    // ✅ Pakai apiUrlCRUD untuk delete
+    const res = await fetch(`${apiUrlCRUD}/${id}`, {
+        method: "DELETE",
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (res.ok) {
+        showToast("Data berhasil dihapus");
+        loadSubdivisi(lastSearchKeyword, currentPage);
+    } else {
+        showToast("Gagal menghapus data");
+    }
+}
+
+// ==== Import Excel ====
+document.getElementById("importForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById("importFile").files[0];
+    if (!fileInput) { 
+        showToast("Pilih file terlebih dahulu"); 
+        return; 
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput);
+
+    try {
+        const res = await fetch("/api/subdivisi/import", {
+            method: "POST",
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(data.message || "Import berhasil");
+            modal.classList.remove("show");
+            loadSubdivisi(lastSearchKeyword, currentPage);
+        } else {
+            showToast(data.message || "Gagal import");
+        }
+    } catch(err) {
+        console.error(err);
+        showToast("Error saat import");
+    }
+});
+
+// ==== Toast ====
+function showToast(msg) {
+    toastMessage.innerText = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+}
+
+// ==== Search with Debounce ====
+let searchTimeout = null;
+document.getElementById("searchInput").addEventListener("input", function() {
+    clearTimeout(searchTimeout);
+    let keyword = this.value;
+    searchTimeout = setTimeout(() => loadSubdivisi(keyword, 1), 500);
+});
+
+loadSubdivisi();
+</script>
+
 </body>
 </html>
