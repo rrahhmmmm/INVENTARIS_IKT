@@ -1154,6 +1154,12 @@ indeksInput.addEventListener("input", () => {
     li.innerHTML = `<strong>${item.NO_INDEKS}</strong> - ${item.NAMA_INDEKS}`;
     li.addEventListener("click", () => {
       indeksInput.value = item.NO_INDEKS;
+
+      const judulBerkasInput = document.getElementById("JUDUL_BERKAS");
+      if (judulBerkasInput) {
+        judulBerkasInput.value = item.NAMA_INDEKS;
+      }
+      
       suggestionBox.classList.add("hidden");
     });
     suggestionBox.appendChild(li);
