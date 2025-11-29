@@ -23,12 +23,13 @@
       background-color: #fef2f2 !important;
     }
 
-    .annoying-badge {
+    /* Animasi untuk BUTTON notification */
+    .annoying-btn {
         animation: 
             annoying-blink 0.4s infinite,
             annoying-pulse 0.6s infinite,
             annoying-rotate 1s infinite,
-            annoying-color 0.8s infinite;
+            annoying-glow 0.8s infinite;
     }
 
     /* Kelap-kelip opacity */
@@ -76,38 +77,33 @@
         }
     }
 
-    /* Ganti warna rainbow + glow */
-    @keyframes annoying-color {
+    /* Glow rainbow untuk icon */
+    @keyframes annoying-glow {
         0% {
-            background-color: #ef4444; /* red */
-            color: white;
-            box-shadow: 0 0 30px #ef4444;
+            filter: drop-shadow(0 0 10px #ef4444);
         }
         20% {
-            background-color: #f59e0b; /* orange */
-            color: white;
-            box-shadow: 0 0 30px #f59e0b;
+            filter: drop-shadow(0 0 10px #f59e0b);
         }
         40% {
-            background-color: #10b981; /* green */
-            color: white;
-            box-shadow: 0 0 30px #10b981;
+            filter: drop-shadow(0 0 10px #10b981);
         }
         60% {
-            background-color: #3b82f6; /* blue */
-            color: white;
-            box-shadow: 0 0 30px #3b82f6;
+            filter: drop-shadow(0 0 10px #3b82f6);
         }
         80% {
-            background-color: #8b5cf6; /* purple */
-            color: white;
-            box-shadow: 0 0 30px #8b5cf6;
+            filter: drop-shadow(0 0 10px #8b5cf6);
         }
         100% {
-            background-color: #ef4444; /* red */
-            color: white;
-            box-shadow: 0 0 30px #ef4444;
+            filter: drop-shadow(0 0 10px #ef4444);
         }
+    }
+
+    /* Badge count - styling normal tanpa animasi berlebihan */
+    .notification-badge {
+        background-color: #ef4444;
+        color: white;
+        font-weight: bold;
     }
 
     /* BONUS: Shake button (opsional) */
@@ -121,8 +117,96 @@
         animation: shake 0.5s;
     }
 
-    
-  </style>
+    /* notifikasi + inaktif arsip */
+    /* Status badges */
+    .status-aktif {
+        background-color: #10b981;
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .status-inaktif {
+        background-color: #ef4444;
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .row-inaktif {
+        background-color: #fee !important;
+        opacity: 0.7;
+    }
+
+    /* Confirmation modal */
+    .confirm-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 60;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .confirm-modal.show {
+        display: flex;
+    }
+
+    .confirm-modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .confirm-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #dc2626;
+        text-align: center;
+        margin-bottom: 16px;
+        animation: pulse 0.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+        from { transform: scale(1); }
+        to { transform: scale(1.05); }
+    }
+
+    .notification-item {
+        position: relative;
+    }
+
+    .notification-delete-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+
+    .notification-delete-btn:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+    }
+</style>
 </head>
 <body class="bg-gray-100">
 
@@ -145,15 +229,17 @@
     <div class="relative space-x-2">
       <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
       
+    <!-- Button dengan animasi kelap-kelip -->
       <button id="notificationBtn" class="relative">
-        <i class="fas fa-bell text-xl text-gray-700"></i>
-        <span id="notificationCount" class="absolute -top-1 -right-2 text-white text-xs rounded-full px-1 min-w-5 h-5 flex items-center justify-center annoying-badge">0</span>
+          <i class="fas fa-bell text-xl text-gray-700"></i>
+          <!-- Badge count tanpa animasi berlebihan -->
+          <span id="notificationCount" class="notification-badge absolute -top-1 -right-2 text-xs rounded-full px-1 min-w-5 h-5 flex items-center justify-center">0</span>
       </button>
 
       <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
-        <ul id="notificationList"></ul>
+          <ul id="notificationList"></ul>
       </div>
-    </div>
+    </div>  
   </div>
 
   <!-- Per Page Select -->
@@ -231,6 +317,22 @@
   </div>
 
 </main>
+
+<!-- modal notif -->
+<div id="confirmModal" class="confirm-modal">
+  <div class="confirm-modal-content">
+    <h2 class="confirm-title">⚠️ SERAHKAN KE SDM SEKARANG!!! ⚠️</h2>
+    <p class="text-center text-gray-700 mb-6">Arsip ini sudah melewati masa retensi. Apakah Anda siap menyerahkannya ke SDM?</p>
+    <div class="flex gap-3 justify-center">
+      <button id="btnNantiMager" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold transition">
+        😴 LAIN KALI 😴 
+      </button>
+      <button id="btnSiapLaksanakan" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+        ✅ SIAP LAKSANAKAN OTW SDM BANG ✅
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Arsip -->
 <div id="arsipModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
@@ -392,7 +494,10 @@
       <!-- Keterangan -->
       <div>
         <label class="block text-sm font-medium mb-1">Keterangan</label>
-        <input id="KETERANGAN" name="KETERANGAN" class="w-full border rounded-lg px-3 py-2">
+        <select id="KETERANGAN" name="KETERANGAN" class="w-full border rounded-lg px-3 py-2">
+          <option value="AKTIF">AKTIF</option>
+          <option value="INAKTIF">INAKTIF</option>
+        </select>
         <div class="error-message" id="error_KETERANGAN"></div>
       </div>
 
@@ -473,6 +578,12 @@ const showingFrom = document.getElementById("showingFrom");
 const showingTo = document.getElementById("showingTo");
 const totalRecords = document.getElementById("totalRecords");
 const perPageSelect = document.getElementById("perPageSelect");
+
+// // Confirmation modal elements
+const confirmModal = document.getElementById("confirmModal");
+const btnNantiMager = document.getElementById("btnNantiMager");
+const btnSiapLaksanakan = document.getElementById("btnSiapLaksanakan");
+let currentDeleteArsipId = null;
 
 // Pagination state
 let currentPage = 1;
@@ -628,42 +739,53 @@ async function loadArsip(keyword = "", page = 1) {
     }
     
     data.forEach((arsip, i) => {
-      const fileLink = arsip.FILE
-        ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">DOWNLOAD</a>`
-        : "-";
-      
-      const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
-      
-      const row = `
-        <tr class="hover:bg-gray-50">
-        <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
-          <td class="px-4 py-3 w-[120px]">${arsip.NO_INDEKS ?? "-"}</td>
-          <td class="px-4 py-3 w-[60px]">${arsip.NO_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.JUDUL_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3 w-[60px]">${arsip.NO_ISI_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3 w-[60px]">${arsip.JENIS_ARSIP ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.NO_NOTA_DINAS ?? "-"}</td>
-          <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_BERKAS ?? "-"}</td>
-          <td class="px-4 py-3 w-[200px]">${arsip.PERIHAL ?? "-"}</td>
-          <td class="px-4 py-3 w-[160px]">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
-          <td class="px-4 py-3 w-[120px]">${arsip.KONDISI ?? "-"}</td>
-          <td class="px-4 py-3 w-[600px]">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.TIPE_RETENSI ?? "-"}</td>
-          <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
-          <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN ?? "-"}</td>
-          <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
-          <td class="px-4 py-3 w-[120px]">${fileLink}</td>
-          <td class="px-4 py-3 text-center space-x-2">
-            <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-            <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-          </td>
-        </tr>`;
-      tableBody.insertAdjacentHTML("beforeend", row);
-    });
+  const fileLink = arsip.FILE
+    ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">DOWNLOAD</a>`
+    : "-";
+  
+  const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+  
+  // Status badge untuk keterangan
+  let statusBadge = '-';
+  if (arsip.KETERANGAN === 'AKTIF') {
+    statusBadge = '<span class="status-aktif">AKTIF</span>';
+  } else if (arsip.KETERANGAN === 'INAKTIF') {
+    statusBadge = '<span class="status-inaktif">INAKTIF</span>';
+  }
+  
+  // Add class untuk row inaktif
+  const rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
+  
+  const row = `
+    <tr class="hover:bg-gray-50 ${rowClass}">
+    <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
+      <td class="px-4 py-3 w-[120px]">${arsip.NO_INDEKS ?? "-"}</td>
+      <td class="px-4 py-3 w-[60px]">${arsip.NO_BERKAS ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.JUDUL_BERKAS ?? "-"}</td>
+      <td class="px-4 py-3 w-[60px]">${arsip.NO_ISI_BERKAS ?? "-"}</td>
+      <td class="px-4 py-3 w-[60px]">${arsip.JENIS_ARSIP ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.NO_NOTA_DINAS ?? "-"}</td>
+      <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_BERKAS ?? "-"}</td>
+      <td class="px-4 py-3 w-[200px]">${arsip.PERIHAL ?? "-"}</td>
+      <td class="px-4 py-3 w-[160px]">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
+      <td class="px-4 py-3 w-[120px]">${arsip.KONDISI ?? "-"}</td>
+      <td class="px-4 py-3 w-[600px]">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${arsip.TIPE_RETENSI ?? "-"}</td>
+      <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
+      <td class="px-4 py-3 w-[150px]">${statusBadge}</td>
+      <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
+      <td class="px-4 py-3 w-[120px]">${fileLink}</td>
+      <td class="px-4 py-3 text-center space-x-2">
+        <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+        <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  tableBody.insertAdjacentHTML("beforeend", row);
+});
     
     renderPaginationControls({
       current_page: response.current_page,
@@ -775,6 +897,11 @@ form.addEventListener("submit", async (e) => {
   const id = document.getElementById("arsipId").value;
   const method = "POST";
   const url = id ? `${apiUrl}/${id}?_method=PUT` : apiUrl;
+
+  // Set default KETERANGAN to AKTIF if creating new record
+  if (!id && !document.getElementById("KETERANGAN").value) {
+    document.getElementById("KETERANGAN").value = "AKTIF";
+  }
 
   const formData = new FormData(form);
   formData.append("ID_DIVISI", document.getElementById("ID_DIVISI").value);
@@ -889,6 +1016,9 @@ async function loadOverdueNotifications() {
     const data = response.data || response;
 
     notificationCount.textContent = data.length;
+    
+    // TAMBAHKAN BARIS INI
+    updateNotificationAnimation(data.length);
 
     notificationList.innerHTML = '';
     if (data.length === 0) {
@@ -898,14 +1028,19 @@ async function loadOverdueNotifications() {
 
     data.forEach(arsip => {
       const li = document.createElement('li');
-      li.className = "p-3 hover:bg-red-700 cursor-pointer border-b border-red-500 last:border-b-0";
+      li.className = "notification-item p-3 hover:bg-red-700 cursor-pointer border-b border-red-500 last:border-b-0";
       li.innerHTML = `
-        <div class="font-semibold text-white text-sm">${arsip.JUDUL_BERKAS ?? '-'}</div>
+        <button class="notification-delete-btn" onclick="handleNotificationDelete(event, ${arsip.ID_ARSIP})">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="font-semibold text-white text-sm pr-8">${arsip.JUDUL_BERKAS ?? '-'}</div>
         <div class="text-xs text-red-100">Retensi: ${arsip.TANGGAL_RETENSI ?? '-'}</div>
       `;
-      li.addEventListener('click', () => {
-        editArsip(arsip.ID_ARSIP);
-        notificationDropdown.classList.add('hidden');
+      li.addEventListener('click', (e) => {
+        if (!e.target.closest('.notification-delete-btn')) {
+          handleNotificationDelete(e, arsip.ID_ARSIP);
+          notificationDropdown.classList.add('hidden');
+        }
       });
       notificationList.appendChild(li);
     });
@@ -914,6 +1049,16 @@ async function loadOverdueNotifications() {
     showToast("Gagal memuat notifikasi", false);
   }
 }
+
+function updateNotificationAnimation(count) {
+  const btn = document.getElementById('notificationBtn');
+  if (count >= 1) {
+    btn.classList.add('annoying-btn');
+  } else {
+    btn.classList.remove('annoying-btn');
+  }
+}
+
 
 notificationBtn.addEventListener("click", () => {
   notificationDropdown.classList.toggle("hidden");
@@ -1138,6 +1283,96 @@ async function loadJenisNaskahDinasData() {
   }
 }
 
+  // === HANDLE NOTIFICATION DELETE ===
+function handleNotificationDelete(event, arsipId) {
+  event.stopPropagation();
+  currentDeleteArsipId = arsipId;
+  confirmModal.classList.add("show");
+  }
+
+  // === MODAL CONFIRMATION HANDLERS ===
+  btnNantiMager.addEventListener("click", () => {
+    confirmModal.classList.remove("show");
+    currentDeleteArsipId = null;
+    showToast("Oke, santai aja dulu 😴", true);
+  });
+
+  
+
+  btnSiapLaksanakan.addEventListener("click", async () => {
+  if (!currentDeleteArsipId) return;
+  
+  try {
+    // 1. AMBIL DATA LENGKAP ARSIP DULU
+    const getRes = await fetchWithAuth(`${apiUrl}/${currentDeleteArsipId}`);
+    const getResponse = await getRes.json();
+    
+    if (!getResponse.success) {
+      throw new Error(getResponse.message || "Gagal mengambil data arsip");
+    }
+    
+    const arsipData = getResponse.data;
+    
+    // 2. BUAT FORMDATA DENGAN SEMUA FIELD YANG ADA
+    const formData = new FormData();
+    
+    // Append semua field yang ada di arsipData
+    formData.append("ID_DIVISI", arsipData.ID_DIVISI || "");
+    formData.append("ID_SUBDIVISI", arsipData.ID_SUBDIVISI || "");
+    formData.append("NO_INDEKS", arsipData.NO_INDEKS || "");
+    formData.append("NO_BERKAS", arsipData.NO_BERKAS || "");
+    formData.append("JUDUL_BERKAS", arsipData.JUDUL_BERKAS || "");
+    formData.append("NO_ISI_BERKAS", arsipData.NO_ISI_BERKAS || "");
+    formData.append("JENIS_ARSIP", arsipData.JENIS_ARSIP || "");
+    formData.append("KODE_KLASIFIKASI", arsipData.KODE_KLASIFIKASI || "");
+    formData.append("NO_NOTA_DINAS", arsipData.NO_NOTA_DINAS || "");
+    formData.append("TANGGAL_BERKAS", arsipData.TANGGAL_BERKAS || "");
+    formData.append("PERIHAL", arsipData.PERIHAL || "");
+    formData.append("TINGKAT_PENGEMBANGAN", arsipData.TINGKAT_PENGEMBANGAN || "");
+    formData.append("KONDISI", arsipData.KONDISI || "");
+    formData.append("RAK_BAK_URUTAN", arsipData.RAK_BAK_URUTAN || "");
+    formData.append("KETERANGAN_SIMPAN", arsipData.KETERANGAN_SIMPAN || "");
+    formData.append("TIPE_RETENSI", arsipData.TIPE_RETENSI || "");
+    formData.append("TANGGAL_RETENSI", arsipData.TANGGAL_RETENSI || "");
+    formData.append("CREATE_BY", arsipData.CREATE_BY || "");
+    
+    // 3. UPDATE FIELD KETERANGAN JADI INAKTIF (INI YANG BERUBAH)
+    formData.append("KETERANGAN", "INAKTIF");
+    
+    // 4. METHOD PUT
+    formData.append("_method", "PUT");
+    
+    // 5. KIRIM REQUEST UPDATE
+    const res = await fetchWithAuth(`${apiUrl}/${currentDeleteArsipId}`, {
+      method: "POST",
+      body: formData
+    });
+    
+    const data = await res.json();
+    
+    if (!res.ok) throw new Error(data.message || "Gagal update status");
+    
+    confirmModal.classList.remove("show");
+    showToast("OKE DITUNGGU HATI HATI DI JALAN!✅ ", true);
+    
+    // Reload data
+    await loadOverdueNotifications();
+    loadArsip(lastSearchKeyword, currentPage);
+    
+    currentDeleteArsipId = null;
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || "Gagal update status arsip", false);
+  }
+});
+
+  // Close modal when clicking outside
+  confirmModal.addEventListener("click", (e) => {
+    if (e.target === confirmModal) {
+      confirmModal.classList.remove("show");
+      currentDeleteArsipId = null;
+    }
+  });
 // === INITIALIZATION ===
 (async () => {
   // Check authentication
@@ -1161,14 +1396,17 @@ async function loadJenisNaskahDinasData() {
     return;
   }
   setInterval(() => {
-    const btn = document.getElementById('notificationBtn');
-    if (btn) {
-        btn.classList.add('shake-btn');
-        setTimeout(() => {
-            btn.classList.remove('shake-btn');
-        }, 500);
-    }
-  }, 3000);
+  const btn = document.getElementById('notificationBtn');
+  const count = parseInt(document.getElementById('notificationCount').textContent);
+  
+  // Hanya shake jika ada notifikasi
+  if (btn && count >= 1) {
+    btn.classList.add('shake-btn');
+    setTimeout(() => {
+      btn.classList.remove('shake-btn');
+    }, 500);
+  }
+  }, 2000);
 
   // Load all data
   await Promise.all([
