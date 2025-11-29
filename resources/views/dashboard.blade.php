@@ -235,6 +235,81 @@
         opacity: 0.8;
         transform: scale(1.05);
     }
+
+    /* Nota Dinas Validation Styles */
+    .nota-dinas-wrapper {
+        position: relative;
+    }
+
+    .validation-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        font-size: 0.875rem;
+        padding: 6px 10px;
+        border-radius: 6px;
+    }
+
+    .validation-status.pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .validation-status.checking {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .validation-status.valid {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .validation-status.invalid {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .check-nota-btn {
+        transition: all 0.2s;
+    }
+
+    .check-nota-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .check-nota-btn.checking {
+        animation: pulse-btn 1s infinite;
+    }
+
+    @keyframes pulse-btn {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    /* Input valid/invalid styling */
+    .input-valid {
+        border-color: #10b981 !important;
+        background-color: #f0fdf4 !important;
+    }
+
+    .input-invalid {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+    }
+
+    /* Save button disabled state */
+    #saveBtn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #9ca3af !important;
+    }
+
+    #saveBtn:disabled:hover {
+        background-color: #9ca3af !important;
+    }
 </style>
 </head>
 <body class="bg-gray-100">
@@ -457,11 +532,22 @@
         <ul id="klasifikasiSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
       </div>
 
-      <!-- No Nota Dinas -->
-      <div>
-        <label class="block text-sm font-medium mb-1">No Nota Dinas</label>
-        <input id="NO_NOTA_DINAS" name="NO_NOTA_DINAS" class="w-full border rounded-lg px-3 py-2">
+      <!-- No Nota Dinas - UPDATED WITH CHECK BUTTON -->
+      <div class="nota-dinas-wrapper">
+        <label class="block text-sm font-medium mb-1">No Nota Dinas <span class="text-red-500">*</span></label>
+        <div class="flex gap-2">
+          <input id="NO_NOTA_DINAS" name="NO_NOTA_DINAS" class="flex-1 border rounded-lg px-3 py-2" placeholder="Masukkan nomor nota dinas" required>
+          <button type="button" id="checkNotaBtn" class="check-nota-btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
+            <i class="fas fa-search"></i>
+            <span>Cek</span>
+          </button>
+        </div>
         <div class="error-message" id="error_NO_NOTA_DINAS"></div>
+        <!-- Validation Status -->
+        <div id="notaValidationStatus" class="validation-status pending mt-2">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>Belum dicek - Klik tombol "Cek" untuk memvalidasi</span>
+        </div>
       </div>
 
       <!-- Tanggal Berkas -->
@@ -557,7 +643,7 @@
       <!-- Action Buttons -->
       <div class="col-span-2 flex justify-end gap-2 mt-4">
         <button type="button" id="cancelBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg">Batal</button>
-        <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">
+        <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg" disabled>
           <i class="fas fa-save mr-1"></i> Simpan
         </button>
       </div>
@@ -624,6 +710,18 @@ const btnNantiMager = document.getElementById("btnNantiMager");
 const btnSiapLaksanakan = document.getElementById("btnSiapLaksanakan");
 let currentDeleteArsipId = null;
 
+// Nota Dinas validation elements
+const notaDinasInput = document.getElementById("NO_NOTA_DINAS");
+const checkNotaBtn = document.getElementById("checkNotaBtn");
+const notaValidationStatus = document.getElementById("notaValidationStatus");
+const saveBtn = document.getElementById("saveBtn");
+
+// Nota Dinas validation state
+let isNotaDinasValid = false;
+let lastCheckedNotaDinas = "";
+let isEditMode = false;
+let originalNotaDinas = "";
+
 // Pagination state
 let currentPage = 1;
 let perPage = 10;
@@ -636,6 +734,140 @@ let filterInaktif = true;
 let indeksData = [];
 let klasifikasiData = [];
 let retensiData = [];
+
+// === NOTA DINAS VALIDATION FUNCTIONS ===
+function updateNotaValidationUI(status, message) {
+  const statusDiv = notaValidationStatus;
+  const input = notaDinasInput;
+  
+  // Remove all status classes
+  statusDiv.classList.remove("pending", "checking", "valid", "invalid");
+  input.classList.remove("input-valid", "input-invalid");
+  
+  // Add appropriate class and update content
+  statusDiv.classList.add(status);
+  
+  let icon = "";
+  switch(status) {
+    case "pending":
+      icon = '<i class="fas fa-exclamation-triangle"></i>';
+      break;
+    case "checking":
+      icon = '<i class="fas fa-spinner fa-spin"></i>';
+      break;
+    case "valid":
+      icon = '<i class="fas fa-check-circle"></i>';
+      input.classList.add("input-valid");
+      break;
+    case "invalid":
+      icon = '<i class="fas fa-times-circle"></i>';
+      input.classList.add("input-invalid");
+      break;
+  }
+  
+  statusDiv.innerHTML = `${icon}<span>${message}</span>`;
+}
+
+function updateSaveButtonState() {
+  const notaValue = notaDinasInput.value.trim();
+  
+  // If in edit mode and nota dinas hasn't changed, allow save
+  if (isEditMode && notaValue === originalNotaDinas) {
+    saveBtn.disabled = false;
+    return;
+  }
+  
+  // Otherwise, require validation
+  if (isNotaDinasValid && notaValue === lastCheckedNotaDinas) {
+    saveBtn.disabled = false;
+  } else {
+    saveBtn.disabled = true;
+  }
+}
+
+async function checkNotaDinas() {
+  const notaValue = notaDinasInput.value.trim();
+  
+  if (!notaValue) {
+    updateNotaValidationUI("pending", "Masukkan nomor nota dinas terlebih dahulu");
+    isNotaDinasValid = false;
+    updateSaveButtonState();
+    return;
+  }
+  
+  // If in edit mode and value hasn't changed, mark as valid
+  if (isEditMode && notaValue === originalNotaDinas) {
+    updateNotaValidationUI("valid", "Nomor nota dinas tidak berubah");
+    isNotaDinasValid = true;
+    lastCheckedNotaDinas = notaValue;
+    updateSaveButtonState();
+    return;
+  }
+  
+  // Show checking state
+  updateNotaValidationUI("checking", "Sedang memeriksa...");
+  checkNotaBtn.disabled = true;
+  checkNotaBtn.classList.add("checking");
+  
+  try {
+    const res = await fetchWithAuth(`${apiUrl}/check-nota-dinas?no_nota_dinas=${encodeURIComponent(notaValue)}`);
+    const data = await res.json();
+    
+    if (data.exists) {
+      // Nota dinas already exists
+      updateNotaValidationUI("invalid", `Nomor nota dinas "${notaValue}" sudah digunakan!`);
+      isNotaDinasValid = false;
+      showToast("Nomor nota dinas sudah ada dalam sistem!", false);
+    } else {
+      // Nota dinas is available
+      updateNotaValidationUI("valid", `Nomor nota dinas "${notaValue}" tersedia`);
+      isNotaDinasValid = true;
+      lastCheckedNotaDinas = notaValue;
+      showToast("Nomor nota dinas tersedia!", true);
+    }
+  } catch (err) {
+    console.error("Error checking nota dinas:", err);
+    updateNotaValidationUI("invalid", "Gagal memeriksa - coba lagi");
+    isNotaDinasValid = false;
+    showToast("Gagal memeriksa nomor nota dinas", false);
+  } finally {
+    checkNotaBtn.disabled = false;
+    checkNotaBtn.classList.remove("checking");
+    updateSaveButtonState();
+  }
+}
+
+// Reset validation when input changes
+notaDinasInput.addEventListener("input", () => {
+  const currentValue = notaDinasInput.value.trim();
+  
+  // If in edit mode and value is same as original, mark as valid
+  if (isEditMode && currentValue === originalNotaDinas) {
+    updateNotaValidationUI("valid", "Nomor nota dinas tidak berubah");
+    isNotaDinasValid = true;
+    lastCheckedNotaDinas = currentValue;
+  } else if (currentValue !== lastCheckedNotaDinas) {
+    // Value changed, need to re-validate
+    updateNotaValidationUI("pending", "Nomor berubah - Klik tombol \"Cek\" untuk memvalidasi ulang");
+    isNotaDinasValid = false;
+  }
+  
+  updateSaveButtonState();
+});
+
+// Check button click handler
+checkNotaBtn.addEventListener("click", checkNotaDinas);
+
+// Reset validation state function
+function resetNotaValidation() {
+  isNotaDinasValid = false;
+  lastCheckedNotaDinas = "";
+  isEditMode = false;
+  originalNotaDinas = "";
+  updateNotaValidationUI("pending", "Belum dicek - Klik tombol \"Cek\" untuk memvalidasi");
+  notaDinasInput.classList.remove("input-valid", "input-invalid");
+  updateSaveButtonState();
+}
 
 // === ERROR HANDLING FUNCTIONS ===
 function clearErrors() {
@@ -915,6 +1147,7 @@ addBtn.addEventListener("click", async () => {
   modal.classList.add("show");
   form.reset();
   clearErrors();
+  resetNotaValidation();
   document.getElementById("arsipId").value = "";
   document.getElementById("modalTitle").innerText = "Tambah Arsip";
   await loadUserInfo();
@@ -923,17 +1156,31 @@ addBtn.addEventListener("click", async () => {
 closeModal.addEventListener("click", () => {
   modal.classList.remove("show");
   clearErrors();
+  resetNotaValidation();
 });
 
 cancelBtn.addEventListener("click", () => {
   modal.classList.remove("show");
   clearErrors();
+  resetNotaValidation();
 });
 
 // === FORM SUBMIT ===
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearErrors();
+
+  // Double check nota dinas validation
+  const notaValue = notaDinasInput.value.trim();
+  
+  // If not in edit mode or nota changed, require validation
+  if (!isEditMode || notaValue !== originalNotaDinas) {
+    if (!isNotaDinasValid || notaValue !== lastCheckedNotaDinas) {
+      showToast("Silakan cek nomor nota dinas terlebih dahulu!", false);
+      notaDinasInput.focus();
+      return;
+    }
+  }
 
   // Lokasi simpan
   const rak = document.getElementById("RAK_INPUT").value.trim();
@@ -956,7 +1203,6 @@ form.addEventListener("submit", async (e) => {
   formData.append("CREATE_BY", document.getElementById("CREATE_BY").value);
 
   // Disable submit button
-  const saveBtn = document.getElementById("saveBtn");
   const originalText = saveBtn.innerHTML;
   saveBtn.disabled = true;
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...';
@@ -978,6 +1224,7 @@ form.addEventListener("submit", async (e) => {
 
     modal.classList.remove("show");
     showToast(data.message || "Data berhasil disimpan");
+    resetNotaValidation();
     loadArsip(lastSearchKeyword, currentPage);
     
   } catch (err) {
@@ -986,6 +1233,7 @@ form.addEventListener("submit", async (e) => {
   } finally {
     saveBtn.disabled = false;
     saveBtn.innerHTML = originalText;
+    updateSaveButtonState();
   }
 });
 
@@ -1007,6 +1255,10 @@ async function editArsip(id) {
     document.getElementById("modalTitle").innerText = "Edit Arsip";
     document.getElementById("arsipId").value = data.ID_ARSIP ?? "";
 
+    // Set edit mode for nota dinas validation
+    isEditMode = true;
+    originalNotaDinas = data.NO_NOTA_DINAS ?? "";
+    
     // Load user info first
     await loadUserInfo();
 
@@ -1030,6 +1282,15 @@ async function editArsip(id) {
       document.getElementById("BAK_INPUT").value = parts[1] || "";
       document.getElementById("ARSIP_INPUT").value = parts[2] || "";
     }
+
+    // Set nota dinas as valid (since it's existing data)
+    if (originalNotaDinas) {
+      isNotaDinasValid = true;
+      lastCheckedNotaDinas = originalNotaDinas;
+      updateNotaValidationUI("valid", "Data existing - sudah tervalidasi");
+    }
+    
+    updateSaveButtonState();
 
   } catch (err) {
     console.error(err);
@@ -1511,3 +1772,4 @@ filterInaktifBtn.addEventListener("click", () => {
 </script>
 
 </body>
+</html>
