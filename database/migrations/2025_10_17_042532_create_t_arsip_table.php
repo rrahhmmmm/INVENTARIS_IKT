@@ -17,11 +17,11 @@ return new class extends Migration
             $table->integer('ID_SUBDIVISI');
             $table->string('NO_INDEKS', 100);
             $table->integer('NO_BERKAS');
-            $table->string('JUDUL_BERKAS',100);
+            $table->string('JUDUL_BERKAS',256);
             $table->integer('NO_ISI_BERKAS');
             $table->string('JENIS_ARSIP',100);
             $table->string('KODE_KLASIFIKASI',100);
-            $table->string('NO_NOTA_DINAS',100);
+            $table->string('NO_NOTA_DINAS', 100)->unique();
             $table->date('TANGGAL_BERKAS');
             $table->string('PERIHAL',100);
             $table->string('TINGKAT_PENGEMBANGAN', 50);
