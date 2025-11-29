@@ -206,6 +206,35 @@
         background: rgba(255, 255, 255, 0.4);
         transform: scale(1.1);
     }
+
+        /* Filter Button Styles */
+    .filter-btn {
+        border: 2px solid transparent;
+        background-color: #e5e7eb;
+        color: #6b7280;
+    }
+
+    .filter-btn.active {
+        border-color: currentColor;
+        font-weight: 600;
+    }
+
+    #filterAktifBtn.active {
+        background-color: #d1fae5;
+        color: #059669;
+        border-color: #059669;
+    }
+
+    #filterInaktifBtn.active {
+        background-color: #fee2e2;
+        color: #dc2626;
+        border-color: #dc2626;
+    }
+
+    .filter-btn:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
 </style>
 </head>
 <body class="bg-gray-100">
@@ -224,6 +253,16 @@
       <button id="addArsipBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
         <i class="fas fa-plus"></i> <span>Tambah Arsip</span>
       </button>
+      <div class="flex items-center gap-2 ml-4">
+          <button id="filterAktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
+            <i class="fas fa-check-circle"></i>
+            <span>AKTIF</span>
+          </button>
+          <button id="filterInaktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
+            <i class="fas fa-times-circle"></i>
+            <span>INAKTIF</span>
+          </button>
+        </div>
     </div>
     
     <div class="relative space-x-2">
@@ -590,6 +629,8 @@ let currentPage = 1;
 let perPage = 10;
 let totalPages = 1;
 let lastSearchKeyword = "";
+let filterAktif = true;
+let filterInaktif = true;
 
 // Data storage
 let indeksData = [];
@@ -714,6 +755,7 @@ async function loadUserInfo() {
 }
 
 // === LOAD DATA WITH PAGINATION ===
+// === LOAD DATA WITH PAGINATION ===
 async function loadArsip(keyword = "", page = 1) {
   loadingState.classList.remove("hidden");
   emptyState.classList.add("hidden");
@@ -731,7 +773,14 @@ async function loadArsip(keyword = "", page = 1) {
     
     loadingState.classList.add("hidden");
     
-    const data = response.data || [];
+    let data = response.data || [];
+    
+    // Filter berdasarkan status aktif/inaktif
+    data = data.filter(arsip => {
+      if (filterAktif && arsip.KETERANGAN === 'AKTIF') return true;
+      if (filterInaktif && arsip.KETERANGAN === 'INAKTIF') return true;
+      return false;
+    });
     
     if (!Array.isArray(data) || data.length === 0) {
       emptyState.classList.remove("hidden");
@@ -739,53 +788,51 @@ async function loadArsip(keyword = "", page = 1) {
     }
     
     data.forEach((arsip, i) => {
-  const fileLink = arsip.FILE
-    ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">DOWNLOAD</a>`
-    : "-";
-  
-  const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
-  
-  // Status badge untuk keterangan
-  let statusBadge = '-';
-  if (arsip.KETERANGAN === 'AKTIF') {
-    statusBadge = '<span class="status-aktif">AKTIF</span>';
-  } else if (arsip.KETERANGAN === 'INAKTIF') {
-    statusBadge = '<span class="status-inaktif">INAKTIF</span>';
-  }
-  
-  // Add class untuk row inaktif
-  const rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
-  
-  const row = `
-    <tr class="hover:bg-gray-50 ${rowClass}">
-    <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
-      <td class="px-4 py-3 w-[120px]">${arsip.NO_INDEKS ?? "-"}</td>
-      <td class="px-4 py-3 w-[60px]">${arsip.NO_BERKAS ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.JUDUL_BERKAS ?? "-"}</td>
-      <td class="px-4 py-3 w-[60px]">${arsip.NO_ISI_BERKAS ?? "-"}</td>
-      <td class="px-4 py-3 w-[60px]">${arsip.JENIS_ARSIP ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.NO_NOTA_DINAS ?? "-"}</td>
-      <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_BERKAS ?? "-"}</td>
-      <td class="px-4 py-3 w-[200px]">${arsip.PERIHAL ?? "-"}</td>
-      <td class="px-4 py-3 w-[160px]">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
-      <td class="px-4 py-3 w-[120px]">${arsip.KONDISI ?? "-"}</td>
-      <td class="px-4 py-3 w-[600px]">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${arsip.TIPE_RETENSI ?? "-"}</td>
-      <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
-      <td class="px-4 py-3 w-[150px]">${statusBadge}</td>
-      <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
-      <td class="px-4 py-3 w-[120px]">${fileLink}</td>
-      <td class="px-4 py-3 text-center space-x-2">
-        <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-        <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>`;
-  tableBody.insertAdjacentHTML("beforeend", row);
-});
+      const fileLink = arsip.FILE
+        ? `<a href="/${arsip.FILE}" target="_blank" class="text-blue-600 underline">DOWNLOAD</a>`
+        : "-";
+      
+      const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
+      
+      let statusBadge = '-';
+      if (arsip.KETERANGAN === 'AKTIF') {
+        statusBadge = '<span class="status-aktif">AKTIF</span>';
+      } else if (arsip.KETERANGAN === 'INAKTIF') {
+        statusBadge = '<span class="status-inaktif">INAKTIF</span>';
+      }
+      
+      const rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
+      
+      const row = `
+        <tr class="hover:bg-gray-50 ${rowClass}">
+        <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${arsip.NO_INDEKS ?? "-"}</td>
+          <td class="px-4 py-3 w-[60px]">${arsip.NO_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.JUDUL_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[60px]">${arsip.NO_ISI_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[60px]">${arsip.JENIS_ARSIP ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.KODE_KLASIFIKASI ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.NO_NOTA_DINAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_BERKAS ?? "-"}</td>
+          <td class="px-4 py-3 w-[200px]">${arsip.PERIHAL ?? "-"}</td>
+          <td class="px-4 py-3 w-[160px]">${arsip.TINGKAT_PENGEMBANGAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${arsip.KONDISI ?? "-"}</td>
+          <td class="px-4 py-3 w-[600px]">${arsip.RAK_BAK_URUTAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.TIPE_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${statusBadge}</td>
+          <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${fileLink}</td>
+          <td class="px-4 py-3 text-center space-x-2">
+            <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>`;
+      tableBody.insertAdjacentHTML("beforeend", row);
+    });
     
     renderPaginationControls({
       current_page: response.current_page,
@@ -1373,6 +1420,40 @@ function handleNotificationDelete(event, arsipId) {
       currentDeleteArsipId = null;
     }
   });
+
+  // === FILTER BUTTON HANDLERS ===
+const filterAktifBtn = document.getElementById("filterAktifBtn");
+const filterInaktifBtn = document.getElementById("filterInaktifBtn");
+
+filterAktifBtn.addEventListener("click", () => {
+  filterAktif = !filterAktif;
+  filterAktifBtn.classList.toggle("active");
+  
+  // Jika kedua filter dimatikan, nyalakan keduanya
+  if (!filterAktif && !filterInaktif) {
+    filterAktif = true;
+    filterInaktif = true;
+    filterAktifBtn.classList.add("active");
+    filterInaktifBtn.classList.add("active");
+  }
+  
+  loadArsip(lastSearchKeyword, 1);
+});
+
+filterInaktifBtn.addEventListener("click", () => {
+  filterInaktif = !filterInaktif;
+  filterInaktifBtn.classList.toggle("active");
+  
+  // Jika kedua filter dimatikan, nyalakan keduanya
+  if (!filterAktif && !filterInaktif) {
+    filterAktif = true;
+    filterInaktif = true;
+    filterAktifBtn.classList.add("active");
+    filterInaktifBtn.classList.add("active");
+  }
+  
+  loadArsip(lastSearchKeyword, 1);
+});
 // === INITIALIZATION ===
 (async () => {
   // Check authentication
