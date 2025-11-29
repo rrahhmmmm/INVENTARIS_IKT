@@ -1195,7 +1195,7 @@ klasifikasiInput.addEventListener("input", () => {
   filtered.slice(0, 50).forEach(item => {
     const li = document.createElement("li");
     li.className = "px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm border-b last:border-b-0";
-    li.innerHTML = `<strong>${item.KODE_KLASIFIKASI}</strong> - ${item.DESKRIPSI}`;
+    li.innerHTML = `<strong>${item.KODE_KLASIFIKASI} ${item.KATEGORI}</strong> - ${item.DESKRIPSI}`;
     li.addEventListener("click", () => {
       klasifikasiInput.value = item.KODE_KLASIFIKASI;
       suggestionKlasifikasi.classList.add("hidden");
