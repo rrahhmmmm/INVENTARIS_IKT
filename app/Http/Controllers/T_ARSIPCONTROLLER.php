@@ -282,7 +282,8 @@ class T_ARSIPCONTROLLER extends Controller
             $today = now()->format('Y-m-d');
 
             $query = T_arsip::with(['divisi', 'subdivisi'])
-                ->whereDate('TANGGAL_RETENSI', '<', $today);
+                ->whereDate('TANGGAL_RETENSI', '<', $today)
+                ->where('KETERANGAN', 'AKTIF');
 
             if ($user->ID_ROLE != 1) {
                 $query->where('ID_DIVISI', $user->ID_DIVISI);
@@ -306,6 +307,18 @@ class T_ARSIPCONTROLLER extends Controller
                 'errors' => ['system' => [$e->getMessage()]]
             ], 500);
         }
+    }
+
+    public function checkNotaDinas(Request $request)
+    {
+        $notaDinas = $request->query('no_nota_dinas');
+        
+        $exists = T_arsip::where('NO_NOTA_DINAS', $notaDinas)->exists();
+        
+        return response()->json([
+            'exists' => $exists,
+            'no_nota_dinas' => $notaDinas
+        ]);
     }
 }
 
