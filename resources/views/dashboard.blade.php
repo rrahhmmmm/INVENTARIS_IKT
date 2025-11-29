@@ -310,6 +310,28 @@
     #saveBtn:disabled:hover {
         background-color: #9ca3af !important;
     }
+
+    /* Filter count badge */
+    #countAktif, #countInaktif {
+        min-width: 24px;
+        text-align: center;
+    }
+
+    #filterAktifBtn.active #countAktif {
+        background-color: #065f46;
+        color: white;
+    }
+
+    #filterInaktifBtn.active #countInaktif {
+        background-color: #991b1b;
+        color: white;
+    }
+
+    #filterAktifBtn:not(.active) #countAktif,
+    #filterInaktifBtn:not(.active) #countInaktif {
+        background-color: #9ca3af;
+        color: white;
+    }
 </style>
 </head>
 <body class="bg-gray-100">
@@ -332,12 +354,14 @@
           <button id="filterAktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
             <i class="fas fa-check-circle"></i>
             <span>AKTIF</span>
+            <span id="countAktif" class="bg-white bg-opacity-30 px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
           </button>
           <button id="filterInaktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
             <i class="fas fa-times-circle"></i>
             <span>INAKTIF</span>
+            <span id="countInaktif" class="bg-white bg-opacity-30 px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
           </button>
-        </div>
+      </div>
     </div>
     
     <div class="relative space-x-2">
@@ -716,6 +740,10 @@ const checkNotaBtn = document.getElementById("checkNotaBtn");
 const notaValidationStatus = document.getElementById("notaValidationStatus");
 const saveBtn = document.getElementById("saveBtn");
 
+// aktif/inaktif count
+const countAktif = document.getElementById("countAktif");
+const countInaktif = document.getElementById("countInaktif");
+
 // Nota Dinas validation state
 let isNotaDinasValid = false;
 let lastCheckedNotaDinas = "";
@@ -729,6 +757,7 @@ let totalPages = 1;
 let lastSearchKeyword = "";
 let filterAktif = true;
 let filterInaktif = true;
+
 
 // Data storage
 let indeksData = [];
@@ -782,6 +811,31 @@ function updateSaveButtonState() {
     saveBtn.disabled = false;
   } else {
     saveBtn.disabled = true;
+  }
+}
+
+// Function to load filter counts
+async function loadFilterCounts() {
+  try {
+    // Fetch semua data tanpa filter untuk mendapatkan count
+    const res = await fetchWithAuth(`${apiUrl}?per_page=9999`);
+    const response = await res.json();
+    
+    const data = response.data || [];
+    
+    let aktifCount = 0;
+    let inaktifCount = 0;
+    
+    data.forEach(arsip => {
+      if (arsip.KETERANGAN === 'AKTIF') aktifCount++;
+      if (arsip.KETERANGAN === 'INAKTIF') inaktifCount++;
+    });
+    
+    countAktif.textContent = aktifCount;
+    countInaktif.textContent = inaktifCount;
+    
+  } catch (err) {
+    console.error("Gagal load filter counts:", err);
   }
 }
 
@@ -1225,6 +1279,7 @@ form.addEventListener("submit", async (e) => {
     modal.classList.remove("show");
     showToast(data.message || "Data berhasil disimpan");
     resetNotaValidation();
+    loadFilterCounts();
     loadArsip(lastSearchKeyword, currentPage);
     
   } catch (err) {
@@ -1309,6 +1364,7 @@ async function deleteArsip(id) {
     if (!res.ok) throw new Error(data.message || "Gagal menghapus");
     
     showToast(data.message || "Data berhasil dihapus");
+    loadFilterCounts();
     loadArsip(lastSearchKeyword, currentPage);
   } catch (err) {
     console.error(err);
@@ -1671,6 +1727,7 @@ function handleNotificationDelete(event, arsipId) {
     
     // Reload data
     await loadOverdueNotifications();
+    loadFilterCounts();
     loadArsip(lastSearchKeyword, currentPage);
     
     currentDeleteArsipId = null;
@@ -1764,7 +1821,8 @@ filterInaktifBtn.addEventListener("click", () => {
     loadKondisiData(),
     loadTingkatpengembanganData(),
     loadJenisNaskahDinasData(),
-    loadOverdueNotifications()
+    loadOverdueNotifications(),
+    loadFilterCounts() 
   ]);
   
   loadArsip();
