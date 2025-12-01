@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('JENIS_ARSIP', 150);
             $table->string('BIDANG_ARSIP', 150);
             $table->string('TIPE_ARSIP', 150);
-            $table->string('DETAIL_TIPE_ARSIP')->nullable();
+            $table->text('DETAIL_TIPE_ARSIP',1000)->nullable();
             $table->string('MASA_AKTIF',100);
             $table->string('DESC_AKTIF',150)->nullable();
-            $table->string('MASA_INAKTIF',100);
+            $table->string('MASA_INAKTIF',100)->nullable();
             $table->string('DESC_INAKTIF',150)->nullable();
             $table->text('KETERANGAN')->nullable();
             $table->string('CREATE_BY', 50);
