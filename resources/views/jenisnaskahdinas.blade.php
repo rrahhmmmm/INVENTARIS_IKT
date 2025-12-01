@@ -47,14 +47,19 @@
     
     <!-- Controls -->
     <div class="bg-white rounded-lg shadow-lg p-3 md:p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
-        <div class="flex flex-wrap items-center gap-3">
-            <button id="addJenisNaskahBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
-                <i class="fas fa-plus"></i> <span>Tambah Jenis Naskah</span>
-            </button>
-        </div>
+    <div class="flex flex-wrap items-center gap-3">
+        <button id="addJenisNaskahBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+            <i class="fas fa-plus"></i> <span>Tambah Jenis Naskah</span>
+        </button>
 
-        <input id="searchInput" type="text" placeholder="Cari..." 
-            class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+        <a href="{{ url('api/jenisnaskah/export') }}" id="exportBtn"
+            class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+            <span>Export Excel</span> <i class="fas fa-file-excel"></i>
+        </a>
+    </div>
+
+    <input id="searchInput" type="text" placeholder="Cari..." 
+        class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
     </div>
 
     <!-- Per Page Selection -->
@@ -120,6 +125,7 @@
 </div>
 
 <!-- Modal -->
+<<!-- Modal -->
 <div id="jenisNaskahModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 px-2">
     <div class="bg-white rounded-lg p-5 md:p-8 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
         
@@ -131,7 +137,7 @@
             </button>
         </div>
 
-        <!-- Form -->
+        <!-- Form Utama -->
         <form id="jenisNaskahForm" class="bg-white rounded-xl space-y-5">
             <input type="hidden" id="jenisNaskahId">
 
@@ -158,6 +164,21 @@
                 </button>
             </div>
         </form>
+
+        <!-- Import Excel (DILUAR FORM UTAMA) -->
+        <div class="border-t mt-6 pt-4">
+            <h4 class="text-md font-semibold mb-3">Tambah Data dengan Import Excel</h4>
+            <a href="{{ url('/api/jenisnaskah/export-template') }}" id="templateBtn"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
+                <span>Download Template</span> <i class="fas fa-download"></i>
+            </a>
+            <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
+                <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    Import
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -199,6 +220,35 @@ let currentPage = 1;
 let perPage = 10;
 let totalPages = 1;
 let lastSearchKeyword = "";
+
+// ==== Import Excel ====
+document.getElementById("importForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById("importFile").files[0];
+    if (!fileInput) { showToast("Pilih file terlebih dahulu"); return; }
+
+    const formData = new FormData();
+    formData.append("file", fileInput);
+
+    try {
+        const res = await fetch("/api/jenisnaskah/import", {
+            method: "POST",
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(data.message || "Data berhasil diimport");
+            modal.classList.remove("show");
+            loadJenisNaskah(lastSearchKeyword, currentPage);
+        } else {
+            showToast(data.message || "Gagal import data");
+        }
+    } catch(err) {
+        console.error(err);
+        showToast("Terjadi error saat import");
+    }
+});
 
 // ==== Fetch Data with Pagination ====
 async function loadJenisNaskah(keyword = "", page = 1) {
@@ -401,11 +451,12 @@ form.addEventListener("submit", async function(e) {
     }
 });
 
+
 // ==== Edit ====
 async function editJenisNaskah(id) {
     try {
         const res = await fetch(`${apiUrl}/${id}`, {
-            method: "put",
+            method: "GET",
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         const data = await res.json();
