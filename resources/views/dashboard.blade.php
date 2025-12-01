@@ -332,13 +332,75 @@
         background-color: #9ca3af;
         color: white;
     }
+
+    /* Dropdown Filter Styles */
+    .header-dropdown {
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        max-width: 150px;
+    }
+
+    .header-dropdown:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .header-dropdown option {
+        background-color: #2563eb;
+        color: white;
+    }
+
+    .filter-header {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .filter-header span {
+        font-weight: 600;
+    }
+
+    .clear-filter-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.65rem;
+        cursor: pointer;
+        margin-left: 4px;
+    }
+
+    .clear-filter-btn:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    #adminFiltersContainer select {
+    border: 1px solid #d1d5db;
+    background-color: white;
+    }
+
+    #adminFiltersContainer select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    #adminFiltersContainer label {
+        white-space: nowrap;
+    }
 </style>
 </head>
 <body class="bg-gray-100">
 
 @include('components.TA_navbar')
 
-<!-- Include navbar here -->
+
 
 <header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>
 
@@ -380,15 +442,42 @@
     </div>  
   </div>
 
-  <!-- Per Page Select -->
-  <div class="pb-2">
-    <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
-      <option value="10">10</option>
-      <option value="25">25</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-    </select>
-  </div>
+    <!-- Per Page Select & Admin Filters -->
+    <div class="pb-2 flex flex-wrap items-center gap-4">
+      <!-- Per Page -->
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-600">Tampilkan:</label>
+        <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+
+      <!-- Admin Filters - Hidden by default -->
+      <div id="adminFiltersContainer" class="hidden flex items-center gap-4">
+        <!-- Divisi Filter -->
+        <div class="flex items-center gap-2">
+          <select id="filterDivisi" class="border rounded px-3 py-1 text-sm min-w-[180px]">
+            <option value="">Semua Divisi</option>
+          </select>
+          <button type="button" id="clearDivisiFilter" class="text-gray-400 hover:text-red-500 text-sm" title="Reset">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Subdivisi Filter -->
+        <div class="flex items-center gap-2">
+          <select id="filterSubdivisi" class="border rounded px-3 py-1 text-sm min-w-[180px]">
+            <option value="">Semua Subdivisi</option>
+          </select>
+          <button type="button" id="clearSubdivisiFilter" class="text-gray-400 hover:text-red-500 text-sm" title="Reset">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
   <!-- Tabel Arsip -->
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -744,6 +833,20 @@ const saveBtn = document.getElementById("saveBtn");
 const countAktif = document.getElementById("countAktif");
 const countInaktif = document.getElementById("countInaktif");
 
+// Admin filter elements
+const filterDivisi = document.getElementById("filterDivisi");
+const filterSubdivisi = document.getElementById("filterSubdivisi");
+const adminFiltersContainer = document.getElementById("adminFiltersContainer");
+const clearDivisiFilter = document.getElementById("clearDivisiFilter");
+const clearSubdivisiFilter = document.getElementById("clearSubdivisiFilter");
+
+// Filter state
+let selectedDivisi = "";
+let selectedSubdivisi = "";
+let isAdmin = false;
+let divisiList = [];
+let subdivisiList = [];
+
 // Nota Dinas validation state
 let isNotaDinasValid = false;
 let lastCheckedNotaDinas = "";
@@ -1040,7 +1143,113 @@ async function loadUserInfo() {
   }
 }
 
-// === LOAD DATA WITH PAGINATION ===
+
+// === CHECK IF USER IS ADMIN ===
+// === CHECK IF USER IS ADMIN ===
+async function checkAdminRole() {
+  try {
+    const res = await fetchWithAuth('/api/me');
+    if (!res.ok) return false;
+    
+    const user = await res.json();
+    
+    // Sesuaikan dengan struktur data dari navbar
+    isAdmin = user.role && user.role.Nama_role === 'ADMIN';
+    
+    console.log("User data:", user);
+    console.log("Is Admin:", isAdmin);
+    
+    if (isAdmin) {
+      // Show admin filters container
+      adminFiltersContainer.classList.remove("hidden");
+      adminFiltersContainer.classList.add("flex");
+      await loadDivisiFilter();
+    }
+    
+    return isAdmin;
+  } catch (err) {
+    console.error("Failed to check admin role:", err);
+    return false;
+  }
+}
+
+// === LOAD DIVISI FOR FILTER ===
+async function loadDivisiFilter() {
+  try {
+    const res = await fetchWithAuth("/api/m_divisi");
+    if (!res.ok) throw new Error("Gagal memuat data divisi");
+    
+    divisiList = await res.json();
+    
+    filterDivisi.innerHTML = '<option value="">Semua Divisi</option>';
+    divisiList.forEach(div => {
+      const option = document.createElement("option");
+      option.value = div.ID_DIVISI;
+      option.textContent = div.NAMA_DIVISI;
+      filterDivisi.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Gagal load divisi filter:", err);
+  }
+}
+
+// === LOAD SUBDIVISI FOR FILTER (CASCADING) ===
+async function loadSubdivisiFilter(idDivisi) {
+  filterSubdivisi.innerHTML = '<option value="">Semua Subdivisi</option>';
+  
+  if (!idDivisi) {
+    subdivisiList = [];
+    return;
+  }
+  
+  try {
+    const res = await fetchWithAuth(`/api/m_subdivisi/divisi/${idDivisi}`);
+    if (!res.ok) throw new Error("Gagal memuat data subdivisi");
+    
+    subdivisiList = await res.json();
+    
+    subdivisiList.forEach(sub => {
+      const option = document.createElement("option");
+      option.value = sub.ID_SUBDIVISI;
+      option.textContent = sub.NAMA_SUBDIVISI;
+      filterSubdivisi.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Gagal load subdivisi filter:", err);
+  }
+}
+
+// === FILTER EVENT LISTENERS ===
+filterDivisi.addEventListener("change", async (e) => {
+  selectedDivisi = e.target.value;
+  selectedSubdivisi = ""; // Reset subdivisi when divisi changes
+  filterSubdivisi.value = "";
+  
+  await loadSubdivisiFilter(selectedDivisi);
+  loadArsip(lastSearchKeyword, 1);
+});
+
+filterSubdivisi.addEventListener("change", (e) => {
+  selectedSubdivisi = e.target.value;
+  loadArsip(lastSearchKeyword, 1);
+});
+
+clearDivisiFilter.addEventListener("click", async () => {
+  selectedDivisi = "";
+  selectedSubdivisi = "";
+  filterDivisi.value = "";
+  filterSubdivisi.value = "";
+  filterSubdivisi.innerHTML = '<option value="">Semua Subdivisi</option>';
+  loadArsip(lastSearchKeyword, 1);
+});
+
+clearSubdivisiFilter.addEventListener("click", () => {
+  selectedSubdivisi = "";
+  filterSubdivisi.value = "";
+  loadArsip(lastSearchKeyword, 1);
+});
+
+
 // === LOAD DATA WITH PAGINATION ===
 async function loadArsip(keyword = "", page = 1) {
   loadingState.classList.remove("hidden");
@@ -1054,12 +1263,32 @@ async function loadArsip(keyword = "", page = 1) {
     let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
     if (keyword.trim()) url += `&search=${encodeURIComponent(keyword)}`;
     
+    // Add divisi filter for admin
+    if (isAdmin && selectedDivisi) {
+      url += `&divisi=${encodeURIComponent(selectedDivisi)}`;
+    }
+    
+    // Add subdivisi filter for admin
+    if (isAdmin && selectedSubdivisi) {
+      url += `&subdivisi=${encodeURIComponent(selectedSubdivisi)}`;
+    }
+    
     const res = await fetchWithAuth(url);
     const response = await res.json();
     
     loadingState.classList.add("hidden");
     
     let data = response.data || [];
+    
+    // Client-side filter for divisi/subdivisi if API doesn't support it
+    if (isAdmin) {
+      if (selectedDivisi) {
+        data = data.filter(arsip => String(arsip.ID_DIVISI) === String(selectedDivisi));
+      }
+      if (selectedSubdivisi) {
+        data = data.filter(arsip => String(arsip.ID_SUBDIVISI) === String(selectedSubdivisi));
+      }
+    }
     
     // Filter berdasarkan status aktif/inaktif
     data = data.filter(arsip => {
@@ -1812,6 +2041,8 @@ filterInaktifBtn.addEventListener("click", () => {
     }, 500);
   }
   }, 2000);
+
+  await checkAdminRole();
 
   // Load all data
   await Promise.all([
