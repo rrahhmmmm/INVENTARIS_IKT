@@ -379,21 +379,6 @@
     .clear-filter-btn:hover {
         background-color: rgba(255, 255, 255, 0.4);
     }
-
-    #adminFiltersContainer select {
-    border: 1px solid #d1d5db;
-    background-color: white;
-    }
-
-    #adminFiltersContainer select:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-    }
-
-    #adminFiltersContainer label {
-        white-space: nowrap;
-    }
 </style>
 </head>
 <body class="bg-gray-100">
@@ -442,9 +427,8 @@
     </div>  
   </div>
 
-    <!-- Per Page Select & Admin Filters -->
-    <div class="pb-2 flex flex-wrap items-center gap-4">
-      <!-- Per Page -->
+    <!-- Per Page Select -->
+    <div class="pb-2">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Tampilkan:</label>
         <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
@@ -454,29 +438,6 @@
           <option value="100">100</option>
         </select>
       </div>
-
-      <!-- Admin Filters - Hidden by default -->
-      <div id="adminFiltersContainer" class="hidden flex items-center gap-4">
-        <!-- Divisi Filter -->
-        <div class="flex items-center gap-2">
-          <select id="filterDivisi" class="border rounded px-3 py-1 text-sm min-w-[180px]">
-            <option value="">Semua Divisi</option>
-          </select>
-          <button type="button" id="clearDivisiFilter" class="text-gray-400 hover:text-red-500 text-sm" title="Reset">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-
-        <!-- Subdivisi Filter -->
-        <div class="flex items-center gap-2">
-          <select id="filterSubdivisi" class="border rounded px-3 py-1 text-sm min-w-[180px]">
-            <option value="">Semua Subdivisi</option>
-          </select>
-          <button type="button" id="clearSubdivisiFilter" class="text-gray-400 hover:text-red-500 text-sm" title="Reset">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      </div>
     </div>
 
   <!-- Tabel Arsip -->
@@ -484,29 +445,65 @@
     <div class="overflow-x-auto">
       <table class="min-w-[2500px] table-fixed text-sm md:text-base">
         <thead class="bg-blue-600 text-white">
+          <!-- Header Row 1: Titles -->
           <tr>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[60px] z-10">NO</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Divisi</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Subdivisi</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">No Indeks</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Berkas</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">Judul Berkas</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">No Isi Berkas</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Jenis Naskah Dinas</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[150px] z-10">Kode Klasifikasi</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[300px] z-10">No Nota Dinas</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Berkas</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[400px] z-10">Perihal</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Tingkat Pengembangan</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">Kondisi</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-40 z-10">Lokasi Simpan</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[200px] z-10">Keterangan Simpan</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Tipe Retensi</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 min-w-[200px] z-10">Tanggal Retensi</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[150px] z-10">Keterangan</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[140px] z-10">Create By</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[120px] z-10">File Arsip</th>
-            <th class="sticky top-0 bg-blue-600 px-4 py-3 w-[100px] text-center z-10">Aksi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[60px] z-10">NO</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[200px] z-10">Divisi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[200px] z-10">Subdivisi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[120px] z-10">No Indeks</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[150px] z-10">No Berkas</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[300px] z-10">Judul Berkas</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[150px] z-10">No Isi Berkas</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[150px] z-10">Jenis Naskah Dinas</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[150px] z-10">Kode Klasifikasi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[300px] z-10">No Nota Dinas</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[200px] z-10">Tanggal Berkas</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[400px] z-10">Perihal</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-40 z-10">Tingkat Pengembangan</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[120px] z-10">Kondisi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-40 z-10">Lokasi Simpan</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[200px] z-10">Keterangan Simpan</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[150px] z-10">Tipe Retensi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[200px] z-10">Tanggal Retensi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[150px] z-10">Keterangan</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[140px] z-10">Create By</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[120px] z-10">File Arsip</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[100px] text-center z-10">Aksi</th>
+          </tr>
+          <!-- Header Row 2: Filters -->
+          <tr class="bg-blue-600">
+            <th class="px-2 py-2"></th>
+            <!-- Divisi - Dropdown for Admin only -->
+            <th class="px-2 py-2">
+              <select id="colFilterDivisi" class="column-filter-dropdown w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" style="display:none;">
+                <option value="">Semua</option>
+              </select>
+            </th>
+            <!-- Subdivisi - Dropdown for Admin only -->
+            <th class="px-2 py-2">
+              <select id="colFilterSubdivisi" class="column-filter-dropdown w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" style="display:none;">
+                <option value="">Semua</option>
+              </select>
+            </th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="no_indeks"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="no_berkas"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="judul_berkas"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="no_isi_berkas"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="jenis_arsip"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="kode_klasifikasi"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="no_nota_dinas"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tanggal_berkas"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="perihal"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tingkat_pengembangan"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="kondisi"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="lokasi_simpan"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="keterangan_simpan"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tipe_retensi"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tanggal_retensi"></th>
+            <th class="px-2 py-2"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="create_by"></th>
+            <th class="px-2 py-2"></th>
+            <th class="px-2 py-2"></th>
           </tr>
         </thead>
         <tbody id="arsipTableBody" class="divide-y divide-gray-200 text-gray-700"></tbody>
@@ -833,19 +830,36 @@ const saveBtn = document.getElementById("saveBtn");
 const countAktif = document.getElementById("countAktif");
 const countInaktif = document.getElementById("countInaktif");
 
-// Admin filter elements
-const filterDivisi = document.getElementById("filterDivisi");
-const filterSubdivisi = document.getElementById("filterSubdivisi");
-const adminFiltersContainer = document.getElementById("adminFiltersContainer");
-const clearDivisiFilter = document.getElementById("clearDivisiFilter");
-const clearSubdivisiFilter = document.getElementById("clearSubdivisiFilter");
-
 // Filter state
-let selectedDivisi = "";
-let selectedSubdivisi = "";
 let isAdmin = false;
 let divisiList = [];
 let subdivisiList = [];
+
+// Column filter state
+let columnFilters = {
+  divisi: "",
+  subdivisi: "",
+  no_indeks: "",
+  no_berkas: "",
+  judul_berkas: "",
+  no_isi_berkas: "",
+  jenis_arsip: "",
+  kode_klasifikasi: "",
+  no_nota_dinas: "",
+  tanggal_berkas: "",
+  perihal: "",
+  tingkat_pengembangan: "",
+  kondisi: "",
+  lokasi_simpan: "",
+  keterangan_simpan: "",
+  tipe_retensi: "",
+  tanggal_retensi: "",
+  create_by: ""
+};
+
+// Column filter elements (Admin only - dropdowns)
+const colFilterDivisi = document.getElementById("colFilterDivisi");
+const colFilterSubdivisi = document.getElementById("colFilterSubdivisi");
 
 // Nota Dinas validation state
 let isNotaDinasValid = false;
@@ -1145,31 +1159,91 @@ async function loadUserInfo() {
 
 
 // === CHECK IF USER IS ADMIN ===
-// === CHECK IF USER IS ADMIN ===
 async function checkAdminRole() {
   try {
     const res = await fetchWithAuth('/api/me');
     if (!res.ok) return false;
-    
+
     const user = await res.json();
-    
+
     // Sesuaikan dengan struktur data dari navbar
     isAdmin = user.role && user.role.Nama_role === 'ADMIN';
-    
+
     console.log("User data:", user);
     console.log("Is Admin:", isAdmin);
-    
+
     if (isAdmin) {
-      // Show admin filters container
-      adminFiltersContainer.classList.remove("hidden");
-      adminFiltersContainer.classList.add("flex");
+      // Load divisi data for column filter dropdowns
       await loadDivisiFilter();
+
+      // Setup column filter dropdowns for Admin
+      await setupColumnFilterDropdowns();
     }
-    
+    // Non-admin users don't see divisi/subdivisi filters at all
+
     return isAdmin;
   } catch (err) {
     console.error("Failed to check admin role:", err);
     return false;
+  }
+}
+
+// === SETUP COLUMN FILTER DROPDOWNS (Admin Only) ===
+async function setupColumnFilterDropdowns() {
+  // Show dropdown filters for admin
+  colFilterDivisi.style.display = "block";
+  colFilterSubdivisi.style.display = "block";
+
+  // Populate divisi dropdown
+  colFilterDivisi.innerHTML = '<option value="">Semua</option>';
+  divisiList.forEach(div => {
+    const option = document.createElement("option");
+    option.value = div.ID_DIVISI;
+    option.textContent = div.NAMA_DIVISI;
+    colFilterDivisi.appendChild(option);
+  });
+
+  // Event listener for column divisi filter
+  colFilterDivisi.addEventListener("change", async (e) => {
+    columnFilters.divisi = e.target.value;
+
+    // Reset subdivisi when divisi changes
+    columnFilters.subdivisi = "";
+    colFilterSubdivisi.value = "";
+
+    // Load subdivisi options based on selected divisi
+    await loadColumnSubdivisiOptions(e.target.value);
+
+    applyColumnFilters();
+  });
+
+  // Event listener for column subdivisi filter
+  colFilterSubdivisi.addEventListener("change", (e) => {
+    columnFilters.subdivisi = e.target.value;
+    applyColumnFilters();
+  });
+}
+
+// === LOAD SUBDIVISI OPTIONS FOR COLUMN FILTER ===
+async function loadColumnSubdivisiOptions(idDivisi) {
+  colFilterSubdivisi.innerHTML = '<option value="">Semua</option>';
+
+  if (!idDivisi) return;
+
+  try {
+    const res = await fetchWithAuth(`/api/m_subdivisi/divisi/${idDivisi}`);
+    if (!res.ok) throw new Error("Gagal memuat data subdivisi");
+
+    const subdivisiData = await res.json();
+
+    subdivisiData.forEach(sub => {
+      const option = document.createElement("option");
+      option.value = sub.ID_SUBDIVISI;
+      option.textContent = sub.NAMA_SUBDIVISI;
+      colFilterSubdivisi.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Gagal load subdivisi options:", err);
   }
 }
 
@@ -1178,76 +1252,143 @@ async function loadDivisiFilter() {
   try {
     const res = await fetchWithAuth("/api/m_divisi");
     if (!res.ok) throw new Error("Gagal memuat data divisi");
-    
+
     divisiList = await res.json();
-    
-    filterDivisi.innerHTML = '<option value="">Semua Divisi</option>';
-    divisiList.forEach(div => {
-      const option = document.createElement("option");
-      option.value = div.ID_DIVISI;
-      option.textContent = div.NAMA_DIVISI;
-      filterDivisi.appendChild(option);
-    });
   } catch (err) {
     console.error("Gagal load divisi filter:", err);
   }
 }
 
-// === LOAD SUBDIVISI FOR FILTER (CASCADING) ===
-async function loadSubdivisiFilter(idDivisi) {
-  filterSubdivisi.innerHTML = '<option value="">Semua Subdivisi</option>';
-  
-  if (!idDivisi) {
-    subdivisiList = [];
-    return;
-  }
-  
-  try {
-    const res = await fetchWithAuth(`/api/m_subdivisi/divisi/${idDivisi}`);
-    if (!res.ok) throw new Error("Gagal memuat data subdivisi");
-    
-    subdivisiList = await res.json();
-    
-    subdivisiList.forEach(sub => {
-      const option = document.createElement("option");
-      option.value = sub.ID_SUBDIVISI;
-      option.textContent = sub.NAMA_SUBDIVISI;
-      filterSubdivisi.appendChild(option);
-    });
-  } catch (err) {
-    console.error("Gagal load subdivisi filter:", err);
-  }
+// === COLUMN FILTERS EVENT LISTENERS ===
+function setupColumnFilterListeners() {
+  const columnFilterInputs = document.querySelectorAll(".column-filter");
+
+  columnFilterInputs.forEach(input => {
+    input.addEventListener("input", debounce((e) => {
+      const column = e.target.dataset.column;
+      if (column) {
+        columnFilters[column] = e.target.value.toLowerCase().trim();
+        applyColumnFilters();
+      }
+    }, 300));
+  });
 }
 
-// === FILTER EVENT LISTENERS ===
-filterDivisi.addEventListener("change", async (e) => {
-  selectedDivisi = e.target.value;
-  selectedSubdivisi = ""; // Reset subdivisi when divisi changes
-  filterSubdivisi.value = "";
-  
-  await loadSubdivisiFilter(selectedDivisi);
-  loadArsip(lastSearchKeyword, 1);
-});
+// Debounce helper function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
-filterSubdivisi.addEventListener("change", (e) => {
-  selectedSubdivisi = e.target.value;
-  loadArsip(lastSearchKeyword, 1);
-});
+// === APPLY COLUMN FILTERS ===
+function applyColumnFilters() {
+  const rows = tableBody.querySelectorAll("tr");
 
-clearDivisiFilter.addEventListener("click", async () => {
-  selectedDivisi = "";
-  selectedSubdivisi = "";
-  filterDivisi.value = "";
-  filterSubdivisi.value = "";
-  filterSubdivisi.innerHTML = '<option value="">Semua Subdivisi</option>';
-  loadArsip(lastSearchKeyword, 1);
-});
+  rows.forEach(row => {
+    const cells = row.querySelectorAll("td");
+    if (cells.length === 0) return;
 
-clearSubdivisiFilter.addEventListener("click", () => {
-  selectedSubdivisi = "";
-  filterSubdivisi.value = "";
-  loadArsip(lastSearchKeyword, 1);
-});
+    let showRow = true;
+
+    // Map column index to filter key
+    const columnMap = {
+      1: "divisi",
+      2: "subdivisi",
+      3: "no_indeks",
+      4: "no_berkas",
+      5: "judul_berkas",
+      6: "no_isi_berkas",
+      7: "jenis_arsip",
+      8: "kode_klasifikasi",
+      9: "no_nota_dinas",
+      10: "tanggal_berkas",
+      11: "perihal",
+      12: "tingkat_pengembangan",
+      13: "kondisi",
+      14: "lokasi_simpan",
+      15: "keterangan_simpan",
+      16: "tipe_retensi",
+      17: "tanggal_retensi",
+      19: "create_by"
+    };
+
+    // Check each filter
+    for (const [colIndex, filterKey] of Object.entries(columnMap)) {
+      const filterValue = columnFilters[filterKey];
+
+      if (filterValue && filterValue !== "") {
+        const cellText = cells[colIndex]?.textContent?.toLowerCase() || "";
+
+        // For admin dropdown filters (divisi/subdivisi), match by ID stored in data attribute or exact text
+        if (isAdmin && (filterKey === "divisi" || filterKey === "subdivisi")) {
+          // Get the ID from the row's data attribute if available, otherwise match text
+          const rowDivisiId = row.dataset.divisiId;
+          const rowSubdivisiId = row.dataset.subdivisiId;
+
+          if (filterKey === "divisi" && rowDivisiId) {
+            if (rowDivisiId !== filterValue) {
+              showRow = false;
+              break;
+            }
+          } else if (filterKey === "subdivisi" && rowSubdivisiId) {
+            if (rowSubdivisiId !== filterValue) {
+              showRow = false;
+              break;
+            }
+          } else {
+            // Fallback to text matching for admin if no data attribute
+            const selectedOption = filterKey === "divisi"
+              ? colFilterDivisi.options[colFilterDivisi.selectedIndex]
+              : colFilterSubdivisi.options[colFilterSubdivisi.selectedIndex];
+            const filterText = selectedOption?.textContent?.toLowerCase() || "";
+
+            if (filterText && !cellText.includes(filterText)) {
+              showRow = false;
+              break;
+            }
+          }
+        } else {
+          // Text search for non-admin and other columns
+          if (!cellText.includes(filterValue)) {
+            showRow = false;
+            break;
+          }
+        }
+      }
+    }
+
+    row.style.display = showRow ? "" : "none";
+  });
+
+  // Update visible count info
+  updateVisibleCount();
+}
+
+// === UPDATE VISIBLE COUNT AFTER FILTERING ===
+function updateVisibleCount() {
+  const rows = tableBody.querySelectorAll("tr");
+  let visibleCount = 0;
+
+  rows.forEach(row => {
+    if (row.style.display !== "none") {
+      visibleCount++;
+    }
+  });
+
+  // Update the "showing" text if needed
+  const hasActiveFilters = Object.values(columnFilters).some(v => v !== "");
+  if (hasActiveFilters) {
+    showingFrom.textContent = visibleCount > 0 ? "1" : "0";
+    showingTo.textContent = visibleCount;
+  }
+}
 
 
 // === LOAD DATA WITH PAGINATION ===
@@ -1262,34 +1403,14 @@ async function loadArsip(keyword = "", page = 1) {
   try {
     let url = `${apiUrl}?page=${page}&per_page=${perPage}`;
     if (keyword.trim()) url += `&search=${encodeURIComponent(keyword)}`;
-    
-    // Add divisi filter for admin
-    if (isAdmin && selectedDivisi) {
-      url += `&divisi=${encodeURIComponent(selectedDivisi)}`;
-    }
-    
-    // Add subdivisi filter for admin
-    if (isAdmin && selectedSubdivisi) {
-      url += `&subdivisi=${encodeURIComponent(selectedSubdivisi)}`;
-    }
-    
+
     const res = await fetchWithAuth(url);
     const response = await res.json();
-    
+
     loadingState.classList.add("hidden");
-    
+
     let data = response.data || [];
-    
-    // Client-side filter for divisi/subdivisi if API doesn't support it
-    if (isAdmin) {
-      if (selectedDivisi) {
-        data = data.filter(arsip => String(arsip.ID_DIVISI) === String(selectedDivisi));
-      }
-      if (selectedSubdivisi) {
-        data = data.filter(arsip => String(arsip.ID_SUBDIVISI) === String(selectedSubdivisi));
-      }
-    }
-    
+
     // Filter berdasarkan status aktif/inaktif
     data = data.filter(arsip => {
       if (filterAktif && arsip.KETERANGAN === 'AKTIF') return true;
@@ -1319,7 +1440,7 @@ async function loadArsip(keyword = "", page = 1) {
       const rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
       
       const row = `
-        <tr class="hover:bg-gray-50 ${rowClass}">
+        <tr class="hover:bg-gray-50 ${rowClass}" data-divisi-id="${arsip.ID_DIVISI || ''}" data-subdivisi-id="${arsip.ID_SUBDIVISI || ''}">
         <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
           <td class="px-4 py-3 w-[150px]">${arsip.divisi?.NAMA_DIVISI ?? "-"}</td>
           <td class="px-4 py-3 w-[150px]">${arsip.subdivisi?.NAMA_SUBDIVISI ?? "-"}</td>
@@ -2044,6 +2165,9 @@ filterInaktifBtn.addEventListener("click", () => {
 
   await checkAdminRole();
 
+  // Setup column filter listeners
+  setupColumnFilterListeners();
+
   // Load all data
   await Promise.all([
     loadIndeksData(),
@@ -2053,9 +2177,9 @@ filterInaktifBtn.addEventListener("click", () => {
     loadTingkatpengembanganData(),
     loadJenisNaskahDinasData(),
     loadOverdueNotifications(),
-    loadFilterCounts() 
+    loadFilterCounts()
   ]);
-  
+
   loadArsip();
 })();
 </script>
