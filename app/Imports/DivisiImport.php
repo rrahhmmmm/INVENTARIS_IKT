@@ -87,7 +87,7 @@ class DivisiImport implements ToCollection, WithHeadingRow
             // Insert ke database
             M_divisi::create([
                 'NAMA_DIVISI' => $namaDivisi,
-                'CREATE_BY'   => $createBy ?: null
+                'CREATE_BY'   => $createBy ?: (auth()->user()->username ?? 'system')
             ]);
 
             $this->imported++;

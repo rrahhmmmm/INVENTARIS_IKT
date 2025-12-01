@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\M_subdivisi;
@@ -11,6 +12,34 @@ use App\Imports\SubdivisiImport;
 
 class M_SUBDIVISICONTROLLER extends Controller
 {
+    /**
+     * Helper function untuk normalize string
+     * Hapus semua spasi dan convert ke uppercase
+     */
+    private function normalizeString($value)
+    {
+        return strtoupper(str_replace(' ', '', trim($value ?? '')));
+    }
+
+    /**
+     * Cek apakah NAMA_SUBDIVISI sudah ada di database (normalized)
+     * @param string $namaSubdivisi - nama subdivisi yang akan dicek
+     * @param int|null $excludeId - ID yang dikecualikan (untuk update)
+     * @return bool - true jika sudah ada, false jika belum
+     */
+    private function isDuplicateNamaSubdivisi($namaSubdivisi, $excludeId = null)
+    {
+        $normalizedInput = $this->normalizeString($namaSubdivisi);
+
+        $query = M_subdivisi::whereRaw("UPPER(REPLACE(NAMA_SUBDIVISI, ' ', '')) = ?", [$normalizedInput]);
+
+        if ($excludeId) {
+            $query->where('ID_SUBDIVISI', '!=', $excludeId);
+        }
+
+        return $query->exists();
+    }
+
     public function index(Request $request)
     {
         $query = M_subdivisi::with('divisi');
@@ -19,7 +48,7 @@ class M_SUBDIVISICONTROLLER extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('NAMA_SUBDIVISI', 'like', '%' . $search . '%')
-                  ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
+                    ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
             });
         }
 
@@ -27,19 +56,17 @@ class M_SUBDIVISICONTROLLER extends Controller
         return response()->json($subdivisi);
     }
 
-
-
     public function paginated(Request $request)
     {
         $perPage = $request->get('per_page', 10);
         $search = $request->get('search', '');
-        
+
         $query = M_subdivisi::with('divisi');
-        
+
         if (!empty($search)) {
             $query->where('NAMA_SUBDIVISI', 'like', "%{$search}%");
         }
-        
+
         return $query->paginate($perPage);
     }
 
@@ -51,15 +78,31 @@ class M_SUBDIVISICONTROLLER extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'ID_DIVISI'      => 'required|integer|exists:M_DIVISI,ID_DIVISI',
-            'NAMA_SUBDIVISI' => 'required|string|max:100|unique:M_SUBDIVISI,NAMA_SUBDIVISI',
+            'NAMA_SUBDIVISI' => 'required|string|max:100',
             'CREATE_BY'      => 'nullable|string|max:100'
         ]);
 
-        $subdivisi = M_subdivisi::create($validated);
+        // Cek duplicate NAMA_SUBDIVISI dengan normalisasi
+        if ($this->isDuplicateNamaSubdivisi($request->NAMA_SUBDIVISI)) {
+            return response()->json([
+                'message' => 'Nama subdivisi sudah ada (duplikat terdeteksi)',
+                'errors' => [
+                    'NAMA_SUBDIVISI' => ['Nama subdivisi sudah ada di database']
+                ]
+            ], 422);
+        }
+
+        $subdivisi = M_subdivisi::create([
+            'ID_DIVISI'      => $request->ID_DIVISI,
+            'NAMA_SUBDIVISI' => $request->NAMA_SUBDIVISI,
+            'CREATE_BY'      => $request->CREATE_BY
+        ]);
+
         // muat relasi supaya response lengkap
         $subdivisi->load('divisi');
+
         return response()->json($subdivisi, 201);
     }
 
@@ -73,15 +116,30 @@ class M_SUBDIVISICONTROLLER extends Controller
     {
         $subdivisi = M_subdivisi::findOrFail($id);
 
-        $validated = $request->validate([
+        $request->validate([
             'ID_DIVISI'      => 'required|integer|exists:M_DIVISI,ID_DIVISI',
-            // ignore current record pada unique validation (ID_SUBDIVISI adalah primary key Anda)
-            'NAMA_SUBDIVISI' => 'required|string|max:100|unique:M_SUBDIVISI,NAMA_SUBDIVISI,'.$id.',ID_SUBDIVISI',
+            'NAMA_SUBDIVISI' => 'required|string|max:100',
             'CREATE_BY'      => 'nullable|string|max:100'
         ]);
 
-        $subdivisi->update($validated);
+        // Cek duplicate NAMA_SUBDIVISI dengan normalisasi (exclude ID sendiri)
+        if ($this->isDuplicateNamaSubdivisi($request->NAMA_SUBDIVISI, $id)) {
+            return response()->json([
+                'message' => 'Nama subdivisi sudah ada (duplikat terdeteksi)',
+                'errors' => [
+                    'NAMA_SUBDIVISI' => ['Nama subdivisi sudah ada di database']
+                ]
+            ], 422);
+        }
+
+        $subdivisi->update([
+            'ID_DIVISI'      => $request->ID_DIVISI,
+            'NAMA_SUBDIVISI' => $request->NAMA_SUBDIVISI,
+            'CREATE_BY'      => $request->CREATE_BY
+        ]);
+
         $subdivisi->load('divisi');
+
         return response()->json($subdivisi);
     }
 
@@ -89,6 +147,7 @@ class M_SUBDIVISICONTROLLER extends Controller
     {
         $subdivisi = M_subdivisi::findOrFail($id);
         $subdivisi->delete();
+
         return response()->json(null, 204);
     }
 
@@ -103,13 +162,27 @@ class M_SUBDIVISICONTROLLER extends Controller
     }
 
     public function importExcel(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv'
-    ]);
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
 
-    Excel::import(new SubdivisiImport, $request->file('file'));
+        $import = new SubdivisiImport;
+        Excel::import($import, $request->file('file'));
 
-    return response()->json(['message' => 'Data subdivisi berhasil diimport']);
-}   
+        $results = $import->getResults();
+
+        $message = "Import selesai: {$results['imported']} data berhasil diimport";
+
+        if ($results['skipped'] > 0) {
+            $message .= ", {$results['skipped']} data dilewati (duplikat/tidak valid)";
+        }
+
+        return response()->json([
+            'message'    => $message,
+            'imported'   => $results['imported'],
+            'skipped'    => $results['skipped'],
+            'duplicates' => $results['duplicates']
+        ]);
+    }
 }
