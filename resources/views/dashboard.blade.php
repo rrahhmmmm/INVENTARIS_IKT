@@ -397,18 +397,6 @@
       <button id="addArsipBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
         <i class="fas fa-plus"></i> <span>Tambah Arsip</span>
       </button>
-      <div class="flex items-center gap-2 ml-4">
-          <button id="filterAktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
-            <i class="fas fa-check-circle"></i>
-            <span>AKTIF</span>
-            <span id="countAktif" class="bg-white bg-opacity-30 px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
-          </button>
-          <button id="filterInaktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
-            <i class="fas fa-times-circle"></i>
-            <span>INAKTIF</span>
-            <span id="countInaktif" class="bg-white bg-opacity-30 px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
-          </button>
-      </div>
     </div>
     
     <div class="relative space-x-2">
@@ -437,6 +425,18 @@
           <option value="50">50</option>
           <option value="100">100</option>
         </select>
+        <div class="flex items-center gap-2 ml-4">
+          <button id="filterAktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
+            <i class="fas fa-check-circle"></i>
+            <span>AKTIF</span>
+            <span id="countAktif" class="bg-white bg-opacity-30 px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
+          </button>
+          <button id="filterInaktifBtn" class="filter-btn active px-3 py-2 rounded-lg flex items-center space-x-1 text-sm font-medium transition-all">
+            <i class="fas fa-times-circle"></i>
+            <span>INAKTIF</span>
+            <span id="countInaktif" class="bg-white bg-opacity-30 px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
+          </button>
+      </div>
       </div>
     </div>
 
@@ -467,6 +467,7 @@
             <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[200px] z-10">Tanggal Retensi</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[150px] z-10">Keterangan</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[140px] z-10">Create By</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[250px] z-10">Update</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[120px] z-10">File Arsip</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[100px] text-center z-10">Aksi</th>
           </tr>
@@ -502,6 +503,7 @@
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tanggal_retensi"></th>
             <th class="px-2 py-2"></th>
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="create_by"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="update_info"></th>
             <th class="px-2 py-2"></th>
             <th class="px-2 py-2"></th>
           </tr>
@@ -736,6 +738,14 @@
         <div class="error-message" id="error_KETERANGAN"></div>
       </div>
 
+      <!-- Keterangan Update - hanya muncul saat edit -->
+      <div id="keteranganUpdateWrapper" class="col-span-2 hidden">
+        <label class="block text-sm font-medium mb-1">Keterangan Update <span id="keteranganUpdateRequired" class="text-red-500 hidden">*</span></label>
+        <textarea id="KETERANGAN_UPDATE" name="KETERANGAN_UPDATE" class="w-full border rounded-lg px-3 py-2" placeholder="Jelaskan alasan perubahan data..."></textarea>
+        <div class="error-message" id="error_KETERANGAN_UPDATE"></div>
+        <div id="keteranganUpdateHint" class="text-xs text-gray-500 mt-1 hidden">Wajib diisi karena ada perubahan data selain status aktif/inaktif</div>
+      </div>
+
       <!-- Create By -->
       <div class="col-span-2">
         <label class="block text-sm font-medium mb-1">Di Buat Oleh</label>
@@ -854,7 +864,8 @@ let columnFilters = {
   keterangan_simpan: "",
   tipe_retensi: "",
   tanggal_retensi: "",
-  create_by: ""
+  create_by: "",
+  update_info: ""
 };
 
 // Column filter elements (Admin only - dropdowns)
@@ -1316,7 +1327,8 @@ function applyColumnFilters() {
       15: "keterangan_simpan",
       16: "tipe_retensi",
       17: "tanggal_retensi",
-      19: "create_by"
+      19: "create_by",
+      20: "update_info"
     };
 
     // Check each filter
@@ -1439,6 +1451,15 @@ async function loadArsip(keyword = "", page = 1) {
       
       const rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
       
+      // Format update info
+      let updateInfo = '-';
+      if (arsip.UPDATE_BY || arsip.KETERANGAN_UPDATE) {
+        updateInfo = `<div class="text-xs">
+          ${arsip.UPDATE_BY ? `<div class="font-semibold text-blue-600">${arsip.UPDATE_BY}</div>` : ''}
+          ${arsip.KETERANGAN_UPDATE ? `<div class="text-gray-600 mt-1">${arsip.KETERANGAN_UPDATE}</div>` : ''}
+        </div>`;
+      }
+
       const row = `
         <tr class="hover:bg-gray-50 ${rowClass}" data-divisi-id="${arsip.ID_DIVISI || ''}" data-subdivisi-id="${arsip.ID_SUBDIVISI || ''}">
         <td class="px-4 py-3 w-[60px]">${rowNumber}</td>
@@ -1461,6 +1482,7 @@ async function loadArsip(keyword = "", page = 1) {
           <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
           <td class="px-4 py-3 w-[150px]">${statusBadge}</td>
           <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
+          <td class="px-4 py-3 w-[250px]">${updateInfo}</td>
           <td class="px-4 py-3 w-[120px]">${fileLink}</td>
           <td class="px-4 py-3 text-center space-x-2">
             <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
@@ -1554,6 +1576,11 @@ addBtn.addEventListener("click", async () => {
   resetNotaValidation();
   document.getElementById("arsipId").value = "";
   document.getElementById("modalTitle").innerText = "Tambah Arsip";
+
+  // Sembunyikan field KETERANGAN_UPDATE saat tambah baru
+  document.getElementById("keteranganUpdateWrapper").classList.add("hidden");
+  document.getElementById("KETERANGAN_UPDATE").value = "";
+
   await loadUserInfo();
 });
 
@@ -1642,18 +1669,24 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
+// Data original untuk perbandingan saat update
+let originalArsipData = {};
+
 // === EDIT ===
 async function editArsip(id) {
   try {
     const res = await fetchWithAuth(`${apiUrl}/${id}`);
     const response = await res.json();
-    
+
     if (!response.success) {
       showToast(response.message || "Gagal memuat data", false);
       return;
     }
-    
+
     const data = response.data;
+
+    // Simpan data original untuk perbandingan
+    originalArsipData = { ...data };
 
     modal.classList.add("show");
     clearErrors();
@@ -1663,7 +1696,7 @@ async function editArsip(id) {
     // Set edit mode for nota dinas validation
     isEditMode = true;
     originalNotaDinas = data.NO_NOTA_DINAS ?? "";
-    
+
     // Load user info first
     await loadUserInfo();
 
@@ -1688,19 +1721,104 @@ async function editArsip(id) {
       document.getElementById("ARSIP_INPUT").value = parts[2] || "";
     }
 
+    // Tampilkan field KETERANGAN_UPDATE saat edit
+    document.getElementById("keteranganUpdateWrapper").classList.remove("hidden");
+    document.getElementById("KETERANGAN_UPDATE").value = ""; // Reset value, user harus isi baru
+
+    // Setup listener untuk cek perubahan field
+    setupFieldChangeListeners();
+
     // Set nota dinas as valid (since it's existing data)
     if (originalNotaDinas) {
       isNotaDinasValid = true;
       lastCheckedNotaDinas = originalNotaDinas;
       updateNotaValidationUI("valid", "Data existing - sudah tervalidasi");
     }
-    
+
     updateSaveButtonState();
 
   } catch (err) {
     console.error(err);
     showToast("Gagal memuat data edit", false);
   }
+}
+
+// Cek apakah ada field lain selain KETERANGAN yang berubah
+function checkOtherFieldsChanged() {
+  const fieldsToCheck = [
+    'NO_INDEKS', 'NO_BERKAS', 'JUDUL_BERKAS', 'NO_ISI_BERKAS', 'JENIS_ARSIP',
+    'KODE_KLASIFIKASI', 'NO_NOTA_DINAS', 'TANGGAL_BERKAS', 'PERIHAL',
+    'TINGKAT_PENGEMBANGAN', 'KONDISI', 'KETERANGAN_SIMPAN',
+    'TIPE_RETENSI', 'TANGGAL_RETENSI'
+  ];
+
+  for (const field of fieldsToCheck) {
+    const el = document.getElementById(field);
+    if (el) {
+      const currentValue = el.value ?? '';
+      const originalValue = originalArsipData[field] ?? '';
+      if (currentValue !== originalValue) {
+        return true;
+      }
+    }
+  }
+
+  // Cek RAK_BAK_URUTAN secara khusus (gabungan 3 input)
+  const rak = document.getElementById("RAK_INPUT").value.trim();
+  const bak = document.getElementById("BAK_INPUT").value.trim();
+  const arsipInput = document.getElementById("ARSIP_INPUT").value.trim();
+  const currentLokasiSimpan = `${rak}/${bak}/${arsipInput}`;
+  const originalLokasiSimpan = originalArsipData.RAK_BAK_URUTAN ?? '';
+  if (currentLokasiSimpan !== originalLokasiSimpan) {
+    return true;
+  }
+
+  // Cek file upload
+  const fileInput = document.getElementById("FILE");
+  if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    return true;
+  }
+
+  return false;
+}
+
+// Update UI untuk menampilkan/sembunyikan required indicator
+function updateKeteranganUpdateRequirement() {
+  const otherFieldsChanged = checkOtherFieldsChanged();
+  const requiredSpan = document.getElementById("keteranganUpdateRequired");
+  const hintDiv = document.getElementById("keteranganUpdateHint");
+  const keteranganUpdateInput = document.getElementById("KETERANGAN_UPDATE");
+
+  if (otherFieldsChanged) {
+    requiredSpan.classList.remove("hidden");
+    hintDiv.classList.remove("hidden");
+    keteranganUpdateInput.setAttribute("required", "required");
+  } else {
+    requiredSpan.classList.add("hidden");
+    hintDiv.classList.add("hidden");
+    keteranganUpdateInput.removeAttribute("required");
+  }
+}
+
+// Setup listener untuk semua field yang perlu dipantau
+function setupFieldChangeListeners() {
+  const fieldsToWatch = [
+    'NO_INDEKS', 'NO_BERKAS', 'JUDUL_BERKAS', 'NO_ISI_BERKAS', 'JENIS_ARSIP',
+    'KODE_KLASIFIKASI', 'NO_NOTA_DINAS', 'TANGGAL_BERKAS', 'PERIHAL',
+    'TINGKAT_PENGEMBANGAN', 'KONDISI', 'KETERANGAN_SIMPAN',
+    'TIPE_RETENSI', 'TANGGAL_RETENSI', 'RAK_INPUT', 'BAK_INPUT', 'ARSIP_INPUT', 'FILE'
+  ];
+
+  fieldsToWatch.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    if (el) {
+      el.addEventListener('change', updateKeteranganUpdateRequirement);
+      el.addEventListener('input', updateKeteranganUpdateRequirement);
+    }
+  });
+
+  // Initial check
+  updateKeteranganUpdateRequirement();
 }
 
 // === DELETE ===

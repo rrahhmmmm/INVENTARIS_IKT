@@ -160,6 +160,29 @@ class T_ARSIPCONTROLLER extends Controller
         try {
             $arsip = T_arsip::findOrFail($id);
 
+            // Cek apakah ada field lain selain KETERANGAN yang berubah
+            $fieldsToCheck = [
+                'NO_INDEKS', 'NO_BERKAS', 'JUDUL_BERKAS', 'NO_ISI_BERKAS', 'JENIS_ARSIP',
+                'KODE_KLASIFIKASI', 'NO_NOTA_DINAS', 'TANGGAL_BERKAS', 'PERIHAL',
+                'TINGKAT_PENGEMBANGAN', 'KONDISI', 'RAK_BAK_URUTAN', 'KETERANGAN_SIMPAN',
+                'TIPE_RETENSI', 'TANGGAL_RETENSI'
+            ];
+
+            $otherFieldsChanged = false;
+            foreach ($fieldsToCheck as $field) {
+                $oldValue = $arsip->$field ?? '';
+                $newValue = $request->$field ?? '';
+                if ($oldValue != $newValue) {
+                    $otherFieldsChanged = true;
+                    break;
+                }
+            }
+
+            // Juga cek jika ada file baru diupload
+            if ($request->hasFile('FILE')) {
+                $otherFieldsChanged = true;
+            }
+
             $validated = $request->validate([
                 'NO_INDEKS'             => 'required|string|max:100',
                 'NO_BERKAS'             => 'required|string|max:100',
@@ -177,6 +200,7 @@ class T_ARSIPCONTROLLER extends Controller
                 'TIPE_RETENSI'          => 'nullable|string|max:50',
                 'TANGGAL_RETENSI'       => 'nullable|date',
                 'KETERANGAN'            => 'nullable|string|max:255',
+                'KETERANGAN_UPDATE'     => $otherFieldsChanged ? 'required|string|max:255' : 'nullable|string|max:255',
                 'STATUS'                => 'nullable|string|max:20',
                 'param1'                => 'nullable|string|max:255',
                 'param2'                => 'nullable|string|max:255',
@@ -187,6 +211,7 @@ class T_ARSIPCONTROLLER extends Controller
                 'NO_INDEKS.required' => 'No Indeks wajib diisi',
                 'NO_BERKAS.required' => 'No Berkas wajib diisi',
                 'JUDUL_BERKAS.required' => 'Judul Berkas wajib diisi',
+                'KETERANGAN_UPDATE.required' => 'Keterangan Update wajib diisi karena ada perubahan data',
                 'FILE.mimes' => 'File harus berformat: pdf, doc, docx, jpg, jpeg, atau png',
                 'FILE.max' => 'Ukuran file maksimal 20MB',
             ]);
@@ -202,6 +227,7 @@ class T_ARSIPCONTROLLER extends Controller
             }
 
             $validated['UPDATE_BY'] = Auth::user()->username ?? '-';
+            $validated['UPDATE_DATE'] = now();
             $arsip->update($validated);
 
             return response()->json([

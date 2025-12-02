@@ -35,6 +35,7 @@ return new class extends Migration
             $table->string('CREATE_BY', 50);
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 50)->nullable();
+            $table->string('KETERANGAN_UPDATE', 255)->nullable();
             $table->timestamp('UPDATE_DATE')->useCurrentOnUpdate()->nullable();
             $table->integer('STATUS')->default(1);
             $table->string('param1')->nullable();

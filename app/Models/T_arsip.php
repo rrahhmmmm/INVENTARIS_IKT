@@ -33,6 +33,7 @@ class T_arsip extends Model
         'CREATE_BY',
         'CREATE_DATE',
         'UPDATE_BY',
+        'KETERANGAN_UPDATE',
         'UPDATE_DATE',
         'STATUS',
     ];
