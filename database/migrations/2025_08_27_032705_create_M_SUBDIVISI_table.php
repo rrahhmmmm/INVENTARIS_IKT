@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('ID_SUBDIVISI', true);
             $table->integer('ID_DIVISI')->nullable();
             $table->string('NAMA_SUBDIVISI', 100);
+            $table->string('KODE_LOKASI', 100)->nullable();
             $table->string('CREATE_BY', 100);
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 100)->nullable();
@@ -27,61 +28,71 @@ return new class extends Migration
             $table->string('param3')->nullable();
         });
 
-        // Trigger INSERT
-        DB::unprepared('
-            CREATE TRIGGER trg_m_subdivisi_insert
-            AFTER INSERT ON M_SUBDIVISI
-            FOR EACH ROW
-            BEGIN
-                INSERT INTO H_M_SUBDIVISI
-                (ID_SUBDIVISI, ID_DIVISI, NAMA_SUBDIVISI, CREATE_BY, CREATE_DATE,
-                 UPDATE_BY, UPDATE_DATE, deskripsi, STATUS, param1, param2, param3)
-                VALUES
-                (NEW.ID_SUBDIVISI, NEW.ID_DIVISI, NEW.NAMA_SUBDIVISI, NEW.CREATE_BY, NEW.CREATE_DATE,
-                 NEW.UPDATE_BY, NEW.UPDATE_DATE, NEW.deskripsi, NEW.STATUS, NEW.param1, NEW.param2, NEW.param3);
-            END
-        ');
+    // ===========================================
+    // TRIGGER AFTER insert
+    // ===========================================
 
-        // Trigger UPDATE
         DB::unprepared('
-            CREATE TRIGGER trg_m_subdivisi_update
-            AFTER UPDATE ON M_SUBDIVISI
-            FOR EACH ROW
-            BEGIN
-                INSERT INTO H_M_SUBDIVISI
-                (ID_SUBDIVISI, ID_DIVISI, NAMA_SUBDIVISI, CREATE_BY, CREATE_DATE,
-                 UPDATE_BY, UPDATE_DATE, deskripsi, STATUS, param1, param2, param3)
-                VALUES
-                (NEW.ID_SUBDIVISI, NEW.ID_DIVISI, NEW.NAMA_SUBDIVISI, NEW.CREATE_BY, NEW.CREATE_DATE,
-                 NEW.UPDATE_BY, NEW.UPDATE_DATE, NEW.deskripsi, 2, NEW.param1, NEW.param2, NEW.param3);
-            END
-        ');
+        CREATE TRIGGER trg_m_subdivisi_insert
+        AFTER INSERT ON M_SUBDIVISI
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO H_M_SUBDIVISI
+            (ID_SUBDIVISI, ID_DIVISI, NAMA_SUBDIVISI, KODE_LOKASI, CREATE_BY, CREATE_DATE,
+             UPDATE_BY, UPDATE_DATE, deskripsi, STATUS, param1, param2, param3)
+            VALUES
+            (NEW.ID_SUBDIVISI, NEW.ID_DIVISI, NEW.NAMA_SUBDIVISI, NEW.KODE_LOKASI, NEW.CREATE_BY, NEW.CREATE_DATE,
+             NEW.UPDATE_BY, NEW.UPDATE_DATE, NEW.deskripsi, NEW.STATUS, NEW.param1, NEW.param2, NEW.param3);
+        END
+    ');
 
-        // Update status otomatis sebelum UPDATE
-        DB::unprepared('
-            CREATE TRIGGER trg_status_subdivisi
-            BEFORE UPDATE ON M_SUBDIVISI
-            FOR EACH ROW
-            BEGIN
-                SET NEW.STATUS = 2;
-            END
-        ');
+    // ===========================================
+    // TRIGGER AFTER UPDATE
+    // ===========================================
+    DB::unprepared('
+        CREATE TRIGGER trg_m_subdivisi_update
+        AFTER UPDATE ON M_SUBDIVISI
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO H_M_SUBDIVISI
+            (ID_SUBDIVISI, ID_DIVISI, NAMA_SUBDIVISI, KODE_LOKASI, CREATE_BY, CREATE_DATE,
+             UPDATE_BY, UPDATE_DATE, deskripsi, STATUS, param1, param2, param3)
+            VALUES
+            (NEW.ID_SUBDIVISI, NEW.ID_DIVISI, NEW.NAMA_SUBDIVISI, NEW.KODE_LOKASI, NEW.CREATE_BY, NEW.CREATE_DATE,
+             NEW.UPDATE_BY, NEW.UPDATE_DATE, NEW.deskripsi, 2, NEW.param1, NEW.param2, NEW.param3);
+        END
+    ');
 
-        // Trigger DELETE
-        DB::unprepared('
-            CREATE TRIGGER trg_m_subdivisi_delete
-            AFTER DELETE ON M_SUBDIVISI
-            FOR EACH ROW
-            BEGIN
-                INSERT INTO H_M_SUBDIVISI
-                (ID_SUBDIVISI, ID_DIVISI, NAMA_SUBDIVISI, CREATE_BY, CREATE_DATE,
-                 UPDATE_BY, UPDATE_DATE, deskripsi, STATUS, param1, param2, param3)
-                VALUES
-                (OLD.ID_SUBDIVISI, OLD.ID_DIVISI, OLD.NAMA_SUBDIVISI, OLD.CREATE_BY, OLD.CREATE_DATE,
-                 OLD.UPDATE_BY, OLD.UPDATE_DATE, OLD.deskripsi, 99, OLD.param1, OLD.param2, OLD.param3);
-            END
-        ');
-    }
+    // ===========================================
+    // TRIGGER BEFORE UPDATE (set status = 2)
+    // ===========================================
+    DB::unprepared('
+        CREATE TRIGGER trg_status_subdivisi
+        BEFORE UPDATE ON M_SUBDIVISI
+        FOR EACH ROW
+        BEGIN
+            SET NEW.STATUS = 2;
+        END
+    ');
+
+    // ===========================================
+    // TRIGGER AFTER DELETE (status 99)
+    // ===========================================
+    DB::unprepared('
+        CREATE TRIGGER trg_m_subdivisi_delete
+        AFTER DELETE ON M_SUBDIVISI
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO H_M_SUBDIVISI
+            (ID_SUBDIVISI, ID_DIVISI, NAMA_SUBDIVISI, KODE_LOKASI, CREATE_BY, CREATE_DATE,
+             UPDATE_BY, UPDATE_DATE, deskripsi, STATUS, param1, param2, param3)
+            VALUES
+            (OLD.ID_SUBDIVISI, OLD.ID_DIVISI, OLD.NAMA_SUBDIVISI, OLD.KODE_LOKASI, OLD.CREATE_BY, OLD.CREATE_DATE,
+             OLD.UPDATE_BY, OLD.UPDATE_DATE, OLD.deskripsi, 99, OLD.param1, OLD.param2, OLD.param3);
+        END
+    ');
+}
+
 
     /**
      * Reverse the migrations.

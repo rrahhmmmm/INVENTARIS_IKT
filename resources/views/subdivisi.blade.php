@@ -75,6 +75,7 @@
         <tr>
           <th class="px-4 md:px-6 py-3 text-left font-medium">NO</th>
           <th class="px-4 md:px-6 py-3 text-left font-medium">Nama Subdivisi</th>
+          <th class="px-4 md:px-6 py-3 text-left font-medium">Kode Lokasi</th>
           <th class="px-4 md:px-6 py-3 text-left font-medium">Divisi</th>
           <th class="px-4 md:px-6 py-3 text-left font-medium">Dibuat Oleh</th>
           <th class="px-4 md:px-6 py-3 text-center font-medium">Aksi</th>
@@ -146,6 +147,11 @@
         <div id="namaError" class="text-red-600 text-sm mt-1 hidden">
           Nama subdivisi hanya boleh berisi huruf dan spasi.
         </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Kode Lokasi</label>
+        <input type="text" id="kodeLokasi" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Contoh: LOK-001">
       </div>
 
       <div>
@@ -294,11 +300,12 @@ async function loadSubdivisi(keyword = "", page = 1) {
         data.forEach((sub, i) => {
             const rowNumber = ((response.current_page - 1) * perPage) + i + 1;
             const divisiName = sub.divisi && sub.divisi.NAMA_DIVISI ? sub.divisi.NAMA_DIVISI : (sub.ID_DIVISI ?? '-');
-            
+
             let row = `
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4">${rowNumber}</td>
                     <td class="px-6 py-4">${sub.NAMA_SUBDIVISI}</td>
+                    <td class="px-6 py-4">${sub.KODE_LOKASI ?? '-'}</td>
                     <td class="px-6 py-4">${divisiName}</td>
                     <td class="px-6 py-4">${sub.CREATE_BY ?? '-'}</td>
                     <td class="px-6 py-4 text-center space-x-2">
@@ -430,6 +437,7 @@ form.addEventListener("submit", async function(e) {
     const payload = {
         ID_DIVISI: document.getElementById("divisiSelect").value,
         NAMA_SUBDIVISI: namaValue,
+        KODE_LOKASI: document.getElementById("kodeLokasi").value.trim(),
         CREATE_BY: document.getElementById("createBy").value
     };
 
@@ -482,6 +490,7 @@ async function editSubdivisi(id) {
         document.getElementById("modalTitle").innerText = "Edit Subdivisi";
         document.getElementById("subdivisiId").value = data.ID_SUBDIVISI;
         document.getElementById("namaSubdivisi").value = data.NAMA_SUBDIVISI;
+        document.getElementById("kodeLokasi").value = data.KODE_LOKASI ?? "";
         document.getElementById("createBy").value = data.CREATE_BY ?? "";
         await loadDivisiOptions();
         document.getElementById("divisiSelect").value = data.ID_DIVISI;

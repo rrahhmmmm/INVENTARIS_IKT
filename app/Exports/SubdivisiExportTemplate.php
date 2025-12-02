@@ -22,6 +22,7 @@ class SubdivisiExportTemplate implements WithHeadings, WithEvents
         return [
             'Divisi',
             'Nama Subdivisi',
+            'Kode Lokasi'
         ];
     }
 

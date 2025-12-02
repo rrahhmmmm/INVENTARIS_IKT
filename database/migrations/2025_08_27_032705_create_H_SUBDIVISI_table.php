@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('ID_SUBDIVISI')->nullable();
             $table->integer('ID_DIVISI');
             $table->string('NAMA_SUBDIVISI', 100);
+            $table->string('KODE_LOKASI', 100)->nullable();
             $table->string('CREATE_BY', 50);
             $table->timestamp('CREATE_DATE')->useCurrent();
             $table->string('UPDATE_BY', 50)->nullable();

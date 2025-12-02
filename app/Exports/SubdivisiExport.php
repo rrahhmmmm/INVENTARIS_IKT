@@ -26,6 +26,7 @@ class SubdivisiExport implements FromCollection, WithHeadings, WithMapping, Shou
         return [
             'ID Subdivisi',
             'Nama Subdivisi',
+            'Kode Lokasi',
             'Divisi',
             'Created By'
         ];
@@ -39,7 +40,8 @@ class SubdivisiExport implements FromCollection, WithHeadings, WithMapping, Shou
         return [
             $subdivisi->ID_SUBDIVISI,
             $subdivisi->NAMA_SUBDIVISI,
-            $subdivisi->divisi->NAMA_DIVISI ?? '-',   // ambil nama divisi, fallback '-'
+            $subdivisi->KODE_LOKASI ?? '-',
+            $subdivisi->divisi->NAMA_DIVISI ?? '-',
             $subdivisi->CREATE_BY,
         ];
     }

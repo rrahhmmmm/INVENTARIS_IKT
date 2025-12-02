@@ -58,6 +58,7 @@ class SubdivisiImport implements ToCollection, WithHeadingRow
         foreach ($rows as $row) {
             $namaDivisi = trim($row['divisi'] ?? $row['DIVISI'] ?? '');
             $namaSubdivisi = trim($row['nama_subdivisi'] ?? $row['NAMA_SUBDIVISI'] ?? '');
+            $kodeLokasi = trim($row['kode_lokasi'] ?? $row['KODE_LOKASI'] ?? '');
             $createBy = trim($row['create_by'] ?? $row['CREATE_BY'] ?? '');
 
             // Skip jika nama subdivisi kosong
@@ -110,6 +111,7 @@ class SubdivisiImport implements ToCollection, WithHeadingRow
             M_subdivisi::create([
                 'ID_DIVISI'      => $divisi->ID_DIVISI,
                 'NAMA_SUBDIVISI' => $namaSubdivisi,
+                'KODE_LOKASI'    => $kodeLokasi ?: null,
                 'CREATE_BY'      => $createBy ?: (auth()->user()->username ?? 'system')
             ]);
 

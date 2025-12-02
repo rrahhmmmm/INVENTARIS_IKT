@@ -81,6 +81,7 @@ class M_SUBDIVISICONTROLLER extends Controller
         $request->validate([
             'ID_DIVISI'      => 'required|integer|exists:M_DIVISI,ID_DIVISI',
             'NAMA_SUBDIVISI' => 'required|string|max:100',
+            'KODE_LOKASI'    => 'nullable|string|max:50',
             'CREATE_BY'      => 'nullable|string|max:100'
         ]);
 
@@ -97,6 +98,7 @@ class M_SUBDIVISICONTROLLER extends Controller
         $subdivisi = M_subdivisi::create([
             'ID_DIVISI'      => $request->ID_DIVISI,
             'NAMA_SUBDIVISI' => $request->NAMA_SUBDIVISI,
+            'KODE_LOKASI'    => $request->KODE_LOKASI,
             'CREATE_BY'      => $request->CREATE_BY
         ]);
 
@@ -119,6 +121,7 @@ class M_SUBDIVISICONTROLLER extends Controller
         $request->validate([
             'ID_DIVISI'      => 'required|integer|exists:M_DIVISI,ID_DIVISI',
             'NAMA_SUBDIVISI' => 'required|string|max:100',
+            'KODE_LOKASI'    => 'nullable|string|max:50',
             'CREATE_BY'      => 'nullable|string|max:100'
         ]);
 
@@ -135,6 +138,7 @@ class M_SUBDIVISICONTROLLER extends Controller
         $subdivisi->update([
             'ID_DIVISI'      => $request->ID_DIVISI,
             'NAMA_SUBDIVISI' => $request->NAMA_SUBDIVISI,
+            'KODE_LOKASI'    => $request->KODE_LOKASI,
             'CREATE_BY'      => $request->CREATE_BY
         ]);
 

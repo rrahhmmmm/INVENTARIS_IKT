@@ -16,6 +16,7 @@ class M_subdivisi extends Model
    protected $fillable = [
    'ID_DIVISI',
     'NAMA_SUBDIVISI',
+    'KODE_LOKASI',
     'CREATE_BY'
    ];
 
