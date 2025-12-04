@@ -72,7 +72,7 @@ class T_ARSIPCONTROLLER extends Controller
                 'param1'                => 'nullable|string|max:255',
                 'param2'                => 'nullable|string|max:255',
                 'param3'                => 'nullable|string|max:255',
-                'FILE'                  => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'FILE'                  => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,zip|max:20480',
                 'CREATE_BY'             => 'nullable|string|max:100',
             ], [
                 // Custom error messages
@@ -80,7 +80,7 @@ class T_ARSIPCONTROLLER extends Controller
                 'NO_INDEKS.required' => 'No Indeks wajib diisi',
                 'NO_BERKAS.required' => 'No Berkas wajib diisi',
                 'JUDUL_BERKAS.required' => 'Judul Berkas wajib diisi',
-                'FILE.mimes' => 'File harus berformat: pdf, doc, docx, jpg, jpeg, atau png',
+                'FILE.mimes' => 'File harus berformat: pdf, doc, docx, jpg, jpeg, zip, atau png',
                 'FILE.max' => 'Ukuran file maksimal 20MB',
             ]);
 
@@ -205,14 +205,14 @@ class T_ARSIPCONTROLLER extends Controller
                 'param1'                => 'nullable|string|max:255',
                 'param2'                => 'nullable|string|max:255',
                 'param3'                => 'nullable|string|max:255',
-                'FILE'                  => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:20480',
+                'FILE'                  => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,zip|max:20480',
             ], [
                 'NO_NOTA_DINAS.unique' => 'Nomor Nota Dinas sudah digunakan',
                 'NO_INDEKS.required' => 'No Indeks wajib diisi',
                 'NO_BERKAS.required' => 'No Berkas wajib diisi',
                 'JUDUL_BERKAS.required' => 'Judul Berkas wajib diisi',
                 'KETERANGAN_UPDATE.required' => 'Keterangan Update wajib diisi karena ada perubahan data',
-                'FILE.mimes' => 'File harus berformat: pdf, doc, docx, jpg, jpeg, atau png',
+                'FILE.mimes' => 'File harus berformat: pdf, doc, docx, jpg, jpeg, zip, atau png',
                 'FILE.max' => 'Ukuran file maksimal 20MB',
             ]);
 

@@ -622,23 +622,22 @@
 
       <!-- No Isi Berkas -->
       <div>
-        <label class="block text-sm font-medium mb-1">No Isi Berkas</label>
+        <label class="block text-sm font-medium mb-1">No Isi Berkas <span class="text-red-500">*</span></label>
         <input id="NO_ISI_BERKAS" name="NO_ISI_BERKAS" class="w-full border rounded-lg px-3 py-2">
         <div class="error-message" id="error_NO_ISI_BERKAS"></div>
       </div>
 
       <!-- Jenis Naskah Dinas -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Jenis Naskah Dinas</label>
-        <select id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2">
-          <option value="">-- Pilih Jenis Naskah Dinas --</option>
-        </select>
+      <div class="relative">
+        <label class="block text-sm font-medium mb-1">Jenis Naskah Dinas <span class="text-red-500">*</span></label>
+        <input id="JENIS_ARSIP" name="JENIS_ARSIP" class="w-full border rounded-lg px-3 py-2" placeholder="Ketik atau pilih jenis naskah dinas..." autocomplete="off">
         <div class="error-message" id="error_JENIS_ARSIP"></div>
+        <ul id="jenisNaskahSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
       </div>
 
       <!-- Kode Klasifikasi -->
       <div class="relative">
-        <label class="block text-sm font-medium mb-1">Kode Klasifikasi</label>
+        <label class="block text-sm font-medium mb-1">Kode Klasifikasi <span class="text-red-500">*</span></label>
         <input id="KODE_KLASIFIKASI" name="KODE_KLASIFIKASI" class="w-full border rounded-lg px-3 py-2" autocomplete="off">
         <div class="error-message" id="error_KODE_KLASIFIKASI"></div>
         <ul id="klasifikasiSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
@@ -664,21 +663,21 @@
 
       <!-- Tanggal Berkas -->
       <div>
-        <label class="block text-sm font-medium mb-1">Tanggal Berkas</label>
+        <label class="block text-sm font-medium mb-1">Tanggal Berkas <span class="text-red-500">*</span></label>
         <input type="date" name="TANGGAL_BERKAS" id="TANGGAL_BERKAS" class="w-full border rounded-lg px-3 py-2">
         <div class="error-message" id="error_TANGGAL_BERKAS"></div>
       </div>
 
       <!-- Perihal -->
       <div>
-        <label class="block text-sm font-medium mb-1">Perihal</label>
+        <label class="block text-sm font-medium mb-1">Perihal <span class="text-red-500">*</span></label>
         <input id="PERIHAL" name="PERIHAL" class="w-full border rounded-lg px-3 py-2">
         <div class="error-message" id="error_PERIHAL"></div>
       </div>
 
       <!-- Tingkat Pengembangan -->
       <div>
-        <label class="block text-sm font-medium mb-1">Tingkat Pengembangan</label>
+        <label class="block text-sm font-medium mb-1">Tingkat Pengembanga <span class="text-red-500">*</span></label>
         <select id="TINGKAT_PENGEMBANGAN" name="TINGKAT_PENGEMBANGAN" class="w-full border rounded-lg px-3 py-2">
           <option value="">-- Pilih Tingkat Pengembangan</option>
         </select>
@@ -687,7 +686,7 @@
 
       <!-- Kondisi -->
       <div>
-        <label class="block text-sm font-medium mb-1">Kondisi</label>
+        <label class="block text-sm font-medium mb-1">Kondisi <span class="text-red-500">*</span></label>
         <select id="KONDISI" name="KONDISI" class="w-full border rounded-lg px-3 py-2">
           <option value="">-- Pilih Kondisi --</option>
         </select>
@@ -695,12 +694,25 @@
       </div>
 
       <!-- Lokasi Simpan -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Lokasi Simpan</label>
+      <div class="col-span-2">
+        <label class="block text-sm font-medium mb-1">Lokasi Simpan <span class="text-red-500">*</span></label>
         <div class="flex gap-2">
-          <input id="RAK_INPUT" type="text" placeholder="Lemari" class="w-1/3 border rounded-lg px-3 py-2">
-          <input id="BAK_INPUT" type="text" placeholder="Baris" class="w-1/3 border rounded-lg px-3 py-2">
-          <input id="ARSIP_INPUT" type="text" placeholder="Box" class="w-1/3 border rounded-lg px-3 py-2">
+          <div class="w-1/4">
+            <input id="KODE_LOKASI_INPUT" type="text" placeholder="Kode Lokasi" class="w-full border rounded-lg px-3 py-2 bg-gray-50">
+            <span class="text-xs text-gray-500">Kode Lokasi</span>
+          </div>
+          <div class="w-1/4">
+            <input id="RAK_INPUT" type="text" placeholder="Lemari" class="w-full border rounded-lg px-3 py-2">
+            <span class="text-xs text-gray-500">Lemari</span>
+          </div>
+          <div class="w-1/4">
+            <input id="BAK_INPUT" type="text" placeholder="Baris" class="w-full border rounded-lg px-3 py-2">
+            <span class="text-xs text-gray-500">Baris</span>
+          </div>
+          <div class="w-1/4">
+            <input id="ARSIP_INPUT" type="text" placeholder="Box" class="w-full border rounded-lg px-3 py-2">
+            <span class="text-xs text-gray-500">Box</span>
+          </div>
         </div>
         <input type="hidden" id="RAK_BAK_URUTAN" name="RAK_BAK_URUTAN">
         <div class="error-message" id="error_RAK_BAK_URUTAN"></div>
@@ -708,14 +720,14 @@
 
       <!-- Keterangan Simpan -->
       <div class="col-span-2">
-        <label class="block text-sm font-medium mb-1">Keterangan Simpan</label>
+        <label class="block text-sm font-medium mb-1">Keterangan Simpan <span class="text-red-500">*</span> </label>
         <textarea id="KETERANGAN_SIMPAN" name="KETERANGAN_SIMPAN" class="w-full border rounded-lg px-3 py-2"></textarea>
         <div class="error-message" id="error_KETERANGAN_SIMPAN"></div>
       </div>
 
       <!-- Tipe Retensi -->
       <div class="relative">
-        <label class="block text-sm font-medium mb-1">Tipe Retensi</label>
+        <label class="block text-sm font-medium mb-1">Tipe Retensi <span class="text-red-500">*</span> </label>
         <input id="TIPE_RETENSI" name="TIPE_RETENSI" class="w-full border rounded-lg px-3 py-2" autocomplete="off">
         <div class="error-message" id="error_TIPE_RETENSI"></div>
         <ul id="retensiSuggestions" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full hidden z-50 max-h-60 overflow-y-auto"></ul>
@@ -723,14 +735,14 @@
 
       <!-- Tanggal Retensi -->
       <div>
-        <label class="block text-sm font-medium mb-1">Tanggal Retensi</label>
+        <label class="block text-sm font-medium mb-1">Tanggal Retensi <span class="text-red-500">*</span> </label>
         <input type="date" id="TANGGAL_RETENSI" name="TANGGAL_RETENSI" class="w-full border rounded-lg px-3 py-2">
         <div class="error-message" id="error_TANGGAL_RETENSI"></div>
       </div>
 
       <!-- Keterangan -->
       <div>
-        <label class="block text-sm font-medium mb-1">Keterangan</label>
+        <label class="block text-sm font-medium mb-1">Keterangan </label>
         <select id="KETERANGAN" name="KETERANGAN" class="w-full border rounded-lg px-3 py-2">
           <option value="AKTIF">AKTIF</option>
           <option value="INAKTIF">INAKTIF</option>
@@ -755,8 +767,8 @@
       <!-- File Upload -->
       <div class="col-span-2">
         <label class="block text-sm font-medium mb-1">Upload File Arsip</label>
-        <input type="file" id="FILE" name="FILE" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full border rounded-lg px-3 py-2">
-        <div class="text-xs text-gray-500 mt-1">Format: PDF, DOC, DOCX, JPG, JPEG, PNG (Maks. 20MB)</div>
+        <input type="file" id="FILE" name="FILE" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" class="w-full border rounded-lg px-3 py-2">
+        <div class="text-xs text-gray-500 mt-1">Format: PDF, DOC, DOCX, JPG, JPEG, PNG, zip (Maks. 20MB)</div>
         <div class="error-message" id="error_FILE"></div>
       </div>
 
@@ -812,7 +824,8 @@ const suggestionRetensi = document.getElementById("retensiSuggestions");
 // Select elements
 const kondisiSelect = document.getElementById("KONDISI");
 const pengembangan = document.getElementById("TINGKAT_PENGEMBANGAN");
-const jenisNaskahDinas = document.getElementById('JENIS_ARSIP');
+const jenisNaskahInput = document.getElementById('JENIS_ARSIP');
+const suggestionJenisNaskah = document.getElementById('jenisNaskahSuggestions');
 
 // Pagination elements
 const paginationControls = document.getElementById("paginationControls");
@@ -891,6 +904,7 @@ let filterInaktif = true;
 let indeksData = [];
 let klasifikasiData = [];
 let retensiData = [];
+let jenisNaskahData = [];
 
 // === NOTA DINAS VALIDATION FUNCTIONS ===
 function updateNotaValidationUI(status, message) {
@@ -1162,6 +1176,10 @@ async function loadUserInfo() {
     document.getElementById("DIVISI_NAME").value = user.divisi?.NAMA_DIVISI ?? "-";
     document.getElementById("SUBDIVISI_NAME").value = user.subdivisi?.NAMA_SUBDIVISI ?? "-";
     document.getElementById("CREATE_BY").value = user.username ?? "-";
+
+    // Set KODE_LOKASI dari subdivisi user
+    const kodeLokasi = user.subdivisi?.KODE_LOKASI ?? "";
+    document.getElementById("KODE_LOKASI_INPUT").value = kodeLokasi;
   } catch (err) {
     console.error("Gagal memuat user info:", err);
     showToast("Gagal memuat data user", false);
@@ -1613,11 +1631,12 @@ form.addEventListener("submit", async (e) => {
     }
   }
 
-  // Lokasi simpan
+  // Lokasi simpan (KODE_LOKASI/Lemari/Baris/Box)
+  const kodeLokasi = document.getElementById("KODE_LOKASI_INPUT").value.trim();
   const rak = document.getElementById("RAK_INPUT").value.trim();
   const bak = document.getElementById("BAK_INPUT").value.trim();
   const arsip = document.getElementById("ARSIP_INPUT").value.trim();
-  document.getElementById("RAK_BAK_URUTAN").value = `${rak}/${bak}/${arsip}`;
+  document.getElementById("RAK_BAK_URUTAN").value = `${kodeLokasi}/${rak}/${bak}/${arsip}`;
 
   const id = document.getElementById("arsipId").value;
   const method = "POST";
@@ -1713,12 +1732,13 @@ async function editArsip(id) {
       if (el) el.value = data[key] ?? "";
     });
 
-    // Parse lokasi simpan
+    // Parse lokasi simpan (KODE_LOKASI/Lemari/Baris/Box)
     if (data.RAK_BAK_URUTAN) {
       const parts = data.RAK_BAK_URUTAN.split("/");
-      document.getElementById("RAK_INPUT").value = parts[0] || "";
-      document.getElementById("BAK_INPUT").value = parts[1] || "";
-      document.getElementById("ARSIP_INPUT").value = parts[2] || "";
+      document.getElementById("KODE_LOKASI_INPUT").value = parts[0] || "";
+      document.getElementById("RAK_INPUT").value = parts[1] || "";
+      document.getElementById("BAK_INPUT").value = parts[2] || "";
+      document.getElementById("ARSIP_INPUT").value = parts[3] || "";
     }
 
     // Tampilkan field KETERANGAN_UPDATE saat edit
@@ -1763,11 +1783,12 @@ function checkOtherFieldsChanged() {
     }
   }
 
-  // Cek RAK_BAK_URUTAN secara khusus (gabungan 3 input)
+  // Cek RAK_BAK_URUTAN secara khusus (gabungan 4 input: KODE_LOKASI/Lemari/Baris/Box)
+  const kodeLokasi = document.getElementById("KODE_LOKASI_INPUT").value.trim();
   const rak = document.getElementById("RAK_INPUT").value.trim();
   const bak = document.getElementById("BAK_INPUT").value.trim();
   const arsipInput = document.getElementById("ARSIP_INPUT").value.trim();
-  const currentLokasiSimpan = `${rak}/${bak}/${arsipInput}`;
+  const currentLokasiSimpan = `${kodeLokasi}/${rak}/${bak}/${arsipInput}`;
   const originalLokasiSimpan = originalArsipData.RAK_BAK_URUTAN ?? '';
   if (currentLokasiSimpan !== originalLokasiSimpan) {
     return true;
@@ -1806,7 +1827,7 @@ function setupFieldChangeListeners() {
     'NO_INDEKS', 'NO_BERKAS', 'JUDUL_BERKAS', 'NO_ISI_BERKAS', 'JENIS_ARSIP',
     'KODE_KLASIFIKASI', 'NO_NOTA_DINAS', 'TANGGAL_BERKAS', 'PERIHAL',
     'TINGKAT_PENGEMBANGAN', 'KONDISI', 'KETERANGAN_SIMPAN',
-    'TIPE_RETENSI', 'TANGGAL_RETENSI', 'RAK_INPUT', 'BAK_INPUT', 'ARSIP_INPUT', 'FILE'
+    'TIPE_RETENSI', 'TANGGAL_RETENSI', 'KODE_LOKASI_INPUT', 'RAK_INPUT', 'BAK_INPUT', 'ARSIP_INPUT', 'FILE'
   ];
 
   fieldsToWatch.forEach(fieldId => {
@@ -1830,9 +1851,10 @@ async function deleteArsip(id) {
     const data = await res.json();
     
     if (!res.ok) throw new Error(data.message || "Gagal menghapus");
-    
+
     showToast(data.message || "Data berhasil dihapus");
     loadFilterCounts();
+    loadOverdueNotifications(); // Refresh notifikasi setelah delete
     loadArsip(lastSearchKeyword, currentPage);
   } catch (err) {
     console.error(err);
@@ -2107,19 +2129,58 @@ async function loadJenisNaskahDinasData() {
   try {
     const res = await fetchWithAuth("/api/m_jenisnaskah/all");
     if (!res.ok) throw new Error("Gagal memuat data jenis naskah dinas");
-    const jenisNaskahData = await res.json();
-    
-    jenisNaskahDinas.innerHTML = '<option value="">-- Pilih Jenis Naskah Dinas --</option>';
-    jenisNaskahData.forEach(item => {
-      const option = document.createElement("option");
-      option.value = item.NAMA_JENIS;
-      option.textContent = item.NAMA_JENIS;
-      jenisNaskahDinas.appendChild(option);
-    });
+    jenisNaskahData = await res.json();
   } catch (err) {
     console.error("Gagal ambil data jenis naskah dinas:", err);
   }
 }
+
+// === AUTOCOMPLETE: JENIS NASKAH DINAS ===
+function showJenisNaskahSuggestions(filterQuery = "") {
+  suggestionJenisNaskah.innerHTML = "";
+
+  const query = filterQuery.toLowerCase().trim();
+
+  // Filter data berdasarkan query, jika kosong tampilkan semua
+  const filtered = query
+    ? jenisNaskahData.filter(item => item.NAMA_JENIS?.toLowerCase().includes(query))
+    : jenisNaskahData;
+
+  if (filtered.length === 0) {
+    suggestionJenisNaskah.classList.add("hidden");
+    return;
+  }
+
+  filtered.forEach(item => {
+    const li = document.createElement("li");
+    li.className = "px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm border-b last:border-b-0";
+    li.textContent = item.NAMA_JENIS;
+    li.addEventListener("click", () => {
+      jenisNaskahInput.value = item.NAMA_JENIS;
+      suggestionJenisNaskah.classList.add("hidden");
+    });
+    suggestionJenisNaskah.appendChild(li);
+  });
+
+  suggestionJenisNaskah.classList.remove("hidden");
+}
+
+// Event: Focus - tampilkan semua suggestion
+jenisNaskahInput.addEventListener("focus", () => {
+  showJenisNaskahSuggestions(jenisNaskahInput.value);
+});
+
+// Event: Input - filter suggestion berdasarkan input
+jenisNaskahInput.addEventListener("input", () => {
+  showJenisNaskahSuggestions(jenisNaskahInput.value);
+});
+
+// Event: Click outside - hide suggestion
+document.addEventListener("click", (e) => {
+  if (!jenisNaskahInput.contains(e.target) && !suggestionJenisNaskah.contains(e.target)) {
+    suggestionJenisNaskah.classList.add("hidden");
+  }
+});
 
   // === HANDLE NOTIFICATION DELETE ===
 function handleNotificationDelete(event, arsipId) {
