@@ -397,6 +397,9 @@
       <button id="addArsipBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
         <i class="fas fa-plus"></i> <span>Tambah Arsip</span>
       </button>
+      <button id="exportExcelBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <i class="fas fa-file-excel"></i> <span>Download Excel</span>
+      </button>
     </div>
     
     <div class="relative space-x-2">
@@ -1503,8 +1506,11 @@ async function loadArsip(keyword = "", page = 1) {
           <td class="px-4 py-3 w-[250px]">${updateInfo}</td>
           <td class="px-4 py-3 w-[120px]">${fileLink}</td>
           <td class="px-4 py-3 text-center space-x-2">
-            <button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-            <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+            ${(arsip.KETERANGAN === 'INAKTIF' && !isAdmin)
+              ? '<span class="text-gray-400 text-xs">GABOLEH</span>'
+              : `<button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                 <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>`
+            }
           </td>
         </tr>`;
       tableBody.insertAdjacentHTML("beforeend", row);
@@ -1584,6 +1590,40 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
   window.searchDelay = setTimeout(() => {
     loadArsip(e.target.value, 1);
   }, 400);
+});
+
+// === EXPORT EXCEL ===
+document.getElementById("exportExcelBtn").addEventListener("click", async () => {
+  try {
+    showToast("Sedang memproses download...", true);
+
+    const response = await fetch("/api/arsip/export", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Gagal mengunduh file");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `arsip_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+
+    showToast("File berhasil diunduh!", true);
+  } catch (err) {
+    console.error(err);
+    showToast("Gagal mengunduh file Excel", false);
+  }
 });
 
 // === MODAL CONTROLS ===
@@ -2333,7 +2373,7 @@ filterInaktifBtn.addEventListener("click", () => {
   const btn = document.getElementById('notificationBtn');
   const count = parseInt(document.getElementById('notificationCount').textContent);
   
-  // Hanya shake jika ada notifikasi
+
   if (btn && count >= 1) {
     btn.classList.add('shake-btn');
     setTimeout(() => {

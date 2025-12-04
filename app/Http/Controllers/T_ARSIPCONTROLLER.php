@@ -7,6 +7,8 @@ use App\Models\T_arsip;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
+use App\Exports\ARSIPEXPORT;
+use Maatwebsite\Excel\Facades\Excel;
 
 class T_ARSIPCONTROLLER extends Controller
 {
@@ -159,6 +161,16 @@ class T_ARSIPCONTROLLER extends Controller
     {
         try {
             $arsip = T_arsip::findOrFail($id);
+            $user = Auth::user();
+
+            // Cek apakah arsip INAKTIF dan user bukan ADMIN (ID_ROLE = 1)
+            if ($arsip->KETERANGAN === 'INAKTIF' && $user->ID_ROLE != 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data yang sudah INAKTIF tidak dapat diubah',
+                    'errors' => ['permission' => ['Anda tidak memiliki izin untuk mengubah data yang sudah INAKTIF']]
+                ], 403);
+            }
 
             // Cek apakah ada field lain selain KETERANGAN yang berubah
             $fieldsToCheck = [
@@ -276,12 +288,22 @@ class T_ARSIPCONTROLLER extends Controller
     {
         try {
             $arsip = T_arsip::findOrFail($id);
-            
+            $user = Auth::user();
+
+            // Cek apakah arsip INAKTIF dan user bukan ADMIN (ID_ROLE = 1)
+            if ($arsip->KETERANGAN === 'INAKTIF' && $user->ID_ROLE != 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data yang sudah INAKTIF tidak dapat dihapus',
+                    'errors' => ['permission' => ['Anda tidak memiliki izin untuk menghapus data yang sudah INAKTIF']]
+                ], 403);
+            }
+
             // Hapus file jika ada
             if ($arsip->FILE && file_exists(public_path($arsip->FILE))) {
                 unlink(public_path($arsip->FILE));
             }
-            
+
             $arsip->delete();
 
             return response()->json([
@@ -338,13 +360,31 @@ class T_ARSIPCONTROLLER extends Controller
     public function checkNotaDinas(Request $request)
     {
         $notaDinas = $request->query('no_nota_dinas');
-        
+
         $exists = T_arsip::where('NO_NOTA_DINAS', $notaDinas)->exists();
-        
+
         return response()->json([
             'exists' => $exists,
             'no_nota_dinas' => $notaDinas
         ]);
+    }
+
+    /**
+     * Export arsip to Excel
+     */
+    public function exportExcel()
+    {
+        $user = Auth::user();
+        $divisiId = null;
+
+        // Jika bukan admin, filter berdasarkan divisi user
+        if ($user->ID_ROLE != 1) {
+            $divisiId = $user->ID_DIVISI;
+        }
+
+        $filename = 'arsip_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        return Excel::download(new ARSIPEXPORT($divisiId), $filename);
     }
 }
 
