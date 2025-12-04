@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('PERIHAL',100);
             $table->string('TINGKAT_PENGEMBANGAN', 50);
             $table->string('KONDISI', 100)->nullable();
-            $table->string('RAK_BAK_URUTAN',11);
+            $table->string('RAK_BAK_URUTAN',50);
             $table->string('KETERANGAN_SIMPAN', 15);
             $table->string('TIPE_RETENSI', 150)->nullable();
             $table->date('TANGGAL_RETENSI')->nullable();
