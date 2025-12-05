@@ -69,6 +69,9 @@ class T_ARSIPCONTROLLER extends Controller
                 'KETERANGAN_SIMPAN'     => 'nullable|string|max:255',
                 'TIPE_RETENSI'          => 'nullable|string|max:50',
                 'TANGGAL_RETENSI'       => 'nullable|date',
+                'MASA_INAKTIF'          => 'nullable|string|max:100',
+                'TANGGAL_INAKTIF'       => 'nullable|date',
+                'KETERANGAN_INAKTIF'    => 'nullable|string|max:255',
                 'KETERANGAN'            => 'nullable|string|max:255',
                 'STATUS'                => 'nullable|string|max:20',
                 'param1'                => 'nullable|string|max:255',
@@ -211,6 +214,9 @@ class T_ARSIPCONTROLLER extends Controller
                 'KETERANGAN_SIMPAN'     => 'nullable|string|max:255',
                 'TIPE_RETENSI'          => 'nullable|string|max:50',
                 'TANGGAL_RETENSI'       => 'nullable|date',
+                'MASA_INAKTIF'          => 'nullable|string|max:100',
+                'TANGGAL_INAKTIF'       => 'nullable|date',
+                'KETERANGAN_INAKTIF'    => 'nullable|string|max:255',
                 'KETERANGAN'            => 'nullable|string|max:255',
                 'KETERANGAN_UPDATE'     => $otherFieldsChanged ? 'required|string|max:255' : 'nullable|string|max:255',
                 'STATUS'                => 'nullable|string|max:20',
@@ -385,6 +391,75 @@ class T_ARSIPCONTROLLER extends Controller
         $filename = 'arsip_' . date('Y-m-d_H-i-s') . '.xlsx';
 
         return Excel::download(new ARSIPEXPORT($divisiId), $filename);
+    }
+
+    /**
+     * Get overdue musnah archives (tanggal inaktif sudah lewat dan keterangan_inaktif = 'musnah')
+     */
+    public function overdueMusnah(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $today = now()->format('Y-m-d');
+
+            $query = T_arsip::with(['divisi', 'subdivisi'])
+                ->whereDate('TANGGAL_INAKTIF', '<', $today)
+                ->whereRaw('LOWER(KETERANGAN_INAKTIF) LIKE ?', ['%musnah%'])
+                ->where('KETERANGAN_INAKTIF', '!=', 'DIMUSNAHKAN');
+
+            if ($user->ID_ROLE != 1) {
+                $query->where('ID_DIVISI', $user->ID_DIVISI);
+            }
+
+            if ($request->filled('divisi_id')) {
+                $query->where('ID_DIVISI', $request->divisi_id);
+            }
+
+            $arsip = $query->orderBy('TANGGAL_INAKTIF', 'asc')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $arsip
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat notifikasi musnah',
+                'errors' => ['system' => [$e->getMessage()]]
+            ], 500);
+        }
+    }
+
+    /**
+     * Update arsip menjadi DIMUSNAHKAN
+     */
+    public function markAsMusnah($id)
+    {
+        try {
+            $arsip = T_arsip::findOrFail($id);
+            $user = Auth::user();
+
+            $arsip->update([
+                'KETERANGAN_INAKTIF' => 'DIMUSNAHKAN',
+                'UPDATE_BY' => $user->username ?? '-',
+                'UPDATE_DATE' => now(),
+                'KETERANGAN_UPDATE' => 'Arsip telah dimusnahkan pada ' . now()->format('d-m-Y H:i')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Arsip berhasil ditandai sebagai DIMUSNAHKAN',
+                'data' => $arsip
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate data',
+                'errors' => ['system' => [$e->getMessage()]]
+            ], 500);
+        }
     }
 }
 

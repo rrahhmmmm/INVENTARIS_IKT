@@ -142,6 +142,49 @@
         opacity: 0.7;
     }
 
+    /* Row untuk data yang sudah DIMUSNAHKAN */
+    .row-dimusnahkan {
+        background-color: #e5e7eb !important;
+        opacity: 0.5;
+        color: #6b7280;
+    }
+
+    .row-dimusnahkan td {
+        text-decoration: line-through;
+    }
+
+    .status-dimusnahkan {
+        background-color: #6b7280;
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    /* Animasi untuk tombol notifikasi musnah */
+    .musnah-btn {
+        animation: musnah-pulse 1.5s infinite;
+    }
+
+    @keyframes musnah-pulse {
+        0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 5px #f59e0b);
+        }
+        50% {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px #f59e0b);
+        }
+    }
+
+    /* Badge untuk notifikasi musnah */
+    .musnah-badge {
+        background-color: #f59e0b;
+        color: white;
+        font-weight: bold;
+    }
+
     /* Confirmation modal */
     .confirm-modal {
         display: none;
@@ -379,6 +422,40 @@
     .clear-filter-btn:hover {
         background-color: rgba(255, 255, 255, 0.4);
     }
+
+    /* Sticky Table Header */
+    .table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        overflow-x: auto;
+        position: relative;
+    }
+
+    .table-container table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-container thead tr:first-child th {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background-color: #2563eb;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .table-container thead tr:nth-child(2) th {
+        position: sticky;
+        top: 41px;
+        z-index: 19;
+        background-color: #2563eb;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    /* Pastikan background tidak transparan saat scroll */
+    .table-container thead th {
+        background-color: #2563eb !important;
+    }
 </style>
 </head>
 <body class="bg-gray-100">
@@ -402,17 +479,32 @@
       </button>
     </div>
     
-    <div class="relative space-x-2">
+    <div class="relative space-x-2 flex items-center">
       <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
-      
-    <!-- Button dengan animasi kelap-kelip -->
+
+      <!-- Button Notifikasi Musnah (Orange/Kuning) -->
+      <button id="musnahNotifBtn" class="relative">
+          <i class="fas fa-fire text-xl text-orange-500"></i>
+          <span id="musnahNotifCount" class="musnah-badge absolute -top-1 -right-2 text-xs rounded-full px-1 min-w-5 h-5 flex items-center justify-center">0</span>
+      </button>
+
+      <div id="musnahNotifDropdown" class="hidden absolute right-0 mt-2 w-80 bg-orange-500 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto" style="top: 100%;">
+          <div class="bg-orange-600 px-3 py-2 text-white font-semibold text-sm">
+              <i class="fas fa-fire mr-2"></i>Arsip Perlu Dimusnahkan
+          </div>
+          <ul id="musnahNotifList"></ul>
+      </div>
+
+      <!-- Button Notifikasi Retensi (Merah) -->
       <button id="notificationBtn" class="relative">
           <i class="fas fa-bell text-xl text-gray-700"></i>
-          <!-- Badge count tanpa animasi berlebihan -->
           <span id="notificationCount" class="notification-badge absolute -top-1 -right-2 text-xs rounded-full px-1 min-w-5 h-5 flex items-center justify-center">0</span>
       </button>
 
-      <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
+      <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-red-600 shadow-lg rounded-lg overflow-hidden z-50 max-h-96 overflow-y-auto" style="top: 100%;">
+          <div class="bg-red-700 px-3 py-2 text-white font-semibold text-sm">
+              <i class="fas fa-bell mr-2"></i>Arsip Lewat Masa Retensi
+          </div>
           <ul id="notificationList"></ul>
       </div>
     </div>  
@@ -445,8 +537,8 @@
 
   <!-- Tabel Arsip -->
   <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-[2500px] table-fixed text-sm md:text-base">
+    <div class="table-container">
+      <table class="min-w-[3000px] table-fixed text-sm md:text-base">
         <thead class="bg-blue-600 text-white">
           <!-- Header Row 1: Titles -->
           <tr>
@@ -468,6 +560,9 @@
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[200px] z-10">Keterangan Simpan</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[150px] z-10">Tipe Retensi</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[200px] z-10">Tanggal Retensi</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[120px] z-10">Masa Inaktif</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 min-w-[150px] z-10">Tanggal Inaktif</th>
+            <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[200px] z-10">Ket. Inaktif</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[150px] z-10">Keterangan</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[140px] z-10">Create By</th>
             <th class="sticky top-0 bg-blue-600 px-4 py-2 w-[250px] z-10">Update</th>
@@ -504,6 +599,9 @@
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="keterangan_simpan"></th>
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tipe_retensi"></th>
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tanggal_retensi"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="masa_inaktif"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="tanggal_inaktif"></th>
+            <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="ket_inaktif"></th>
             <th class="px-2 py-2"></th>
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="create_by"></th>
             <th class="px-2 py-2"><input type="text" class="column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300" placeholder="Cari..." data-column="update_info"></th>
@@ -554,10 +652,28 @@
     <p class="text-center text-gray-700 mb-6">Arsip ini sudah melewati masa retensi. Apakah Anda siap menyerahkannya ke SDM?</p>
     <div class="flex gap-3 justify-center">
       <button id="btnNantiMager" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold transition">
-        😴 LAIN KALI 😴 
+        😴 LAIN KALI 😴
       </button>
       <button id="btnSiapLaksanakan" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition">
         ✅ SIAP LAKSANAKAN OTW SDM BANG ✅
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Musnah -->
+<div id="musnahConfirmModal" class="confirm-modal">
+  <div class="confirm-modal-content" style="border: 3px solid #f97316;">
+    <h2 class="confirm-title" style="color: #ea580c;">🔥 KONFIRMASI PEMUSNAHAN 🔥</h2>
+    <p class="text-center text-gray-700 mb-2">Arsip berikut sudah melewati masa inaktif:</p>
+    <p id="musnahArsipTitle" class="text-center font-bold text-orange-600 mb-4"></p>
+    <p class="text-center text-gray-600 mb-6">Apakah arsip ini sudah dimusnahkan?</p>
+    <div class="flex gap-3 justify-center">
+      <button id="btnMusnahBatal" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold transition">
+        ❌ Belum
+      </button>
+      <button id="btnMusnahKonfirmasi" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition">
+        🔥 Ya, Sudah Dimusnahkan
       </button>
     </div>
   </div>
@@ -743,6 +859,27 @@
         <div class="error-message" id="error_TANGGAL_RETENSI"></div>
       </div>
 
+      <!-- Masa Inaktif (auto-fill dari TIPE_RETENSI, bisa diedit) -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Masa Inaktif</label>
+        <input id="MASA_INAKTIF" name="MASA_INAKTIF" class="w-full border rounded-lg px-3 py-2 bg-yellow-50 border-yellow-300 focus:bg-white focus:border-blue-500" placeholder="Contoh: 2 Tahun">
+        <div class="error-message" id="error_MASA_INAKTIF"></div>
+      </div>
+
+      <!-- Tanggal Inaktif (auto-calculate, bisa diedit) -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Tanggal Inaktif</label>
+        <input type="date" id="TANGGAL_INAKTIF" name="TANGGAL_INAKTIF" class="w-full border rounded-lg px-3 py-2 bg-yellow-50 border-yellow-300 focus:bg-white focus:border-blue-500">
+        <div class="error-message" id="error_TANGGAL_INAKTIF"></div>
+      </div>
+
+      <!-- Keterangan Inaktif (auto-fill dari TIPE_RETENSI, bisa diedit) -->
+      <div class="col-span-2">
+        <label class="block text-sm font-medium mb-1">Keterangan Inaktif</label>
+        <textarea id="KETERANGAN_INAKTIF" name="KETERANGAN_INAKTIF" class="w-full border rounded-lg px-3 py-2 bg-yellow-50 border-yellow-300 focus:bg-white focus:border-blue-500" placeholder="Contoh: Musnah / Permanen"></textarea>
+        <div class="error-message" id="error_KETERANGAN_INAKTIF"></div>
+      </div>
+
       <!-- Keterangan -->
       <div>
         <label class="block text-sm font-medium mb-1">Keterangan </label>
@@ -846,6 +983,17 @@ const btnNantiMager = document.getElementById("btnNantiMager");
 const btnSiapLaksanakan = document.getElementById("btnSiapLaksanakan");
 let currentDeleteArsipId = null;
 
+// Musnah notification elements
+const musnahNotifBtn = document.getElementById("musnahNotifBtn");
+const musnahNotifDropdown = document.getElementById("musnahNotifDropdown");
+const musnahNotifCount = document.getElementById("musnahNotifCount");
+const musnahNotifList = document.getElementById("musnahNotifList");
+const musnahConfirmModal = document.getElementById("musnahConfirmModal");
+const musnahArsipTitle = document.getElementById("musnahArsipTitle");
+const btnMusnahBatal = document.getElementById("btnMusnahBatal");
+const btnMusnahKonfirmasi = document.getElementById("btnMusnahKonfirmasi");
+let currentMusnahArsipId = null;
+
 // Nota Dinas validation elements
 const notaDinasInput = document.getElementById("NO_NOTA_DINAS");
 const checkNotaBtn = document.getElementById("checkNotaBtn");
@@ -908,6 +1056,7 @@ let indeksData = [];
 let klasifikasiData = [];
 let retensiData = [];
 let jenisNaskahData = [];
+let selectedRetensiData = null; 
 
 // === NOTA DINAS VALIDATION FUNCTIONS ===
 function updateNotaValidationUI(status, message) {
@@ -1469,8 +1618,15 @@ async function loadArsip(keyword = "", page = 1) {
       } else if (arsip.KETERANGAN === 'INAKTIF') {
         statusBadge = '<span class="status-inaktif">INAKTIF</span>';
       }
-      
-      const rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
+
+      // Check if DIMUSNAHKAN
+      const isDimusnahkan = arsip.KETERANGAN_INAKTIF === 'DIMUSNAHKAN';
+      let rowClass = arsip.KETERANGAN === 'INAKTIF' ? 'row-inaktif' : '';
+
+      if (isDimusnahkan) {
+        rowClass = 'row-dimusnahkan';
+        statusBadge = '<span class="status-dimusnahkan">DIMUSNAHKAN</span>';
+      }
       
       // Format update info
       let updateInfo = '-';
@@ -1501,15 +1657,20 @@ async function loadArsip(keyword = "", page = 1) {
           <td class="px-4 py-3 w-[150px]">${arsip.KETERANGAN_SIMPAN ?? "-"}</td>
           <td class="px-4 py-3 w-[150px]">${arsip.TIPE_RETENSI ?? "-"}</td>
           <td class="px-4 py-3 w-[140px]">${arsip.TANGGAL_RETENSI ?? "-"}</td>
+          <td class="px-4 py-3 w-[120px]">${arsip.MASA_INAKTIF ?? "-"}</td>
+          <td class="px-4 py-3 w-[150px]">${arsip.TANGGAL_INAKTIF ?? "-"}</td>
+          <td class="px-4 py-3 w-[200px]">${arsip.KETERANGAN_INAKTIF ?? "-"}</td>
           <td class="px-4 py-3 w-[150px]">${statusBadge}</td>
           <td class="px-4 py-3 w-[140px]">${arsip.CREATE_BY ?? "-"}</td>
           <td class="px-4 py-3 w-[250px]">${updateInfo}</td>
           <td class="px-4 py-3 w-[120px]">${fileLink}</td>
           <td class="px-4 py-3 text-center space-x-2">
-            ${(arsip.KETERANGAN === 'INAKTIF' && !isAdmin)
-              ? '<span class="text-gray-400 text-xs">GABOLEH</span>'
-              : `<button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                 <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>`
+            ${isDimusnahkan
+              ? '<span class="text-gray-400 text-xs">ARSIP MUSNAH</span>'
+              : (arsip.KETERANGAN === 'INAKTIF' && !isAdmin)
+                ? '<span class="text-gray-400 text-xs">GABOLEH</span>'
+                : `<button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                   <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>`
             }
           </td>
         </tr>`;
@@ -1639,6 +1800,12 @@ addBtn.addEventListener("click", async () => {
   document.getElementById("keteranganUpdateWrapper").classList.add("hidden");
   document.getElementById("KETERANGAN_UPDATE").value = "";
 
+  // Reset field inaktif
+  document.getElementById("MASA_INAKTIF").value = "";
+  document.getElementById("TANGGAL_INAKTIF").value = "";
+  document.getElementById("KETERANGAN_INAKTIF").value = "";
+  selectedRetensiData = null;
+
   await loadUserInfo();
 });
 
@@ -1764,7 +1931,8 @@ async function editArsip(id) {
       "NO_INDEKS", "NO_BERKAS", "JUDUL_BERKAS", "NO_ISI_BERKAS", "JENIS_ARSIP",
       "KODE_KLASIFIKASI", "NO_NOTA_DINAS", "TANGGAL_BERKAS", "PERIHAL",
       "TINGKAT_PENGEMBANGAN", "KONDISI", "RAK_BAK_URUTAN", "KETERANGAN_SIMPAN",
-      "TIPE_RETENSI", "TANGGAL_RETENSI", "KETERANGAN"
+      "TIPE_RETENSI", "TANGGAL_RETENSI", "MASA_INAKTIF", "TANGGAL_INAKTIF",
+      "KETERANGAN_INAKTIF", "KETERANGAN"
     ];
 
     fields.forEach(key => {
@@ -1953,15 +2121,114 @@ function updateNotificationAnimation(count) {
   }
 }
 
+// === MUSNAH NOTIFICATIONS ===
+async function loadMusnahNotifications() {
+  try {
+    const res = await fetchWithAuth(`${apiUrl}/overdue-musnah`);
+    const response = await res.json();
+    const data = response.data || response;
 
-notificationBtn.addEventListener("click", () => {
+    musnahNotifCount.textContent = data.length;
+    updateMusnahAnimation(data.length);
+
+    musnahNotifList.innerHTML = '';
+    if (data.length === 0) {
+      musnahNotifList.innerHTML = `<li class="p-3 text-orange-100 text-sm">Tidak ada arsip perlu dimusnahkan</li>`;
+      return;
+    }
+
+    data.forEach(arsip => {
+      const li = document.createElement('li');
+      li.className = "p-3 hover:bg-orange-600 cursor-pointer border-b border-orange-400 last:border-b-0";
+      li.innerHTML = `
+        <div class="font-semibold text-white text-sm">${arsip.JUDUL_BERKAS ?? '-'}</div>
+        <div class="text-xs text-orange-100">Inaktif: ${arsip.TANGGAL_INAKTIF ?? '-'}</div>
+        <div class="text-xs text-orange-200">${arsip.KETERANGAN_INAKTIF ?? '-'}</div>
+      `;
+      li.addEventListener('click', () => {
+        showMusnahConfirmModal(arsip.ID_ARSIP, arsip.JUDUL_BERKAS);
+        musnahNotifDropdown.classList.add('hidden');
+      });
+      musnahNotifList.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    showToast("Gagal memuat notifikasi musnah", false);
+  }
+}
+
+function updateMusnahAnimation(count) {
+  if (count >= 1) {
+    musnahNotifBtn.classList.add('musnah-btn');
+  } else {
+    musnahNotifBtn.classList.remove('musnah-btn');
+  }
+}
+
+function showMusnahConfirmModal(arsipId, judulBerkas) {
+  currentMusnahArsipId = arsipId;
+  musnahArsipTitle.textContent = judulBerkas || '-';
+  musnahConfirmModal.classList.add("show");
+}
+
+// Musnah modal button handlers
+btnMusnahBatal.addEventListener("click", () => {
+  musnahConfirmModal.classList.remove("show");
+  currentMusnahArsipId = null;
+});
+
+btnMusnahKonfirmasi.addEventListener("click", async () => {
+  if (!currentMusnahArsipId) return;
+
+  try {
+    const res = await fetchWithAuth(`${apiUrl}/${currentMusnahArsipId}/mark-musnah`, {
+      method: "PUT"
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Gagal mengupdate status musnah");
+
+    showToast(data.message || "Arsip berhasil ditandai sebagai DIMUSNAHKAN");
+    musnahConfirmModal.classList.remove("show");
+    currentMusnahArsipId = null;
+
+    // Refresh data
+    loadMusnahNotifications();
+    loadArsip(lastSearchKeyword, currentPage);
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || "Gagal mengupdate status", false);
+  }
+});
+
+// Close musnah modal when clicking outside
+musnahConfirmModal.addEventListener("click", (e) => {
+  if (e.target === musnahConfirmModal) {
+    musnahConfirmModal.classList.remove("show");
+    currentMusnahArsipId = null;
+  }
+});
+
+// Musnah notification dropdown toggle
+musnahNotifBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  musnahNotifDropdown.classList.toggle("hidden");
+  notificationDropdown.classList.add("hidden"); // Close other dropdown
+});
+
+notificationBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
   notificationDropdown.classList.toggle("hidden");
+  musnahNotifDropdown.classList.add("hidden"); // Close other dropdown
 });
 
 // Close dropdown when clicking outside
 document.addEventListener("click", (e) => {
   if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
     notificationDropdown.classList.add("hidden");
+  }
+  if (!musnahNotifBtn.contains(e.target) && !musnahNotifDropdown.contains(e.target)) {
+    musnahNotifDropdown.classList.add("hidden");
   }
 });
 
@@ -2095,18 +2362,33 @@ retensiInput.addEventListener("input", () => {
   filtered.slice(0, 50).forEach(item => {
     const li = document.createElement("li");
     li.className = "px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm border-b last:border-b-0";
-    
+
     let displayText = '';
     if (item.JENIS_ARSIP) displayText += `<div class="font-semibold text-blue-600">${item.JENIS_ARSIP}</div>`;
     if (item.BIDANG_ARSIP) displayText += `<div class="text-gray-700">Bidang: ${item.BIDANG_ARSIP}</div>`;
     if (item.TIPE_ARSIP) displayText += `<div class="text-gray-600">Tipe: ${item.TIPE_ARSIP}</div>`;
     if (item.DETAIL_TIPE_ARSIP) displayText += `<div class="text-gray-600">Detail: ${item.DETAIL_TIPE_ARSIP}</div>`;
     if (item.MASA_AKTIF) displayText += `<div class="text-green-600 font-medium">Masa Aktif: ${item.MASA_AKTIF}</div>`;
-    
+    if (item.MASA_INAKTIF) displayText += `<div class="text-orange-600 font-medium">Masa Inaktif: ${item.MASA_INAKTIF}</div>`;
+    if (item.KETERANGAN) displayText += `<div class="text-purple-600 text-xs">Ket: ${item.KETERANGAN}</div>`;
+
     li.innerHTML = displayText;
-    
+
     li.addEventListener("click", () => {
       retensiInput.value = item.MASA_AKTIF || '';
+
+      // Auto-fill MASA_INAKTIF dari data retensi
+      document.getElementById("MASA_INAKTIF").value = item.MASA_INAKTIF || '';
+
+      // Auto-fill KETERANGAN_INAKTIF dari KETERANGAN master retensi
+      document.getElementById("KETERANGAN_INAKTIF").value = item.KETERANGAN || '';
+
+      // Simpan data retensi yang dipilih untuk kalkulasi tanggal inaktif
+      selectedRetensiData = item;
+
+      // Hitung tanggal inaktif jika tanggal retensi sudah diisi
+      calculateTanggalInaktif();
+
       suggestionRetensi.classList.add("hidden");
     });
     suggestionRetensi.appendChild(li);
@@ -2127,6 +2409,46 @@ document.addEventListener("click", (e) => {
     suggestionRetensi.classList.add("hidden");
   }
 });
+
+// === FUNGSI KALKULASI TANGGAL INAKTIF ===
+function calculateTanggalInaktif() {
+  const tanggalRetensi = document.getElementById("TANGGAL_RETENSI").value;
+  const masaInaktif = document.getElementById("MASA_INAKTIF").value;
+
+  if (!tanggalRetensi || !masaInaktif) {
+    document.getElementById("TANGGAL_INAKTIF").value = '';
+    return;
+  }
+
+  // Extract angka dari masa inaktif (misal: "2 tahun" -> 2, "1 Tahun" -> 1)
+  const angkaMatch = masaInaktif.match(/(\d+)/);
+  if (!angkaMatch) {
+    document.getElementById("TANGGAL_INAKTIF").value = '';
+    return;
+  }
+
+  const tahunTambahan = parseInt(angkaMatch[1]);
+
+  // Parse tanggal retensi
+  const dateRetensi = new Date(tanggalRetensi);
+  if (isNaN(dateRetensi.getTime())) {
+    document.getElementById("TANGGAL_INAKTIF").value = '';
+    return;
+  }
+
+  // Tambahkan tahun ke tanggal retensi
+  dateRetensi.setFullYear(dateRetensi.getFullYear() + tahunTambahan);
+
+  // Format ke YYYY-MM-DD untuk input date
+  const year = dateRetensi.getFullYear();
+  const month = String(dateRetensi.getMonth() + 1).padStart(2, '0');
+  const day = String(dateRetensi.getDate()).padStart(2, '0');
+
+  document.getElementById("TANGGAL_INAKTIF").value = `${year}-${month}-${day}`;
+}
+
+// Event listener untuk tanggal retensi - recalculate tanggal inaktif ketika berubah
+document.getElementById("TANGGAL_RETENSI").addEventListener("change", calculateTanggalInaktif);
 
 // === LOAD DROPDOWN DATA ===
 async function loadKondisiData() {
@@ -2396,6 +2718,7 @@ filterInaktifBtn.addEventListener("click", () => {
     loadTingkatpengembanganData(),
     loadJenisNaskahDinasData(),
     loadOverdueNotifications(),
+    loadMusnahNotifications(),
     loadFilterCounts()
   ]);
 
