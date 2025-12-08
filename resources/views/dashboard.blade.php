@@ -482,8 +482,8 @@
     <div class="relative space-x-2 flex items-center">
       <input id="searchInput" type="text" placeholder="Cari arsip..." class="border px-3 py-2 w-full md:w-auto text-sm md:text-base" />
 
-      <!-- Button Notifikasi Musnah (Orange/Kuning) -->
-      <button id="musnahNotifBtn" class="relative">
+      <!-- Button Notifikasi Musnah (Orange/Kuning) - Admin Only -->
+      <button id="musnahNotifBtn" class="relative hidden">
           <i class="fas fa-fire text-xl text-orange-500"></i>
           <span id="musnahNotifCount" class="musnah-badge absolute -top-1 -right-2 text-xs rounded-full px-1 min-w-5 h-5 flex items-center justify-center">0</span>
       </button>
@@ -1359,6 +1359,9 @@ async function checkAdminRole() {
 
       // Setup column filter dropdowns for Admin
       await setupColumnFilterDropdowns();
+
+      // Show musnah notification button for Admin only
+      musnahNotifBtn.classList.remove('hidden');
     }
     // Non-admin users don't see divisi/subdivisi filters at all
 
@@ -1668,7 +1671,7 @@ async function loadArsip(keyword = "", page = 1) {
             ${isDimusnahkan
               ? '<span class="text-gray-400 text-xs">ARSIP MUSNAH</span>'
               : (arsip.KETERANGAN === 'INAKTIF' && !isAdmin)
-                ? '<span class="text-gray-400 text-xs">GABOLEH</span>'
+                ? '<button class="textgrey-600 hover:text-grey-800"><i class="fas fa-edit"></i></button> <button  class="text-grey-600 hover:text-grey-800"><i class="fas fa-trash"></i></button>'
                 : `<button onclick="editArsip(${arsip.ID_ARSIP})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
                    <button onclick="deleteArsip(${arsip.ID_ARSIP})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>`
             }
@@ -2096,6 +2099,8 @@ async function loadOverdueNotifications() {
           <i class="fas fa-times"></i>
         </button>
         <div class="font-semibold text-white text-sm pr-8">${arsip.JUDUL_BERKAS ?? '-'}</div>
+        <div class="text-xs text-red-100">Perihal: ${arsip.PERIHAL ?? '-'}</div>
+        <div class="text-xs text-red-100">No Nota Dinas: ${arsip.NO_NOTA_DINAS ?? '-'}</div>
         <div class="text-xs text-red-100">Retensi: ${arsip.TANGGAL_RETENSI ?? '-'}</div>
       `;
       li.addEventListener('click', (e) => {
@@ -2142,6 +2147,8 @@ async function loadMusnahNotifications() {
       li.className = "p-3 hover:bg-orange-600 cursor-pointer border-b border-orange-400 last:border-b-0";
       li.innerHTML = `
         <div class="font-semibold text-white text-sm">${arsip.JUDUL_BERKAS ?? '-'}</div>
+        <div class="text-xs text-red-100">Perihal: ${arsip.PERIHAL ?? '-'}</div>
+        <div class="text-xs text-red-100">No Nota Dinas: ${arsip.NO_NOTA_DINAS ?? '-'}</div>
         <div class="text-xs text-orange-100">Inaktif: ${arsip.TANGGAL_INAKTIF ?? '-'}</div>
         <div class="text-xs text-orange-200">${arsip.KETERANGAN_INAKTIF ?? '-'}</div>
       `;
