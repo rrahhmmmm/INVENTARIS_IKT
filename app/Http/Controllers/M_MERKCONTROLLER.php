@@ -2,38 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\M_anggaran;
+use App\Models\M_merk;
 use Illuminate\Http\Request;
-use App\Exports\AnggaranExport;
-use App\Exports\AnggaranExportTemplate;
+use App\Exports\MerkExport;
+use App\Exports\MerkExportTemplate;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\AnggaranImport;
+use App\Imports\MerkImport;
 
-class M_ANGGARANCONTROLLER extends Controller
+class M_MERKCONTROLLER extends Controller
 {
     /**
-     * Helper function untuk normalize nama anggaran
+     * Helper function untuk normalize nama merk
      * Hapus spasi dan convert ke uppercase
      */
-    private function normalizeNamaAnggaran($nama)
+    private function normalizeNamaMerk($nama)
     {
         return strtoupper(str_replace(' ', '', $nama));
     }
 
     /**
-     * Cek apakah nama anggaran sudah ada di database (normalized)
-     * @param string $namaAnggaran - nama anggaran yang akan dicek
+     * Cek apakah nama merk sudah ada di database (normalized)
+     * @param string $namaMerk - nama merk yang akan dicek
      * @param int|null $excludeId - ID yang dikecualikan (untuk update)
      * @return bool - true jika sudah ada, false jika belum
      */
-    private function isDuplicateNamaAnggaran($namaAnggaran, $excludeId = null)
+    private function isDuplicateNamaMerk($namaMerk, $excludeId = null)
     {
-        $normalizedInput = $this->normalizeNamaAnggaran($namaAnggaran);
+        $normalizedInput = $this->normalizeNamaMerk($namaMerk);
 
-        $query = M_anggaran::whereRaw("UPPER(REPLACE(NAMA_ANGGARAN, ' ', '')) = ?", [$normalizedInput]);
+        $query = M_merk::whereRaw("UPPER(REPLACE(NAMA_MERK, ' ', '')) = ?", [$normalizedInput]);
 
         if ($excludeId) {
-            $query->where('ID_ANGGARAN', '!=', $excludeId);
+            $query->where('ID_MERK', '!=', $excludeId);
         }
 
         return $query->exists();
@@ -41,12 +41,12 @@ class M_ANGGARANCONTROLLER extends Controller
 
     public function index(Request $request)
     {
-        $query = M_anggaran::query();
+        $query = M_merk::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('NAMA_ANGGARAN', 'like', '%' . $search . '%')
+                $q->where('NAMA_MERK', 'like', '%' . $search . '%')
                     ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
             });
         }
@@ -57,12 +57,12 @@ class M_ANGGARANCONTROLLER extends Controller
     public function indexPaginated(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $query = M_anggaran::query();
+        $query = M_merk::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('NAMA_ANGGARAN', 'like', '%' . $search . '%')
+                $q->where('NAMA_MERK', 'like', '%' . $search . '%')
                     ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
             });
         }
@@ -73,74 +73,74 @@ class M_ANGGARANCONTROLLER extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'NAMA_ANGGARAN' => 'required|string|max:100',
-            'CREATE_BY'     => 'nullable|string|max:100'
+            'NAMA_MERK' => 'required|string|max:100',
+            'CREATE_BY' => 'nullable|string|max:100'
         ]);
 
         // Cek duplicate dengan normalisasi
-        if ($this->isDuplicateNamaAnggaran($request->NAMA_ANGGARAN)) {
+        if ($this->isDuplicateNamaMerk($request->NAMA_MERK)) {
             return response()->json([
-                'message' => 'Nama anggaran sudah ada (duplikat terdeteksi)',
+                'message' => 'Nama merk sudah ada (duplikat terdeteksi)',
                 'errors' => [
-                    'NAMA_ANGGARAN' => ['Nama anggaran sudah ada di database']
+                    'NAMA_MERK' => ['Nama merk sudah ada di database']
                 ]
             ], 422);
         }
 
-        $anggaran = M_anggaran::create([
-            'NAMA_ANGGARAN' => $request->NAMA_ANGGARAN,
-            'CREATE_BY'     => $request->CREATE_BY
+        $merk = M_merk::create([
+            'NAMA_MERK' => $request->NAMA_MERK,
+            'CREATE_BY' => $request->CREATE_BY
         ]);
 
-        return response()->json($anggaran, 201);
+        return response()->json($merk, 201);
     }
 
     public function show(string $id)
     {
-        $anggaran = M_anggaran::findOrFail($id);
-        return response()->json($anggaran);
+        $merk = M_merk::findOrFail($id);
+        return response()->json($merk);
     }
 
     public function update(Request $request, string $id)
     {
-        $anggaran = M_anggaran::findOrFail($id);
+        $merk = M_merk::findOrFail($id);
 
         $request->validate([
-            'NAMA_ANGGARAN' => 'sometimes|string|max:100',
-            'CREATE_BY'     => 'nullable|string|max:100'
+            'NAMA_MERK' => 'sometimes|string|max:100',
+            'CREATE_BY' => 'nullable|string|max:100'
         ]);
 
         // Cek duplicate dengan normalisasi (exclude ID yang sedang di-update)
-        if ($request->has('NAMA_ANGGARAN') && $this->isDuplicateNamaAnggaran($request->NAMA_ANGGARAN, $id)) {
+        if ($request->has('NAMA_MERK') && $this->isDuplicateNamaMerk($request->NAMA_MERK, $id)) {
             return response()->json([
-                'message' => 'Nama anggaran sudah ada (duplikat terdeteksi)',
+                'message' => 'Nama merk sudah ada (duplikat terdeteksi)',
                 'errors' => [
-                    'NAMA_ANGGARAN' => ['Nama anggaran sudah ada di database']
+                    'NAMA_MERK' => ['Nama merk sudah ada di database']
                 ]
             ], 422);
         }
 
-        $anggaran->update($request->only(['NAMA_ANGGARAN', 'CREATE_BY']));
+        $merk->update($request->only(['NAMA_MERK', 'CREATE_BY']));
 
-        return response()->json($anggaran);
+        return response()->json($merk);
     }
 
     public function destroy(string $id)
     {
-        $anggaran = M_anggaran::findOrFail($id);
-        $anggaran->delete();
+        $merk = M_merk::findOrFail($id);
+        $merk->delete();
 
         return response()->json(null, 204);
     }
 
     public function exportExcel()
     {
-        return Excel::download(new AnggaranExport, 'anggaran.xlsx');
+        return Excel::download(new MerkExport, 'merk.xlsx');
     }
 
     public function exportTemplate()
     {
-        return Excel::download(new AnggaranExportTemplate, 'anggaran_template.xlsx');
+        return Excel::download(new MerkExportTemplate, 'merk_template.xlsx');
     }
 
     public function importExcel(Request $request)
@@ -149,7 +149,7 @@ class M_ANGGARANCONTROLLER extends Controller
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
 
-        $import = new AnggaranImport;
+        $import = new MerkImport;
         Excel::import($import, $request->file('file'));
 
         $results = $import->getResults();

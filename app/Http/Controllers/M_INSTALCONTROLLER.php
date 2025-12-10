@@ -2,38 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\M_anggaran;
+use App\Models\M_instal;
 use Illuminate\Http\Request;
-use App\Exports\AnggaranExport;
-use App\Exports\AnggaranExportTemplate;
+use App\Exports\InstalExport;
+use App\Exports\InstalExportTemplate;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\AnggaranImport;
+use App\Imports\InstalImport;
 
-class M_ANGGARANCONTROLLER extends Controller
+class M_INSTALCONTROLLER extends Controller
 {
     /**
-     * Helper function untuk normalize nama anggaran
+     * Helper function untuk normalize nama instal
      * Hapus spasi dan convert ke uppercase
      */
-    private function normalizeNamaAnggaran($nama)
+    private function normalizeNamaInstal($nama)
     {
         return strtoupper(str_replace(' ', '', $nama));
     }
 
     /**
-     * Cek apakah nama anggaran sudah ada di database (normalized)
-     * @param string $namaAnggaran - nama anggaran yang akan dicek
+     * Cek apakah nama instal sudah ada di database (normalized)
+     * @param string $namaInstal - nama instal yang akan dicek
      * @param int|null $excludeId - ID yang dikecualikan (untuk update)
      * @return bool - true jika sudah ada, false jika belum
      */
-    private function isDuplicateNamaAnggaran($namaAnggaran, $excludeId = null)
+    private function isDuplicateNamaInstal($namaInstal, $excludeId = null)
     {
-        $normalizedInput = $this->normalizeNamaAnggaran($namaAnggaran);
+        $normalizedInput = $this->normalizeNamaInstal($namaInstal);
 
-        $query = M_anggaran::whereRaw("UPPER(REPLACE(NAMA_ANGGARAN, ' ', '')) = ?", [$normalizedInput]);
+        $query = M_instal::whereRaw("UPPER(REPLACE(NAMA_INSTAL, ' ', '')) = ?", [$normalizedInput]);
 
         if ($excludeId) {
-            $query->where('ID_ANGGARAN', '!=', $excludeId);
+            $query->where('ID_INSTAL', '!=', $excludeId);
         }
 
         return $query->exists();
@@ -41,12 +41,12 @@ class M_ANGGARANCONTROLLER extends Controller
 
     public function index(Request $request)
     {
-        $query = M_anggaran::query();
+        $query = M_instal::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('NAMA_ANGGARAN', 'like', '%' . $search . '%')
+                $q->where('NAMA_INSTAL', 'like', '%' . $search . '%')
                     ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
             });
         }
@@ -57,12 +57,12 @@ class M_ANGGARANCONTROLLER extends Controller
     public function indexPaginated(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $query = M_anggaran::query();
+        $query = M_instal::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('NAMA_ANGGARAN', 'like', '%' . $search . '%')
+                $q->where('NAMA_INSTAL', 'like', '%' . $search . '%')
                     ->orWhere('CREATE_BY', 'like', '%' . $search . '%');
             });
         }
@@ -73,74 +73,74 @@ class M_ANGGARANCONTROLLER extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'NAMA_ANGGARAN' => 'required|string|max:100',
-            'CREATE_BY'     => 'nullable|string|max:100'
+            'NAMA_INSTAL' => 'required|string|max:100',
+            'CREATE_BY'   => 'nullable|string|max:100'
         ]);
 
         // Cek duplicate dengan normalisasi
-        if ($this->isDuplicateNamaAnggaran($request->NAMA_ANGGARAN)) {
+        if ($this->isDuplicateNamaInstal($request->NAMA_INSTAL)) {
             return response()->json([
-                'message' => 'Nama anggaran sudah ada (duplikat terdeteksi)',
+                'message' => 'Nama instal sudah ada (duplikat terdeteksi)',
                 'errors' => [
-                    'NAMA_ANGGARAN' => ['Nama anggaran sudah ada di database']
+                    'NAMA_INSTAL' => ['Nama instal sudah ada di database']
                 ]
             ], 422);
         }
 
-        $anggaran = M_anggaran::create([
-            'NAMA_ANGGARAN' => $request->NAMA_ANGGARAN,
-            'CREATE_BY'     => $request->CREATE_BY
+        $instal = M_instal::create([
+            'NAMA_INSTAL' => $request->NAMA_INSTAL,
+            'CREATE_BY'   => $request->CREATE_BY
         ]);
 
-        return response()->json($anggaran, 201);
+        return response()->json($instal, 201);
     }
 
     public function show(string $id)
     {
-        $anggaran = M_anggaran::findOrFail($id);
-        return response()->json($anggaran);
+        $instal = M_instal::findOrFail($id);
+        return response()->json($instal);
     }
 
     public function update(Request $request, string $id)
     {
-        $anggaran = M_anggaran::findOrFail($id);
+        $instal = M_instal::findOrFail($id);
 
         $request->validate([
-            'NAMA_ANGGARAN' => 'sometimes|string|max:100',
-            'CREATE_BY'     => 'nullable|string|max:100'
+            'NAMA_INSTAL' => 'sometimes|string|max:100',
+            'CREATE_BY'   => 'nullable|string|max:100'
         ]);
 
         // Cek duplicate dengan normalisasi (exclude ID yang sedang di-update)
-        if ($request->has('NAMA_ANGGARAN') && $this->isDuplicateNamaAnggaran($request->NAMA_ANGGARAN, $id)) {
+        if ($request->has('NAMA_INSTAL') && $this->isDuplicateNamaInstal($request->NAMA_INSTAL, $id)) {
             return response()->json([
-                'message' => 'Nama anggaran sudah ada (duplikat terdeteksi)',
+                'message' => 'Nama instal sudah ada (duplikat terdeteksi)',
                 'errors' => [
-                    'NAMA_ANGGARAN' => ['Nama anggaran sudah ada di database']
+                    'NAMA_INSTAL' => ['Nama instal sudah ada di database']
                 ]
             ], 422);
         }
 
-        $anggaran->update($request->only(['NAMA_ANGGARAN', 'CREATE_BY']));
+        $instal->update($request->only(['NAMA_INSTAL', 'CREATE_BY']));
 
-        return response()->json($anggaran);
+        return response()->json($instal);
     }
 
     public function destroy(string $id)
     {
-        $anggaran = M_anggaran::findOrFail($id);
-        $anggaran->delete();
+        $instal = M_instal::findOrFail($id);
+        $instal->delete();
 
         return response()->json(null, 204);
     }
 
     public function exportExcel()
     {
-        return Excel::download(new AnggaranExport, 'anggaran.xlsx');
+        return Excel::download(new InstalExport, 'instal.xlsx');
     }
 
     public function exportTemplate()
     {
-        return Excel::download(new AnggaranExportTemplate, 'anggaran_template.xlsx');
+        return Excel::download(new InstalExportTemplate, 'instal_template.xlsx');
     }
 
     public function importExcel(Request $request)
@@ -149,7 +149,7 @@ class M_ANGGARANCONTROLLER extends Controller
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
 
-        $import = new AnggaranImport;
+        $import = new InstalImport;
         Excel::import($import, $request->file('file'));
 
         $results = $import->getResults();

@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class M_anggaran extends Model
+class M_merk extends Model
 {
     use HasFactory;
 
-    protected $table = "M_ANGGARAN";
-    protected $primaryKey = "ID_ANGGARAN";
+    protected $table = "M_MERK";
+    protected $primaryKey = 'ID_MERK';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'NAMA_ANGGARAN',
+        'NAMA_MERK',
         'CREATE_BY'
     ];
 }
