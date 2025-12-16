@@ -123,7 +123,7 @@
 
     if (allowed) {
       // aktifkan kartu inventaris
-      cardInventaris.href = '/inventaris';
+      cardInventaris.href = '/dashboard-inventaris';
       cardInventaris.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-70');
       cardInventaris.classList.add('bg-[#224E9F]', 'cursor-pointer', 'hover:-translate-y-2', 'hover:shadow-2xl', 'hover:bg-[#1b3f80]');
       cardInventaris.querySelector('div').classList.remove('bg-gray-200', 'text-gray-500');
