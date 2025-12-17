@@ -28,12 +28,18 @@
   <!-- Menu Scrollable -->
   <nav class="flex-1 p-4 overflow-y-auto">
     <!-- HOME -->
-    <a href="home" 
+    <a href="/home"
       class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
       <span>HOME</span>
     </a>
 
-    <a href="/inventaris" 
+    <!-- DASHBOARD INVENTARIS -->
+    <a href="/dashboard-inventaris"
+      class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
+      <span>DASHBOARD</span>
+    </a>
+
+    <a href="/inventaris"
       class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
       <span>TERMINAL</span>
       <i>
