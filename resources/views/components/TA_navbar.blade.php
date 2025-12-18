@@ -21,7 +21,7 @@
          transition-transform duration-300 z-40 border-r-8 flex flex-col">
 
   <!-- Logo -->
-  <div class="p-4 border-b flex-shrink-0">
+  <div class="p-4 border-b shrink-0">
     <img src="{{ asset('images/iktinven.png') }}" class="h-30 mx-auto">
   </div>
 
@@ -54,8 +54,11 @@
       <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
         <a href="/retensi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Retensi</a>
         <a href="/klasifikasi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Klasifikasi</a>
-        <a href="/status" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a>
-        <a href="/indeks" class="block px-3 py-2 rounded-md hover:bg-blue-200">Index</a>
+        <!-- <a href="/status" class="block px-3 py-2 rounded-md hover:bg-blue-200">Status</a> -->
+        <a href="/indeks" class="block px-3 py-2 rounded-md hover:bg-blue-200">Indeks</a>
+        <a href="/jenisnaskah" class="block px-3 py-3 rounded-md hover:bg-blue-200">Naskah</a>
+        <a href="/jenispengembangan" class="block px-3 py-3 rounded-md hover:bg-blue-200">Pengembangan</a>
+        <a href="/kondisi" class="block px-3 py-3 rounded-md hover:bg-blue-200">Kondisi </a>
       </div>
     </div>
   </nav>
