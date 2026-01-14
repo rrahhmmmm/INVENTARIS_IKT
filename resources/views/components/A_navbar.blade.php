@@ -49,11 +49,11 @@
 
       <div id="masterMenu" class="hidden flex-col mt-1 space-y-1 pl-6">
         <a href="/user" class="block px-3 py-2 rounded-md hover:bg-blue-200">User</a>
-        <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Divisi</a>
+        <!-- <a href="/divisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Divisi</a>
         <a href="/subdivisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Subdivisi</a>
         <a href="/role" class="block px-3 py-2 rounded-md hover:bg-blue-200">Role</a>
         <a href="/terminal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Terminal</a>
-        <a href="/parameter" class="block px-3 py-2 rounded-md hover:bg-blue-200">Parameter</a>
+        <a href="/parameter" class="block px-3 py-2 rounded-md hover:bg-blue-200">Parameter</a> -->
       </div>
     </div>
   </nav>
