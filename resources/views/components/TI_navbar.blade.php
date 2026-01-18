@@ -61,8 +61,8 @@
         <a href="/perangkat" class="block px-3 py-2 rounded-md hover:bg-blue-200">Perangkat</a>
         <a href="/terminal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Terminal</a>
         <a href="/merk" class="block px-3 py-2 rounded-md hover:bg-blue-200">Merk</a>
-        <a href="/instal" class="block px-3 py-2 rounded-md hover:bg-blue-200">Instal</a>
         <a href="/anggaran" class="block px-3 py-2 rounded-md hover:bg-blue-200">Anggaran</a>
+        <a href="/kondisi" class="block px-3 py-2 rounded-md hover:bg-blue-200">Kondisi</a>
       </div>
     </div>
   </nav>

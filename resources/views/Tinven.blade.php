@@ -41,6 +41,14 @@
       padding: 4px 12px;
       border-radius: 6px;
     }
+
+    .select-perangkat-notice {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      color: white;
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -79,59 +87,65 @@
     <h1 class="text-2xl font-bold text-blue-600">Data Inventaris - {{ $nama_terminal }}</h1>
   </div>
 
-  <!-- Controls -->
-  <div class="bg-white rounded-lg shadow-lg p-3 md:p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
-    <div class="flex flex-wrap items-center gap-3">
-      <button id="addInventarisBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
-        <i class="fas fa-plus"></i> <span>Tambah Inventaris</span>
-      </button>
-      <a href="{{ url('/api/inventaris/export') }}?terminal_id={{ $id_terminal }}" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
-        <span>Export Excel</span> <i class="fas fa-file-excel"></i>
-      </a>
+  <!-- Perangkat Filter (WAJIB dipilih) -->
+  <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Jenis Perangkat <span class="text-red-500">*</span></label>
+        <select id="perangkatFilter" class="w-full md:w-64 border-2 border-blue-500 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+          <option value="">-- Pilih Jenis Perangkat --</option>
+        </select>
+      </div>
+      <div id="perangkatInfo" class="text-sm text-gray-500 hidden">
+        <i class="fas fa-info-circle"></i> <span id="perangkatInfoText"></span>
+      </div>
     </div>
-    <input type="text" id="searchInput" placeholder="Cari inventaris..." class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
   </div>
 
-  <!-- Per Page Selection -->
-  <div class="pb-2">
-    <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
-      <option value="10">10</option>
-      <option value="25">25</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-    </select>
+  <!-- Notice to select perangkat -->
+  <div id="selectPerangkatNotice" class="select-perangkat-notice mb-6">
+    <i class="fas fa-mouse-pointer text-5xl mb-4"></i>
+    <h2 class="text-xl font-semibold mb-2">Pilih Jenis Perangkat</h2>
+    <p class="opacity-80">Silakan pilih jenis perangkat di atas untuk menampilkan data inventaris</p>
   </div>
 
-  <!-- Inventaris Table -->
-  <div class="bg-white rounded-lg shadow-sm table-container">
-    <table class="w-full min-w-[2500px] text-sm">
-      <thead class="bg-blue-600 text-white">
-        <tr>
-          <th class="px-3 py-3 text-left font-medium min-w-[50px]">NO</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[120px]">Model</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[120px]">Tipe</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[130px]">Serial Number</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[80px]">Tahun</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[140px]">Kapasitas Prosessor</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[100px]">Memori</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[100px]">Penyimpanan</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[120px]">Sistem Operasi</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[120px]">User</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[150px]">Lokasi/Posisi</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[100px]">Kondisi</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[150px]">Keterangan</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[120px]">Terinstall AV</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[120px]">Mata Anggaran</th>
-          <th class="px-3 py-3 text-left font-medium min-w-[150px]">Ket. Asset</th>
-          <th class="px-3 py-3 text-center font-medium min-w-[100px]">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="inventarisTableBody" class="divide-y divide-gray-200"></tbody>
-    </table>
+  <!-- Controls (hidden until perangkat selected) -->
+  <div id="inventarisControls" class="hidden">
+    <div class="bg-white rounded-lg shadow-lg p-3 md:p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="addInventarisBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+          <i class="fas fa-plus"></i> <span>Tambah Inventaris</span>
+        </button>
+        <a id="exportExcelBtn" href="#" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+          <span>Export Excel</span> <i class="fas fa-file-excel"></i>
+        </a>
+      </div>
+      <input type="text" id="searchInput" placeholder="Cari inventaris..." class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+    </div>
+
+    <!-- Per Page Selection -->
+    <div class="pb-2">
+      <select id="perPageSelect" class="border rounded px-2 py-1 text-sm">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+
+    <!-- Inventaris Table -->
+    <div class="bg-white rounded-lg shadow-sm table-container">
+      <table class="w-full text-sm" id="inventarisTable">
+        <thead class="bg-blue-600 text-white" id="tableHeaders">
+          <!-- Dynamic headers will be rendered here -->
+        </thead>
+        <tbody id="inventarisTableBody" class="divide-y divide-gray-200"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Loading & Empty -->
-  <div id="loadingState" class="text-center py-8">
+  <div id="loadingState" class="text-center py-8 hidden">
     <i class="fas fa-spinner fa-spin text-2xl text-blue-600"></i>
     <p class="mt-2 text-gray-600">Memuat data...</p>
   </div>
@@ -174,109 +188,67 @@
     <form id="inventarisForm" class="bg-white rounded-xl space-y-4">
       <input type="hidden" id="inventarisId">
       <input type="hidden" id="terminalId" value="{{ $id_terminal }}">
+      <input type="hidden" id="formPerangkatId">
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Model (Merk) -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-          <select id="ID_MERK" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <option value="">-- Pilih Model --</option>
-          </select>
-        </div>
+      <!-- Jenis Perangkat Display (readonly) -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <label class="block text-sm font-medium text-blue-700 mb-1">Jenis Perangkat</label>
+        <div id="formPerangkatDisplay" class="font-semibold text-blue-800"></div>
+      </div>
 
-        <!-- Tipe -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tipe</label>
-          <input type="text" id="TIPE" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Serial Number -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
-          <input type="text" id="SERIAL_NUMBER" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Tahun Pengadaan -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tahun Pengadaan</label>
-          <input type="text" id="TAHUN_PENGADAAN" maxlength="4" placeholder="2024" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Kapasitas Prosessor -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Prosessor</label>
-          <input type="text" id="KAPASITAS_PROSESSOR" placeholder="Intel Core i7" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Memori Utama -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Memori Utama</label>
-          <input type="text" id="MEMORI_UTAMA" placeholder="16 GB" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Kapasitas Penyimpanan -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Penyimpanan</label>
-          <input type="text" id="KAPASITAS_PENYIMPANAN" placeholder="512 GB SSD" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Sistem Operasi -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Sistem Operasi</label>
-          <input type="text" id="SISTEM_OPERASI" placeholder="Windows 11 Pro" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- User -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
-          <input type="text" id="USER_PENANGGUNG" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Lokasi/Posisi -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi/Posisi</label>
-          <input type="text" id="LOKASI_POSISI" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <!-- Kondisi -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi</label>
-          <select id="ID_KONDISI" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <option value="">-- Pilih Kondisi --</option>
-          </select>
-        </div>
-
-        <!-- Terinstall AV -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Terinstall AV</label>
-          <select id="ID_INSTAL" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <option value="">-- Pilih --</option>
-          </select>
-        </div>
-
-        <!-- Mata Anggaran -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Mata Anggaran</label>
-          <select id="ID_ANGGARAN" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <option value="">-- Pilih Anggaran --</option>
-          </select>
+      <!-- Mandatory Fields (always shown) -->
+      <div class="border-b pb-4 mb-4">
+        <h4 class="text-md font-semibold mb-3 text-gray-700">Field Wajib</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- ID_MERK -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Merk <span class="text-red-500">*</span></label>
+            <select id="ID_MERK" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="">-- Pilih Merk --</option>
+            </select>
+          </div>
+          <!-- TIPE -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipe <span class="text-red-500">*</span></label>
+            <input type="text" id="TIPE" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+          <!-- LOKASI_POSISI -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi/Posisi <span class="text-red-500">*</span></label>
+            <input type="text" id="LOKASI_POSISI" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+          <!-- TAHUN_PENGADAAN -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tahun Pengadaan <span class="text-red-500">*</span></label>
+            <input type="text" id="TAHUN_PENGADAAN" maxlength="4" placeholder="2024" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+          <!-- ID_KONDISI -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi <span class="text-red-500">*</span></label>
+            <select id="ID_KONDISI" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="">-- Pilih Kondisi --</option>
+            </select>
+          </div>
+          <!-- ID_ANGGARAN -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mata Anggaran <span class="text-red-500">*</span></label>
+            <select id="ID_ANGGARAN" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="">-- Pilih Anggaran --</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Keterangan -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-        <textarea id="KETERANGAN" rows="2" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-      </div>
-
-      <!-- Keterangan Asset -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan Asset</label>
-        <textarea id="KETERANGAN_ASSET" rows="2" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+      <!-- Device-Specific Fields (dynamically rendered) -->
+      <div id="deviceSpecificSection">
+        <h4 class="text-md font-semibold mb-3 text-gray-700">Detail Perangkat</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="deviceSpecificFields">
+          <!-- Will be populated dynamically based on perangkat type -->
+        </div>
       </div>
 
       <!-- Dibuat Oleh -->
-      <div>
+      <div class="border-t pt-4 mt-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Dibuat Oleh</label>
         <input type="text" id="CREATE_BY" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100 text-gray-600">
       </div>
@@ -294,7 +266,7 @@
     <!-- Import Excel -->
     <div class="border-t mt-6 pt-4">
       <h4 class="text-md font-semibold mb-3">Tambah Data Dengan Excel</h4>
-      <a href="{{ url('/api/inventaris/export-template') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
+      <a id="downloadTemplateBtn" href="#" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
         <span>Download Template</span> <i class="fas fa-download"></i>
       </a>
       <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
@@ -319,6 +291,7 @@
 const terminalId = {{ $id_terminal }};
 const apiUrl = "/api/t_inventaris";
 const tableBody = document.getElementById("inventarisTableBody");
+const tableHeaders = document.getElementById("tableHeaders");
 const loadingState = document.getElementById("loadingState");
 const emptyState = document.getElementById("emptyState");
 const modal = document.getElementById("inventarisModal");
@@ -340,11 +313,68 @@ const showingTo = document.getElementById("showingTo");
 const totalRecords = document.getElementById("totalRecords");
 const perPageSelect = document.getElementById("perPageSelect");
 
+// New elements
+const selectPerangkatNotice = document.getElementById("selectPerangkatNotice");
+const inventarisControls = document.getElementById("inventarisControls");
+const perangkatFilter = document.getElementById("perangkatFilter");
+const exportExcelBtn = document.getElementById("exportExcelBtn");
+const downloadTemplateBtn = document.getElementById("downloadTemplateBtn");
+
 // Pagination state
 let currentPage = 1;
 let perPage = 10;
 let totalPages = 1;
 let lastSearchKeyword = "";
+
+// Perangkat state
+let perangkatList = [];
+let currentPerangkatSchema = {};
+let currentPerangkatHeaders = [];
+let selectedPerangkatId = null;
+let selectedPerangkat = null;
+let allSchemas = {};
+
+// Column filter state
+let columnFilters = {};
+
+// Debounce helper function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ==== Load Perangkat Options ====
+async function loadPerangkatOptions() {
+    try {
+        const res = await fetch('/api/m_perangkat/all', {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        perangkatList = data.data || data;
+
+        // Populate filter dropdown
+        perangkatFilter.innerHTML = '<option value="">-- Pilih Jenis Perangkat --</option>';
+        perangkatList.forEach(item => {
+            perangkatFilter.innerHTML += `<option value="${item.ID_PERANGKAT}">${item.NAMA_PERANGKAT}</option>`;
+        });
+
+        // Load all schemas at once for efficiency
+        const schemasRes = await fetch('/api/m_perangkat/schemas', {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        });
+        allSchemas = await schemasRes.json();
+
+    } catch (err) {
+        console.error('Error loading perangkat:', err);
+    }
+}
 
 // ==== Load Dropdown Options ====
 async function loadDropdownOptions() {
@@ -355,7 +385,7 @@ async function loadDropdownOptions() {
         });
         const merkData = await merkRes.json();
         const merkSelect = document.getElementById('ID_MERK');
-        merkSelect.innerHTML = '<option value="">-- Pilih Model --</option>';
+        merkSelect.innerHTML = '<option value="">-- Pilih Merk --</option>';
         (merkData.data || merkData).forEach(item => {
             merkSelect.innerHTML += `<option value="${item.ID_MERK}">${item.NAMA_MERK}</option>`;
         });
@@ -369,17 +399,6 @@ async function loadDropdownOptions() {
         kondisiSelect.innerHTML = '<option value="">-- Pilih Kondisi --</option>';
         (kondisiData.data || kondisiData).forEach(item => {
             kondisiSelect.innerHTML += `<option value="${item.ID_KONDISI}">${item.NAMA_KONDISI}</option>`;
-        });
-
-        // Load Instal
-        const instalRes = await fetch('/api/m_instal/all', {
-            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-        });
-        const instalData = await instalRes.json();
-        const instalSelect = document.getElementById('ID_INSTAL');
-        instalSelect.innerHTML = '<option value="">-- Pilih --</option>';
-        (instalData.data || instalData).forEach(item => {
-            instalSelect.innerHTML += `<option value="${item.ID_INSTAL}">${item.NAMA_INSTAL}</option>`;
         });
 
         // Load Anggaran
@@ -398,8 +417,157 @@ async function loadDropdownOptions() {
     }
 }
 
+
+// ==== Handle Perangkat Selection ====
+perangkatFilter.addEventListener('change', function() {
+    selectedPerangkatId = this.value;
+
+    // Reset column filters when perangkat changes
+    columnFilters = {};
+
+    if (!selectedPerangkatId) {
+        // Hide controls, show notice
+        selectPerangkatNotice.classList.remove('hidden');
+        inventarisControls.classList.add('hidden');
+        paginationControls.classList.add('hidden');
+        emptyState.classList.add('hidden');
+        return;
+    }
+
+    // Find selected perangkat
+    selectedPerangkat = perangkatList.find(p => p.ID_PERANGKAT == selectedPerangkatId);
+
+    // Update schema and headers
+    if (selectedPerangkat && allSchemas[selectedPerangkat.KODE_PERANGKAT]) {
+        currentPerangkatSchema = allSchemas[selectedPerangkat.KODE_PERANGKAT].schema;
+        currentPerangkatHeaders = allSchemas[selectedPerangkat.KODE_PERANGKAT].headers;
+    }
+
+    // Show controls, hide notice
+    selectPerangkatNotice.classList.add('hidden');
+    inventarisControls.classList.remove('hidden');
+
+    // Update export URLs
+    updateExportUrls();
+
+    // Render table headers
+    renderTableHeaders();
+
+    // Load data
+    loadInventaris("", 1);
+});
+
+// ==== Update Export URLs ====
+function updateExportUrls() {
+    const baseExportUrl = `/api/inventaris/export?terminal_id=${terminalId}&perangkat_id=${selectedPerangkatId}`;
+    const baseTemplateUrl = `/api/inventaris/export-template?perangkat_id=${selectedPerangkatId}`;
+
+    exportExcelBtn.href = baseExportUrl;
+    downloadTemplateBtn.href = baseTemplateUrl;
+}
+
+// ==== Render Table Headers ====
+function renderTableHeaders() {
+    const filterInputClass = "column-filter w-full px-2 py-1 text-sm text-gray-800 rounded border-0 focus:ring-2 focus:ring-blue-300";
+
+    // Row 1: Header labels
+    let headers = `
+        <tr>
+            <th class="px-3 py-3 text-left font-medium min-w-[50px]">NO</th>
+            <th class="px-3 py-3 text-left font-medium min-w-[120px]">Merk</th>
+            <th class="px-3 py-3 text-left font-medium min-w-[120px]">Tipe</th>
+            <th class="px-3 py-3 text-left font-medium min-w-[150px]">Lokasi/Posisi</th>
+            <th class="px-3 py-3 text-left font-medium min-w-[80px]">Tahun</th>
+    `;
+
+    // Device-specific headers
+    if (currentPerangkatHeaders && currentPerangkatHeaders.length > 0) {
+        currentPerangkatHeaders.forEach(header => {
+            headers += `<th class="px-3 py-3 text-left font-medium min-w-[120px]">${header.label}</th>`;
+        });
+    }
+
+    headers += `
+            <th class="px-3 py-3 text-left font-medium min-w-[100px]">Kondisi</th>
+            <th class="px-3 py-3 text-left font-medium min-w-[120px]">Anggaran</th>
+            <th class="px-3 py-3 text-center font-medium min-w-[100px]">Aksi</th>
+        </tr>
+    `;
+
+    // Row 2: Filter inputs
+    headers += `
+        <tr class="bg-blue-500">
+            <th class="px-2 py-2"></th>
+            <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="merk"></th>
+            <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="tipe"></th>
+            <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="lokasi"></th>
+            <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="tahun"></th>
+    `;
+
+    // Device-specific filter inputs
+    if (currentPerangkatHeaders && currentPerangkatHeaders.length > 0) {
+        currentPerangkatHeaders.forEach(header => {
+            headers += `<th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="${header.key}"></th>`;
+        });
+    }
+
+    headers += `
+            <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="kondisi"></th>
+            <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="anggaran"></th>
+            <th class="px-2 py-2"></th>
+        </tr>
+    `;
+
+    tableHeaders.innerHTML = headers;
+
+    // Update table min-width based on number of columns
+    const colCount = 8 + (currentPerangkatHeaders?.length || 0);
+    document.getElementById('inventarisTable').style.minWidth = (colCount * 120) + 'px';
+
+    // Setup filter listeners after rendering headers
+    setupColumnFilterListeners();
+}
+
+// ==== Render Device Specific Form Fields ====
+// schema format: { param1: { label: "SERIAL NUMBER", type: "text" }, param2: {...}, ... }
+function renderDeviceSpecificFields(schema) {
+    const container = document.getElementById('deviceSpecificFields');
+    container.innerHTML = '';
+
+    if (!schema || Object.keys(schema).length === 0) {
+        document.getElementById('deviceSpecificSection').classList.add('hidden');
+        return;
+    }
+
+    document.getElementById('deviceSpecificSection').classList.remove('hidden');
+
+    Object.entries(schema).forEach(([paramKey, fieldConfig]) => {
+        let fieldHtml = '';
+
+        if (fieldConfig.type === 'textarea') {
+            fieldHtml = `
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">${fieldConfig.label}</label>
+                    <textarea id="${paramKey}" name="${paramKey}" rows="2" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+            `;
+        } else {
+            fieldHtml = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">${fieldConfig.label}</label>
+                    <input type="text" id="${paramKey}" name="${paramKey}" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            `;
+        }
+
+        container.insertAdjacentHTML('beforeend', fieldHtml);
+    });
+}
+
 // ==== Fetch Inventaris with Pagination ====
 async function loadInventaris(keyword = "", page = 1) {
+    if (!selectedPerangkatId) return;
+
     loadingState.classList.remove("hidden");
     emptyState.classList.add("hidden");
     tableBody.innerHTML = "";
@@ -408,7 +576,7 @@ async function loadInventaris(keyword = "", page = 1) {
     lastSearchKeyword = keyword;
 
     try {
-        let url = `${apiUrl}?terminal_id=${terminalId}&page=${page}&per_page=${perPage}`;
+        let url = `${apiUrl}?terminal_id=${terminalId}&perangkat_id=${selectedPerangkatId}&page=${page}&per_page=${perPage}`;
         if (keyword && keyword.trim() !== "") {
             url += `&search=${encodeURIComponent(keyword)}`;
         }
@@ -438,19 +606,22 @@ async function loadInventaris(keyword = "", page = 1) {
                     <td class="px-3 py-3">${rowNumber}</td>
                     <td class="px-3 py-3">${item.merk?.NAMA_MERK ?? '-'}</td>
                     <td class="px-3 py-3">${item.TIPE ?? '-'}</td>
-                    <td class="px-3 py-3">${item.SERIAL_NUMBER ?? '-'}</td>
-                    <td class="px-3 py-3">${item.TAHUN_PENGADAAN ?? '-'}</td>
-                    <td class="px-3 py-3">${item.KAPASITAS_PROSESSOR ?? '-'}</td>
-                    <td class="px-3 py-3">${item.MEMORI_UTAMA ?? '-'}</td>
-                    <td class="px-3 py-3">${item.KAPASITAS_PENYIMPANAN ?? '-'}</td>
-                    <td class="px-3 py-3">${item.SISTEM_OPERASI ?? '-'}</td>
-                    <td class="px-3 py-3">${item.USER_PENANGGUNG ?? '-'}</td>
                     <td class="px-3 py-3">${item.LOKASI_POSISI ?? '-'}</td>
+                    <td class="px-3 py-3">${item.TAHUN_PENGADAAN ?? '-'}</td>
+            `;
+
+            // Add device-specific columns from param1-param16
+            if (currentPerangkatHeaders && currentPerangkatHeaders.length > 0) {
+                currentPerangkatHeaders.forEach(header => {
+                    // header.key is now 'param1', 'param2', etc.
+                    let value = item[header.key] ?? '-';
+                    row += `<td class="px-3 py-3">${value}</td>`;
+                });
+            }
+
+            row += `
                     <td class="px-3 py-3">${item.kondisi?.NAMA_KONDISI ?? '-'}</td>
-                    <td class="px-3 py-3">${item.KETERANGAN ?? '-'}</td>
-                    <td class="px-3 py-3">${item.instal?.NAMA_INSTAL ?? '-'}</td>
                     <td class="px-3 py-3">${item.anggaran?.NAMA_ANGGARAN ?? '-'}</td>
-                    <td class="px-3 py-3">${item.KETERANGAN_ASSET ?? '-'}</td>
                     <td class="px-3 py-3 text-center space-x-2">
                         <button onclick="editInventaris(${item.ID_INVENTARIS})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteInventaris(${item.ID_INVENTARIS})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
@@ -471,7 +642,7 @@ async function loadInventaris(keyword = "", page = 1) {
     } catch (err) {
         console.error(err);
         loadingState.classList.add("hidden");
-        showToast("Gagal memuat data");
+        showToast("Gagal memuat data", "error");
     }
 }
 
@@ -544,15 +715,41 @@ async function loadUsername() {
 
 // ==== Add Modal ====
 addBtn.addEventListener("click", () => {
+    if (!selectedPerangkatId) {
+        showToast("Pilih jenis perangkat terlebih dahulu", "error");
+        return;
+    }
+
     modal.classList.add("show");
     document.getElementById("modalTitle").innerText = "Tambah Inventaris";
     form.reset();
     document.getElementById("inventarisId").value = "";
+    document.getElementById("formPerangkatId").value = selectedPerangkatId;
+    document.getElementById("formPerangkatDisplay").textContent = selectedPerangkat?.NAMA_PERANGKAT || '';
+
+    // Render device-specific fields
+    renderDeviceSpecificFields(currentPerangkatSchema);
+
     loadUsername();
 });
 
 closeModal.addEventListener("click", () => modal.classList.remove("show"));
 cancelBtn.addEventListener("click", () => modal.classList.remove("show"));
+
+// ==== Collect param values from form ====
+function collectParamValues() {
+    const params = {};
+    if (currentPerangkatSchema) {
+        Object.keys(currentPerangkatSchema).forEach(paramKey => {
+            // paramKey is 'param1', 'param2', etc.
+            const element = document.getElementById(paramKey);
+            if (element) {
+                params[paramKey] = element.value || null;
+            }
+        });
+    }
+    return params;
+}
 
 // ==== Submit Form ====
 form.addEventListener("submit", async function(e) {
@@ -561,22 +758,15 @@ form.addEventListener("submit", async function(e) {
     const id = document.getElementById("inventarisId").value;
     const payload = {
         ID_TERMINAL: terminalId,
+        ID_PERANGKAT: document.getElementById("formPerangkatId").value || selectedPerangkatId,
         ID_MERK: document.getElementById("ID_MERK").value || null,
         TIPE: document.getElementById("TIPE").value,
-        SERIAL_NUMBER: document.getElementById("SERIAL_NUMBER").value,
-        TAHUN_PENGADAAN: document.getElementById("TAHUN_PENGADAAN").value,
-        KAPASITAS_PROSESSOR: document.getElementById("KAPASITAS_PROSESSOR").value,
-        MEMORI_UTAMA: document.getElementById("MEMORI_UTAMA").value,
-        KAPASITAS_PENYIMPANAN: document.getElementById("KAPASITAS_PENYIMPANAN").value,
-        SISTEM_OPERASI: document.getElementById("SISTEM_OPERASI").value,
-        USER_PENANGGUNG: document.getElementById("USER_PENANGGUNG").value,
         LOKASI_POSISI: document.getElementById("LOKASI_POSISI").value,
+        TAHUN_PENGADAAN: document.getElementById("TAHUN_PENGADAAN").value,
         ID_KONDISI: document.getElementById("ID_KONDISI").value || null,
-        KETERANGAN: document.getElementById("KETERANGAN").value,
-        ID_INSTAL: document.getElementById("ID_INSTAL").value || null,
         ID_ANGGARAN: document.getElementById("ID_ANGGARAN").value || null,
-        KETERANGAN_ASSET: document.getElementById("KETERANGAN_ASSET").value,
-        CREATE_BY: document.getElementById("CREATE_BY").value
+        CREATE_BY: document.getElementById("CREATE_BY").value,
+        ...collectParamValues()  // Spread param1-param16
     };
 
     try {
@@ -608,11 +798,11 @@ form.addEventListener("submit", async function(e) {
             modal.classList.remove("show");
             loadInventaris(lastSearchKeyword, currentPage);
         } else {
-            showToast(result.message || "Gagal menyimpan data");
+            showToast(result.message || "Gagal menyimpan data", "error");
         }
     } catch (err) {
         console.error(err);
-        showToast("Terjadi kesalahan");
+        showToast("Terjadi kesalahan", "error");
     }
 });
 
@@ -627,25 +817,35 @@ async function editInventaris(id) {
         modal.classList.add("show");
         document.getElementById("modalTitle").innerText = "Edit Inventaris";
         document.getElementById("inventarisId").value = data.ID_INVENTARIS;
+        document.getElementById("formPerangkatId").value = data.ID_PERANGKAT;
+        document.getElementById("formPerangkatDisplay").textContent = data.perangkat?.NAMA_PERANGKAT || selectedPerangkat?.NAMA_PERANGKAT || '';
+
+        // Mandatory fields
         document.getElementById("ID_MERK").value = data.ID_MERK || "";
         document.getElementById("TIPE").value = data.TIPE || "";
-        document.getElementById("SERIAL_NUMBER").value = data.SERIAL_NUMBER || "";
-        document.getElementById("TAHUN_PENGADAAN").value = data.TAHUN_PENGADAAN || "";
-        document.getElementById("KAPASITAS_PROSESSOR").value = data.KAPASITAS_PROSESSOR || "";
-        document.getElementById("MEMORI_UTAMA").value = data.MEMORI_UTAMA || "";
-        document.getElementById("KAPASITAS_PENYIMPANAN").value = data.KAPASITAS_PENYIMPANAN || "";
-        document.getElementById("SISTEM_OPERASI").value = data.SISTEM_OPERASI || "";
-        document.getElementById("USER_PENANGGUNG").value = data.USER_PENANGGUNG || "";
         document.getElementById("LOKASI_POSISI").value = data.LOKASI_POSISI || "";
+        document.getElementById("TAHUN_PENGADAAN").value = data.TAHUN_PENGADAAN || "";
         document.getElementById("ID_KONDISI").value = data.ID_KONDISI || "";
-        document.getElementById("KETERANGAN").value = data.KETERANGAN || "";
-        document.getElementById("ID_INSTAL").value = data.ID_INSTAL || "";
         document.getElementById("ID_ANGGARAN").value = data.ID_ANGGARAN || "";
-        document.getElementById("KETERANGAN_ASSET").value = data.KETERANGAN_ASSET || "";
         document.getElementById("CREATE_BY").value = data.CREATE_BY || "";
+
+        // Render and populate device-specific fields
+        renderDeviceSpecificFields(currentPerangkatSchema);
+
+        // Populate param values from data
+        if (currentPerangkatSchema) {
+            Object.keys(currentPerangkatSchema).forEach(paramKey => {
+                // paramKey is 'param1', 'param2', etc.
+                const element = document.getElementById(paramKey);
+                if (element) {
+                    element.value = data[paramKey] ?? "";
+                }
+            });
+        }
+
     } catch (err) {
         console.error(err);
-        showToast("Gagal memuat data edit");
+        showToast("Gagal memuat data edit", "error");
     }
 }
 
@@ -665,26 +865,33 @@ async function deleteInventaris(id) {
             showToast(result.message || "Data berhasil dihapus");
             loadInventaris(lastSearchKeyword, currentPage);
         } else {
-            showToast(result.message || "Gagal menghapus data");
+            showToast(result.message || "Gagal menghapus data", "error");
         }
     } catch (err) {
         console.error(err);
-        showToast("Gagal menghapus data");
+        showToast("Gagal menghapus data", "error");
     }
 }
 
 // ==== Import Excel ====
 document.getElementById("importForm").addEventListener("submit", async function(e) {
     e.preventDefault();
+
+    if (!selectedPerangkatId) {
+        showToast("Pilih jenis perangkat terlebih dahulu", "error");
+        return;
+    }
+
     const fileInput = document.getElementById("importFile").files[0];
     if (!fileInput) {
-        showToast("Pilih file terlebih dahulu");
+        showToast("Pilih file terlebih dahulu", "error");
         return;
     }
 
     const formData = new FormData();
     formData.append("file", fileInput);
     formData.append("terminal_id", terminalId);
+    formData.append("perangkat_id", selectedPerangkatId);
 
     try {
         const res = await fetch("/api/inventaris/import", {
@@ -698,17 +905,116 @@ document.getElementById("importForm").addEventListener("submit", async function(
             modal.classList.remove("show");
             loadInventaris(lastSearchKeyword, currentPage);
         } else {
-            showToast(data.message || "Gagal import");
+            showToast(data.message || "Gagal import", "error");
         }
     } catch (err) {
         console.error(err);
-        showToast("Error saat import");
+        showToast("Error saat import", "error");
     }
 });
 
+// ==== Column Filter Functions ====
+function setupColumnFilterListeners() {
+    const columnFilterInputs = document.querySelectorAll(".column-filter");
+
+    columnFilterInputs.forEach(input => {
+        input.addEventListener("input", debounce((e) => {
+            const column = e.target.dataset.column;
+            if (column) {
+                columnFilters[column] = e.target.value.toLowerCase().trim();
+                applyColumnFilters();
+            }
+        }, 300));
+    });
+}
+
+function applyColumnFilters() {
+    const rows = tableBody.querySelectorAll("tr");
+
+    // Build column map dynamically based on current headers
+    // Fixed columns: 0=NO, 1=Merk, 2=Tipe, 3=Lokasi, 4=Tahun, then params, then Kondisi, Anggaran, Aksi
+    const paramCount = currentPerangkatHeaders?.length || 0;
+    const kondisiIndex = 5 + paramCount;
+    const anggaranIndex = 6 + paramCount;
+
+    const columnMap = {
+        1: "merk",
+        2: "tipe",
+        3: "lokasi",
+        4: "tahun"
+    };
+
+    // Add param columns to map
+    if (currentPerangkatHeaders && currentPerangkatHeaders.length > 0) {
+        currentPerangkatHeaders.forEach((header, idx) => {
+            columnMap[5 + idx] = header.key;
+        });
+    }
+
+    // Add kondisi and anggaran
+    columnMap[kondisiIndex] = "kondisi";
+    columnMap[anggaranIndex] = "anggaran";
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length === 0) return;
+
+        let showRow = true;
+
+        for (const [colIndex, filterKey] of Object.entries(columnMap)) {
+            const filterValue = columnFilters[filterKey];
+
+            if (filterValue && filterValue !== "") {
+                const cellText = cells[colIndex]?.textContent?.toLowerCase() || "";
+
+                if (!cellText.includes(filterValue)) {
+                    showRow = false;
+                    break;
+                }
+            }
+        }
+
+        row.style.display = showRow ? "" : "none";
+    });
+
+    updateVisibleCount();
+}
+
+function updateVisibleCount() {
+    const rows = tableBody.querySelectorAll("tr");
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        if (row.style.display !== "none") {
+            visibleCount++;
+        }
+    });
+
+    // Update the "showing" text if column filters are active
+    const hasActiveFilters = Object.values(columnFilters).some(v => v !== "");
+    if (hasActiveFilters) {
+        showingFrom.textContent = visibleCount > 0 ? "1" : "0";
+        showingTo.textContent = visibleCount;
+    }
+}
+
 // ==== Toast ====
-function showToast(msg) {
+function showToast(msg, type = "success") {
+    const toastIcon = document.getElementById("toastIcon");
     toastMessage.innerText = msg;
+
+    if (type === "error") {
+        toast.classList.remove("bg-green-500");
+        toast.classList.add("bg-red-500");
+        toastIcon.classList.remove("fa-check-circle");
+        toastIcon.classList.add("fa-exclamation-circle");
+    } else {
+        toast.classList.remove("bg-red-500");
+        toast.classList.add("bg-green-500");
+        toastIcon.classList.remove("fa-exclamation-circle");
+        toastIcon.classList.add("fa-check-circle");
+    }
+
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 3000);
 }
@@ -722,8 +1028,8 @@ document.getElementById("searchInput").addEventListener("input", function() {
 });
 
 // ==== Initialize ====
+loadPerangkatOptions();
 loadDropdownOptions();
-loadInventaris();
 </script>
 
 </body>
