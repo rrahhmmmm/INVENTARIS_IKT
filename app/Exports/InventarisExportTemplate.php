@@ -2,29 +2,44 @@
 
 namespace App\Exports;
 
+use App\Models\M_perangkat;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class InventarisExportTemplate implements WithHeadings, ShouldAutoSize
 {
+    protected $perangkatId;
+    protected $perangkat;
+
+    public function __construct($perangkatId = 1)
+    {
+        $this->perangkatId = $perangkatId;
+        $this->perangkat = M_perangkat::find($perangkatId);
+    }
+
     public function headings(): array
     {
-        return [
+        // Mandatory fields (same for all device types)
+        $headers = [
             'ID_MERK',
             'TIPE',
-            'SERIAL_NUMBER',
-            'TAHUN_PENGADAAN',
-            'KAPASITAS_PROSESSOR',
-            'MEMORI_UTAMA',
-            'KAPASITAS_PENYIMPANAN',
-            'SISTEM_OPERASI',
-            'USER_PENANGGUNG',
             'LOKASI_POSISI',
+            'TAHUN_PENGADAAN',
             'ID_KONDISI',
-            'KETERANGAN',
-            'ID_INSTAL',
             'ID_ANGGARAN',
-            'KETERANGAN_ASSET'
         ];
+
+        // Add param columns with their labels for reference
+        if ($this->perangkat) {
+            for ($i = 1; $i <= 16; $i++) {
+                $fieldName = $this->perangkat->{"param$i"};
+                if (!empty($fieldName)) {
+                    // Column name is param1, param2, etc. with label in parentheses
+                    $headers[] = "param{$i} ({$fieldName})";
+                }
+            }
+        }
+
+        return $headers;
     }
 }

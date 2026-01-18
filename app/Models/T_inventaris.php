@@ -15,24 +15,19 @@ class T_inventaris extends Model
 
     protected $fillable = [
         'ID_TERMINAL',
+        'ID_PERANGKAT',
         'ID_MERK',
         'TIPE',
-        'SERIAL_NUMBER',
         'TAHUN_PENGADAAN',
-        'KAPASITAS_PROSESSOR',
-        'MEMORI_UTAMA',
-        'KAPASITAS_PENYIMPANAN',
-        'SISTEM_OPERASI',
-        'USER_PENANGGUNG',
         'LOKASI_POSISI',
         'ID_KONDISI',
-        'KETERANGAN',
-        'ID_INSTAL',
         'ID_ANGGARAN',
-        'KETERANGAN_ASSET',
         'CREATE_BY',
         'UPDATE_BY',
-        'STATUS'
+        'STATUS',
+        'param1', 'param2', 'param3', 'param4', 'param5', 'param6',
+        'param7', 'param8', 'param9', 'param10', 'param11', 'param12',
+        'param13', 'param14', 'param15', 'param16'
     ];
 
     public function terminal()
@@ -50,13 +45,37 @@ class T_inventaris extends Model
         return $this->belongsTo(M_kondisi::class, 'ID_KONDISI', 'ID_KONDISI');
     }
 
-    public function instal()
-    {
-        return $this->belongsTo(M_instal::class, 'ID_INSTAL', 'ID_INSTAL');
-    }
-
     public function anggaran()
     {
         return $this->belongsTo(M_anggaran::class, 'ID_ANGGARAN', 'ID_ANGGARAN');
+    }
+
+    public function perangkat()
+    {
+        return $this->belongsTo(M_perangkat::class, 'ID_PERANGKAT', 'ID_PERANGKAT');
+    }
+
+    /**
+     * Get all param values with their labels from perangkat
+     */
+    public function getParamValuesWithLabels(): array
+    {
+        $result = [];
+        $perangkat = $this->perangkat;
+
+        if ($perangkat) {
+            for ($i = 1; $i <= 16; $i++) {
+                $label = $perangkat->{"param$i"};
+                if (!empty($label)) {
+                    $result[] = [
+                        'key' => "param$i",
+                        'label' => $label,
+                        'value' => $this->{"param$i"}
+                    ];
+                }
+            }
+        }
+
+        return $result;
     }
 }

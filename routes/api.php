@@ -16,9 +16,9 @@ use App\Http\Controllers\T_ARSIPCONTROLLER;
 use App\Http\COntrollers\M_JENISNASKAHCONTROLLER;
 use App\Http\Controllers\M_TINGKATPENGEMBANGANCONTROLLER;
 use App\Http\Controllers\M_KONDISICONTROLLER;
-use App\Http\Controllers\M_INSTALCONTROLLER;
 use App\Http\Controllers\M_ANGGARANCONTROLLER;
 use App\Http\Controllers\M_MERKCONTROLLER;
+use App\Http\Controllers\M_PERANGKATCONTROLLER;
 use App\Http\Controllers\T_INVENTARISCONTROLLER;
 use App\Http\Controllers\DashboardInventarisController;
 
@@ -88,17 +88,15 @@ Route::get('/jenisnaskah/export', [M_JENISNASKAHCONTROLLER::class, 'exportExcel'
 Route::get('/jenisnaskah/export-template', [M_JENISNASKAHCONTROLLER::class, 'exportTemplate']);
 
 // Master Inventaris Export routes
-Route::get('/instal/export', [M_INSTALCONTROLLER::class, 'exportExcel']);
-Route::get('/instal/export-template', [M_INSTALCONTROLLER::class, 'exportTemplate']);
 Route::get('/anggaran/export', [M_ANGGARANCONTROLLER::class, 'exportExcel']);
 Route::get('/anggaran/export-template', [M_ANGGARANCONTROLLER::class, 'exportTemplate']);
 Route::get('/merk/export', [M_MERKCONTROLLER::class, 'exportExcel']);
 Route::get('/merk/export-template', [M_MERKCONTROLLER::class, 'exportTemplate']);
 
 // Master Inventaris Paginated routes
-Route::get('/m_instal/paginated', [M_INSTALCONTROLLER::class, 'indexPaginated']);
 Route::get('/m_anggaran/paginated', [M_ANGGARANCONTROLLER::class, 'indexPaginated']);
 Route::get('/m_merk/paginated', [M_MERKCONTROLLER::class, 'indexPaginated']);
+Route::get('/m_perangkat/paginated', [M_PERANGKATCONTROLLER::class, 'indexPaginated']);
 
 
 
@@ -155,11 +153,14 @@ Route::middleware('auth:sanctum' )->group(function () {
 
     // Master data for dropdowns
     Route::get('/m_merk/all', [M_MERKCONTROLLER::class, 'index']);
-    Route::get('/m_instal/all', [M_INSTALCONTROLLER::class, 'index']);
     Route::get('/m_anggaran/all', [M_ANGGARANCONTROLLER::class, 'index']);
+    Route::get('/m_perangkat/all', [M_PERANGKATCONTROLLER::class, 'index']);
+    Route::get('/m_perangkat/{id}/schema', [M_PERANGKATCONTROLLER::class, 'getFieldSchema']);
+    Route::get('/m_perangkat/schemas', [M_PERANGKATCONTROLLER::class, 'getAllSchemas']);
 
     // Dashboard Inventaris
     Route::get('/dashboard-inventaris/statistics', [DashboardInventarisController::class, 'getStatistics']);
+
 });
 
 Route::middleware('auth:sanctum','role:ADMIN')->group(function () {
@@ -207,12 +208,12 @@ Route::middleware('auth:sanctum','role:ADMIN')->group(function () {
     Route::post('jenisnaskah/import', [M_JENISNASKAHCONTROLLER::class, 'importExcel']);
 
     // Master Inventaris CRUD routes
-    Route::apiResource('m_instal', M_INSTALCONTROLLER::class);
-    Route::post('/instal/import', [M_INSTALCONTROLLER::class, 'importExcel']);
-
     Route::apiResource('m_anggaran', M_ANGGARANCONTROLLER::class);
     Route::post('/anggaran/import', [M_ANGGARANCONTROLLER::class, 'importExcel']);
 
     Route::apiResource('m_merk', M_MERKCONTROLLER::class);
     Route::post('/merk/import', [M_MERKCONTROLLER::class, 'importExcel']);
+
+    // Master Perangkat CRUD routes (admin only)
+    Route::apiResource('m_perangkat', M_PERANGKATCONTROLLER::class);
 });

@@ -13,19 +13,31 @@
     <header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>
 
     <main class="container mx-auto px-4 py-6">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Dashboard Inventaris</h1>
+        <!-- Header with Filter -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Inventaris</h1>
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Filter Dropdown -->
+            <div class="flex items-center gap-3">
+                <label for="filterPerangkat" class="text-sm font-medium text-gray-600">Filter Perangkat:</label>
+                <select id="filterPerangkat"
+                    class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[200px]">
+                    <option value="">Semua Perangkat</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Summary Cards Row 1 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <!-- Total Inventaris -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+            <div class="bg-white rounded-lg shadow-md p-5 border-l-4 border-blue-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 uppercase">Total Inventaris</p>
-                        <p id="totalInventaris" class="text-3xl font-bold text-gray-800">-</p>
+                        <p class="text-xs text-gray-500 uppercase">Total Inventaris</p>
+                        <p id="totalInventaris" class="text-2xl font-bold text-gray-800">-</p>
                     </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-blue-100 p-2 rounded-full">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
                         </svg>
                     </div>
@@ -33,82 +45,105 @@
             </div>
 
             <!-- Butuh Pembaharuan -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+            <div class="bg-white rounded-lg shadow-md p-5 border-l-4 border-orange-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 uppercase">Butuh Pembaharuan</p>
-                        <p id="butuhPembaharuan" class="text-3xl font-bold text-gray-800">-</p>
+                        <p class="text-xs text-gray-500 uppercase">Butuh Pembaharuan</p>
+                        <p id="butuhPembaharuan" class="text-2xl font-bold text-gray-800">-</p>
                         <p class="text-xs text-gray-400">Lebih dari 5 tahun</p>
                     </div>
-                    <div class="bg-orange-100 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-orange-100 p-2 rounded-full">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <!-- Sudah Install AV -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+            <!-- Kondisi Baik -->
+            <div class="bg-white rounded-lg shadow-md p-5 border-l-4 border-green-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 uppercase">Sudah Install AV</p>
-                        <p id="sudahInstallAV" class="text-3xl font-bold text-gray-800">-</p>
+                        <p class="text-xs text-gray-500 uppercase">Kondisi Baik</p>
+                        <p id="kondisiBaik" class="text-2xl font-bold text-gray-800">-</p>
                     </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    <div class="bg-green-100 p-2 rounded-full">
+                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <!-- Belum Install AV -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+            <!-- Kondisi Perlu Perhatian -->
+            <div class="bg-white rounded-lg shadow-md p-5 border-l-4 border-red-500">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 uppercase">Belum Install AV</p>
-                        <p id="belumInstallAV" class="text-3xl font-bold text-gray-800">-</p>
+                        <p class="text-xs text-gray-500 uppercase">Perlu Perhatian</p>
+                        <p id="kondisiPerluPerhatian" class="text-2xl font-bold text-gray-800">-</p>
                     </div>
-                    <div class="bg-red-100 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    <div class="bg-red-100 p-2 rounded-full">
+                        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Charts Grid Row 1 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Chart: Inventaris per Jenis Perangkat -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Inventaris per Jenis Perangkat</h2>
+                <div class="relative h-72">
+                    <canvas id="chartPerangkat"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart: Kondisi Perangkat -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Kondisi Perangkat</h2>
+                <div class="relative h-72">
+                    <canvas id="chartKondisi"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Charts Grid Row 2 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Chart: Distribusi Anggaran -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Distribusi Anggaran</h2>
+                <div class="relative h-72">
+                    <canvas id="chartAnggaran"></canvas>
+                </div>
+            </div>
+
             <!-- Chart: Inventaris per Merek -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Inventaris per Merek</h2>
-                <div class="relative h-80">
+                <div class="relative h-72">
                     <canvas id="chartMerk"></canvas>
                 </div>
             </div>
+        </div>
 
+        <!-- Charts Grid Row 3 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Chart: Inventaris per Tahun Pengadaan -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Inventaris per Tahun Pengadaan</h2>
-                <div class="relative h-80">
+                <div class="relative h-72">
                     <canvas id="chartTahun"></canvas>
-                </div>
-            </div>
-
-            <!-- Chart: Status Antivirus -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Status Antivirus</h2>
-                <div class="relative h-80">
-                    <canvas id="chartAntivirus"></canvas>
                 </div>
             </div>
 
             <!-- Chart: Inventaris per Terminal -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Inventaris per Terminal</h2>
-                <div class="relative h-80">
+                <div class="relative h-72">
                     <canvas id="chartTerminal"></canvas>
                 </div>
             </div>
@@ -128,7 +163,7 @@
 
     <script>
         // Chart instances
-        let chartMerk, chartTahun, chartAntivirus, chartTerminal;
+        let chartPerangkat, chartKondisi, chartAnggaran, chartMerk, chartTahun, chartTerminal;
 
         // Color palette
         const colors = [
@@ -144,7 +179,19 @@
             'rgba(168, 85, 247, 0.8)',   // purple-500
         ];
 
+        // Device type colors (consistent)
+        const perangkatColors = {
+            'PC/Laptop': 'rgba(59, 130, 246, 0.8)',      // blue
+            'Printer & Scan': 'rgba(245, 158, 11, 0.8)', // amber
+            'CCTV': 'rgba(139, 92, 246, 0.8)',           // purple
+            'Handheld (HENHEL)': 'rgba(16, 185, 129, 0.8)', // green
+            'AP (Access Point)': 'rgba(236, 72, 153, 0.8)'  // pink
+        };
+
         const borderColors = colors.map(c => c.replace('0.8', '1'));
+
+        // Current filter
+        let currentPerangkatId = '';
 
         // Fetch with auth
         async function fetchWithAuth(url) {
@@ -161,21 +208,47 @@
             return response.json();
         }
 
+        // Load perangkat options for filter
+        async function loadPerangkatOptions() {
+            try {
+                const data = await fetchWithAuth('/api/m_perangkat/all');
+                const select = document.getElementById('filterPerangkat');
+
+                data.forEach(perangkat => {
+                    const option = document.createElement('option');
+                    option.value = perangkat.ID_PERANGKAT;
+                    option.textContent = perangkat.NAMA_PERANGKAT;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading perangkat options:', error);
+            }
+        }
+
         // Load dashboard data
         async function loadDashboard() {
             try {
-                const data = await fetchWithAuth('/api/dashboard-inventaris/statistics');
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+
+                let url = '/api/dashboard-inventaris/statistics';
+                if (currentPerangkatId) {
+                    url += `?perangkat_id=${currentPerangkatId}`;
+                }
+
+                const data = await fetchWithAuth(url);
 
                 // Update summary cards
                 document.getElementById('totalInventaris').textContent = data.total_inventaris.toLocaleString('id-ID');
                 document.getElementById('butuhPembaharuan').textContent = data.butuh_pembaharuan.toLocaleString('id-ID');
-                document.getElementById('sudahInstallAV').textContent = data.sudah_install_av.toLocaleString('id-ID');
-                document.getElementById('belumInstallAV').textContent = data.belum_install_av.toLocaleString('id-ID');
+                document.getElementById('kondisiBaik').textContent = data.kondisi_baik.toLocaleString('id-ID');
+                document.getElementById('kondisiPerluPerhatian').textContent = data.kondisi_perlu_perhatian.toLocaleString('id-ID');
 
                 // Render charts
+                renderChartPerangkat(data.per_perangkat);
+                renderChartKondisi(data.per_kondisi);
+                renderChartAnggaran(data.per_anggaran);
                 renderChartMerk(data.per_merk);
                 renderChartTahun(data.per_tahun, data.threshold_year);
-                renderChartAntivirus(data.per_antivirus);
                 renderChartTerminal(data.per_terminal);
 
                 // Hide loading
@@ -189,6 +262,120 @@
                     </div>
                 `;
             }
+        }
+
+        // Chart: Inventaris per Jenis Perangkat (Doughnut)
+        function renderChartPerangkat(data) {
+            const ctx = document.getElementById('chartPerangkat').getContext('2d');
+
+            if (chartPerangkat) chartPerangkat.destroy();
+
+            const chartColors = data.map(item => perangkatColors[item.nama] || colors[0]);
+
+            chartPerangkat = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(item => item.nama),
+                    datasets: [{
+                        data: data.map(item => item.total),
+                        backgroundColor: chartColors,
+                        borderColor: chartColors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart: Kondisi Perangkat (Bar)
+        function renderChartKondisi(data) {
+            const ctx = document.getElementById('chartKondisi').getContext('2d');
+
+            if (chartKondisi) chartKondisi.destroy();
+
+            // Color based on condition name
+            const kondisiColors = data.map(item => {
+                const nama = item.nama.toLowerCase();
+                if (nama.includes('baik') || nama.includes('good') || nama.includes('normal')) {
+                    return 'rgba(16, 185, 129, 0.8)'; // green
+                } else if (nama.includes('rusak berat') || nama.includes('broken')) {
+                    return 'rgba(239, 68, 68, 0.8)'; // red
+                } else {
+                    return 'rgba(245, 158, 11, 0.8)'; // amber for others
+                }
+            });
+
+            chartKondisi = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.nama),
+                    datasets: [{
+                        label: 'Jumlah',
+                        data: data.map(item => item.total),
+                        backgroundColor: kondisiColors,
+                        borderColor: kondisiColors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart: Distribusi Anggaran (Pie)
+        function renderChartAnggaran(data) {
+            const ctx = document.getElementById('chartAnggaran').getContext('2d');
+
+            if (chartAnggaran) chartAnggaran.destroy();
+
+            chartAnggaran = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.map(item => item.nama),
+                    datasets: [{
+                        data: data.map(item => item.total),
+                        backgroundColor: colors.slice(0, data.length),
+                        borderColor: borderColors.slice(0, data.length),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // Chart: Inventaris per Merek (Bar Chart)
@@ -251,15 +438,17 @@
             });
 
             const labels = Object.keys(masihBaik).sort().reverse();
-            labels.push('Butuh Pembaharuan (>' + (new Date().getFullYear() - 5) + ')');
+            if (butuhUpdate > 0) {
+                labels.push('Butuh Pembaharuan (>' + (new Date().getFullYear() - 5) + ')');
+            }
 
             const values = labels.map((label, idx) => {
-                if (idx === labels.length - 1) return butuhUpdate;
-                return masihBaik[label];
+                if (idx === labels.length - 1 && butuhUpdate > 0 && label.includes('Butuh')) return butuhUpdate;
+                return masihBaik[label] || 0;
             });
 
             const chartColors = labels.map((label, idx) => {
-                if (idx === labels.length - 1) return 'rgba(239, 68, 68, 0.8)'; // red for butuh update
+                if (label.includes('Butuh')) return 'rgba(239, 68, 68, 0.8)'; // red for butuh update
                 return colors[idx % colors.length];
             });
 
@@ -271,47 +460,6 @@
                         data: values,
                         backgroundColor: chartColors,
                         borderColor: chartColors.map(c => c.replace('0.8', '1')),
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                boxWidth: 15,
-                                padding: 10
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Chart: Status Antivirus (Pie)
-        function renderChartAntivirus(data) {
-            const ctx = document.getElementById('chartAntivirus').getContext('2d');
-
-            if (chartAntivirus) chartAntivirus.destroy();
-
-            const avColors = data.map(item => {
-                const nama = item.NAMA_INSTAL.toLowerCase();
-                if (nama.includes('sudah') || nama.includes('yes') || nama.includes('installed')) {
-                    return 'rgba(16, 185, 129, 0.8)'; // green
-                }
-                return 'rgba(239, 68, 68, 0.8)'; // red
-            });
-
-            chartAntivirus = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: data.map(item => item.NAMA_INSTAL),
-                    datasets: [{
-                        data: data.map(item => item.total),
-                        backgroundColor: avColors,
-                        borderColor: avColors.map(c => c.replace('0.8', '1')),
                         borderWidth: 2
                     }]
                 },
@@ -366,8 +514,17 @@
             });
         }
 
+        // Handle filter change
+        document.getElementById('filterPerangkat').addEventListener('change', function() {
+            currentPerangkatId = this.value;
+            loadDashboard();
+        });
+
         // Initialize
-        document.addEventListener('DOMContentLoaded', loadDashboard);
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadPerangkatOptions();
+            await loadDashboard();
+        });
     </script>
 </body>
 </html>

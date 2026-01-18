@@ -17,23 +17,29 @@ class T_INVENTARISCONTROLLER extends Controller
      */
     public function index(Request $request)
     {
-        $query = T_inventaris::with(['terminal', 'merk', 'kondisi', 'instal', 'anggaran']);
+        $query = T_inventaris::with(['terminal', 'merk', 'kondisi', 'anggaran', 'perangkat']);
 
         // Filter by terminal
         if ($request->filled('terminal_id')) {
             $query->where('ID_TERMINAL', $request->terminal_id);
         }
 
-        // Search filter
+        // Filter by perangkat type
+        if ($request->filled('perangkat_id')) {
+            $query->where('ID_PERANGKAT', $request->perangkat_id);
+        }
+
+        // Search filter - search in param1-param16
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('TIPE', 'like', '%' . $search . '%')
-                  ->orWhere('SERIAL_NUMBER', 'like', '%' . $search . '%')
-                  ->orWhere('USER_PENANGGUNG', 'like', '%' . $search . '%')
-                  ->orWhere('LOKASI_POSISI', 'like', '%' . $search . '%')
-                  ->orWhere('SISTEM_OPERASI', 'like', '%' . $search . '%')
-                  ->orWhere('KETERANGAN', 'like', '%' . $search . '%');
+                  ->orWhere('LOKASI_POSISI', 'like', '%' . $search . '%');
+
+                // Search in all param columns
+                for ($i = 1; $i <= 16; $i++) {
+                    $q->orWhere("param$i", 'like', '%' . $search . '%');
+                }
             });
         }
 
@@ -46,46 +52,41 @@ class T_INVENTARISCONTROLLER extends Controller
      */
     public function store(Request $request)
     {
+        // Validate mandatory fields
         $request->validate([
             'ID_TERMINAL' => 'required|integer',
-            'ID_MERK' => 'nullable|integer',
-            'TIPE' => 'nullable|string|max:100',
-            'SERIAL_NUMBER' => 'nullable|string|max:100',
-            'TAHUN_PENGADAAN' => 'nullable|string|max:4',
-            'KAPASITAS_PROSESSOR' => 'nullable|string|max:100',
-            'MEMORI_UTAMA' => 'nullable|string|max:50',
-            'KAPASITAS_PENYIMPANAN' => 'nullable|string|max:50',
-            'SISTEM_OPERASI' => 'nullable|string|max:100',
-            'USER_PENANGGUNG' => 'nullable|string|max:100',
-            'LOKASI_POSISI' => 'nullable|string|max:150',
-            'ID_KONDISI' => 'nullable|integer',
-            'KETERANGAN' => 'nullable|string',
-            'ID_INSTAL' => 'nullable|integer',
-            'ID_ANGGARAN' => 'nullable|integer',
-            'KETERANGAN_ASSET' => 'nullable|string',
+            'ID_PERANGKAT' => 'required|integer|exists:M_PERANGKAT,ID_PERANGKAT',
+            'LOKASI_POSISI' => 'required|string|max:150',
+            'ID_KONDISI' => 'required|integer|exists:M_KONDISI,ID_KONDISI',
+            'TAHUN_PENGADAAN' => 'required|string|max:4',
+            'ID_ANGGARAN' => 'required|integer|exists:M_ANGGARAN,ID_ANGGARAN',
+            'TIPE' => 'required|string|max:100',
+            'ID_MERK' => 'required|integer|exists:M_MERK,ID_MERK',
             'CREATE_BY' => 'nullable|string|max:50'
         ]);
 
         try {
-            $inventaris = T_inventaris::create([
+            $data = [
                 'ID_TERMINAL' => $request->ID_TERMINAL,
+                'ID_PERANGKAT' => $request->ID_PERANGKAT,
                 'ID_MERK' => $request->ID_MERK,
                 'TIPE' => $request->TIPE,
-                'SERIAL_NUMBER' => $request->SERIAL_NUMBER,
-                'TAHUN_PENGADAAN' => $request->TAHUN_PENGADAAN,
-                'KAPASITAS_PROSESSOR' => $request->KAPASITAS_PROSESSOR,
-                'MEMORI_UTAMA' => $request->MEMORI_UTAMA,
-                'KAPASITAS_PENYIMPANAN' => $request->KAPASITAS_PENYIMPANAN,
-                'SISTEM_OPERASI' => $request->SISTEM_OPERASI,
-                'USER_PENANGGUNG' => $request->USER_PENANGGUNG,
                 'LOKASI_POSISI' => $request->LOKASI_POSISI,
                 'ID_KONDISI' => $request->ID_KONDISI,
-                'KETERANGAN' => $request->KETERANGAN,
-                'ID_INSTAL' => $request->ID_INSTAL,
+                'TAHUN_PENGADAAN' => $request->TAHUN_PENGADAAN,
                 'ID_ANGGARAN' => $request->ID_ANGGARAN,
-                'KETERANGAN_ASSET' => $request->KETERANGAN_ASSET,
                 'CREATE_BY' => $request->CREATE_BY ?? Auth::user()->username ?? 'system'
-            ]);
+            ];
+
+            // Add param1-param16
+            for ($i = 1; $i <= 16; $i++) {
+                $paramKey = "param$i";
+                if ($request->has($paramKey)) {
+                    $data[$paramKey] = $request->input($paramKey);
+                }
+            }
+
+            $inventaris = T_inventaris::create($data);
 
             return response()->json([
                 'success' => true,
@@ -106,7 +107,7 @@ class T_INVENTARISCONTROLLER extends Controller
      */
     public function show(string $id)
     {
-        $inventaris = T_inventaris::with(['terminal', 'merk', 'kondisi', 'instal', 'anggaran'])->findOrFail($id);
+        $inventaris = T_inventaris::with(['terminal', 'merk', 'kondisi', 'anggaran', 'perangkat'])->findOrFail($id);
         return response()->json($inventaris);
     }
 
@@ -118,42 +119,36 @@ class T_INVENTARISCONTROLLER extends Controller
         $inventaris = T_inventaris::findOrFail($id);
 
         $request->validate([
-            'ID_MERK' => 'nullable|integer',
-            'TIPE' => 'nullable|string|max:100',
-            'SERIAL_NUMBER' => 'nullable|string|max:100',
-            'TAHUN_PENGADAAN' => 'nullable|string|max:4',
-            'KAPASITAS_PROSESSOR' => 'nullable|string|max:100',
-            'MEMORI_UTAMA' => 'nullable|string|max:50',
-            'KAPASITAS_PENYIMPANAN' => 'nullable|string|max:50',
-            'SISTEM_OPERASI' => 'nullable|string|max:100',
-            'USER_PENANGGUNG' => 'nullable|string|max:100',
-            'LOKASI_POSISI' => 'nullable|string|max:150',
-            'ID_KONDISI' => 'nullable|integer',
-            'KETERANGAN' => 'nullable|string',
-            'ID_INSTAL' => 'nullable|integer',
-            'ID_ANGGARAN' => 'nullable|integer',
-            'KETERANGAN_ASSET' => 'nullable|string'
+            'ID_PERANGKAT' => 'sometimes|integer|exists:M_PERANGKAT,ID_PERANGKAT',
+            'LOKASI_POSISI' => 'sometimes|string|max:150',
+            'ID_KONDISI' => 'sometimes|integer',
+            'TAHUN_PENGADAAN' => 'sometimes|string|max:4',
+            'ID_ANGGARAN' => 'sometimes|integer',
+            'TIPE' => 'sometimes|string|max:100',
+            'ID_MERK' => 'sometimes|integer',
         ]);
 
         try {
-            $inventaris->update([
-                'ID_MERK' => $request->ID_MERK,
-                'TIPE' => $request->TIPE,
-                'SERIAL_NUMBER' => $request->SERIAL_NUMBER,
-                'TAHUN_PENGADAAN' => $request->TAHUN_PENGADAAN,
-                'KAPASITAS_PROSESSOR' => $request->KAPASITAS_PROSESSOR,
-                'MEMORI_UTAMA' => $request->MEMORI_UTAMA,
-                'KAPASITAS_PENYIMPANAN' => $request->KAPASITAS_PENYIMPANAN,
-                'SISTEM_OPERASI' => $request->SISTEM_OPERASI,
-                'USER_PENANGGUNG' => $request->USER_PENANGGUNG,
-                'LOKASI_POSISI' => $request->LOKASI_POSISI,
-                'ID_KONDISI' => $request->ID_KONDISI,
-                'KETERANGAN' => $request->KETERANGAN,
-                'ID_INSTAL' => $request->ID_INSTAL,
-                'ID_ANGGARAN' => $request->ID_ANGGARAN,
-                'KETERANGAN_ASSET' => $request->KETERANGAN_ASSET,
+            $data = [
+                'ID_PERANGKAT' => $request->ID_PERANGKAT ?? $inventaris->ID_PERANGKAT,
+                'ID_MERK' => $request->ID_MERK ?? $inventaris->ID_MERK,
+                'TIPE' => $request->TIPE ?? $inventaris->TIPE,
+                'LOKASI_POSISI' => $request->LOKASI_POSISI ?? $inventaris->LOKASI_POSISI,
+                'ID_KONDISI' => $request->ID_KONDISI ?? $inventaris->ID_KONDISI,
+                'TAHUN_PENGADAAN' => $request->TAHUN_PENGADAAN ?? $inventaris->TAHUN_PENGADAAN,
+                'ID_ANGGARAN' => $request->ID_ANGGARAN ?? $inventaris->ID_ANGGARAN,
                 'UPDATE_BY' => Auth::user()->username ?? 'system'
-            ]);
+            ];
+
+            // Update param1-param16
+            for ($i = 1; $i <= 16; $i++) {
+                $paramKey = "param$i";
+                if ($request->has($paramKey)) {
+                    $data[$paramKey] = $request->input($paramKey);
+                }
+            }
+
+            $inventaris->update($data);
 
             return response()->json([
                 'success' => true,
@@ -192,39 +187,45 @@ class T_INVENTARISCONTROLLER extends Controller
     }
 
     /**
-     * Export to Excel
+     * Export to Excel with perangkat filter
      */
     public function exportExcel(Request $request)
     {
         $terminalId = $request->input('terminal_id');
+        $perangkatId = $request->input('perangkat_id');
         $filename = 'inventaris';
 
         if ($terminalId) {
             $filename .= '_terminal_' . $terminalId;
         }
+        if ($perangkatId) {
+            $filename .= '_perangkat_' . $perangkatId;
+        }
 
-        return Excel::download(new InventarisExport($terminalId), $filename . '.xlsx');
+        return Excel::download(new InventarisExport($terminalId, $perangkatId), $filename . '.xlsx');
     }
 
     /**
-     * Export template
+     * Export template based on device type
      */
-    public function exportTemplate()
+    public function exportTemplate(Request $request)
     {
-        return Excel::download(new InventarisExportTemplate, 'inventaris_template.xlsx');
+        $perangkatId = $request->input('perangkat_id', 1); // Default to PC/Laptop
+        return Excel::download(new InventarisExportTemplate($perangkatId), 'inventaris_template.xlsx');
     }
 
     /**
-     * Import from Excel
+     * Import from Excel with perangkat type
      */
     public function importExcel(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
-            'terminal_id' => 'required|integer'
+            'terminal_id' => 'required|integer',
+            'perangkat_id' => 'required|integer|exists:M_PERANGKAT,ID_PERANGKAT'
         ]);
 
-        $import = new InventarisImport($request->terminal_id);
+        $import = new InventarisImport($request->terminal_id, $request->perangkat_id);
         Excel::import($import, $request->file('file'));
 
         $results = $import->getResults();

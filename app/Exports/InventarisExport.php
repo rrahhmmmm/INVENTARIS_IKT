@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\T_inventaris;
+use App\Models\M_perangkat;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -11,10 +12,18 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 class InventarisExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping
 {
     protected $terminalId;
+    protected $perangkatId;
+    protected $perangkat;
+    protected $rowNumber = 0;
 
-    public function __construct($terminalId = null)
+    public function __construct($terminalId = null, $perangkatId = null)
     {
         $this->terminalId = $terminalId;
+        $this->perangkatId = $perangkatId;
+
+        if ($perangkatId) {
+            $this->perangkat = M_perangkat::find($perangkatId);
+        }
     }
 
     /**
@@ -22,10 +31,14 @@ class InventarisExport implements FromCollection, ShouldAutoSize, WithHeadings, 
      */
     public function collection()
     {
-        $query = T_inventaris::with(['merk', 'kondisi', 'instal', 'anggaran']);
+        $query = T_inventaris::with(['merk', 'kondisi', 'anggaran', 'perangkat']);
 
         if ($this->terminalId) {
             $query->where('ID_TERMINAL', $this->terminalId);
+        }
+
+        if ($this->perangkatId) {
+            $query->where('ID_PERANGKAT', $this->perangkatId);
         }
 
         return $query->get();
@@ -33,50 +46,59 @@ class InventarisExport implements FromCollection, ShouldAutoSize, WithHeadings, 
 
     public function headings(): array
     {
-        return [
+        // Common mandatory headers
+        $headers = [
             'NO',
-            'MODEL',
+            'JENIS PERANGKAT',
+            'MERK',
             'TIPE',
-            'SERIAL NUMBER',
-            'TAHUN PENGADAAN',
-            'KAPASITAS PROSESSOR',
-            'MEMORI UTAMA',
-            'KAPASITAS PENYIMPANAN',
-            'SISTEM OPERASI',
-            'USER',
             'LOKASI/POSISI',
+            'TAHUN PENGADAAN',
             'KONDISI',
-            'KETERANGAN',
-            'TERINSTALL AV',
             'MATA ANGGARAN',
-            'KETERANGAN ASSET',
-            'DIBUAT OLEH'
         ];
+
+        // Add dynamic param headers based on perangkat
+        if ($this->perangkat) {
+            for ($i = 1; $i <= 16; $i++) {
+                $fieldName = $this->perangkat->{"param$i"};
+                if (!empty($fieldName)) {
+                    $headers[] = strtoupper($fieldName);
+                }
+            }
+        }
+
+        $headers[] = 'DIBUAT OLEH';
+        return $headers;
     }
 
     public function map($inventaris): array
     {
-        static $no = 0;
-        $no++;
+        $this->rowNumber++;
 
-        return [
-            $no,
+        // Common mandatory fields
+        $row = [
+            $this->rowNumber,
+            $inventaris->perangkat->NAMA_PERANGKAT ?? '-',
             $inventaris->merk->NAMA_MERK ?? '-',
             $inventaris->TIPE ?? '-',
-            $inventaris->SERIAL_NUMBER ?? '-',
-            $inventaris->TAHUN_PENGADAAN ?? '-',
-            $inventaris->KAPASITAS_PROSESSOR ?? '-',
-            $inventaris->MEMORI_UTAMA ?? '-',
-            $inventaris->KAPASITAS_PENYIMPANAN ?? '-',
-            $inventaris->SISTEM_OPERASI ?? '-',
-            $inventaris->USER_PENANGGUNG ?? '-',
             $inventaris->LOKASI_POSISI ?? '-',
+            $inventaris->TAHUN_PENGADAAN ?? '-',
             $inventaris->kondisi->NAMA_KONDISI ?? '-',
-            $inventaris->KETERANGAN ?? '-',
-            $inventaris->instal->NAMA_INSTAL ?? '-',
             $inventaris->anggaran->NAMA_ANGGARAN ?? '-',
-            $inventaris->KETERANGAN_ASSET ?? '-',
-            $inventaris->CREATE_BY ?? '-'
         ];
+
+        // Add param values
+        if ($this->perangkat) {
+            for ($i = 1; $i <= 16; $i++) {
+                $fieldName = $this->perangkat->{"param$i"};
+                if (!empty($fieldName)) {
+                    $row[] = $inventaris->{"param$i"} ?? '-';
+                }
+            }
+        }
+
+        $row[] = $inventaris->CREATE_BY ?? '-';
+        return $row;
     }
 }

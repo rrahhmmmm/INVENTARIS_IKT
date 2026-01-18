@@ -16,7 +16,7 @@
 </head>
 <body class="bg-gray-100">
 
-@include('components.A_navbar')
+@include('components.TI_navbar')
 
 <script>
 (async () => {

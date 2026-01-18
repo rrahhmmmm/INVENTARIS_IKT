@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('KETERANGAN_SIMPAN', 15);
             $table->string('TIPE_RETENSI', 150)->nullable();
             $table->date('TANGGAL_RETENSI')->nullable();
-            $table->string('MASA_INAKTIF')->nullable,50();
+            $table->string('MASA_INAKTIF', 50)->nullable();
             $table->date('TANGGAL_INAKTIF')->nullable();
             $table->string('KETERANGAN_INAKTIF')->nullable();
             $table->string('KETERANGAN', 255)->nullable();

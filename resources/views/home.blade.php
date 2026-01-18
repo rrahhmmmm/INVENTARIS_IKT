@@ -50,7 +50,7 @@
     </div>
 
     <div class="relative z-10 min-h-full flex items-center justify-center p-6">
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl w-full mt-52">
+      <div class="flex justify-center max-w-4xl w-full mt-52">
 
         <!-- Card Inventaris -->
         <a 
@@ -67,11 +67,11 @@
           <p class="text-white text-center opacity-90">Anda tidak memiliki akses ke menu ini.</p>
         </a>
 
-        <!-- Card Arsip -->
-        <a 
+        <!-- Card Arsip (Hidden for now) -->
+        {{-- <a
           id="cardArsip"
           href="#"
-          class="group relative bg-gray-400 cursor-not-allowed opacity-70 
+          class="group relative bg-gray-400 cursor-not-allowed opacity-70
               rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center transition transform">
           <div class="bg-gray-200 text-gray-500 rounded-full p-6 mb-4 transition">
             <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@
           </div>
           <h2 class="text-2xl font-semibold mb-2 text-white">ARSIP</h2>
           <p class="text-white text-center opacity-90">Anda tidak memiliki akses ke menu ini.</p>
-        </a>
+        </a> --}}
 
       </div>
     </div>
@@ -119,7 +119,7 @@
     const allowed = ['ADMIN', 'USER'].includes(role);
 
     const cardInventaris = document.getElementById('cardInventaris');
-    const cardArsip = document.getElementById('cardArsip');
+    // const cardArsip = document.getElementById('cardArsip'); // Hidden for now
 
     if (allowed) {
       // aktifkan kartu inventaris
@@ -130,13 +130,13 @@
       cardInventaris.querySelector('div').classList.add('bg-white', 'text-[#224E9F]', 'group-hover:bg-[#1b3f80]', 'group-hover:text-white');
       cardInventaris.querySelector('p').textContent = 'Kelola data barang dan aset perusahaan dengan mudah.';
 
-      // aktifkan kartu arsip
-      cardArsip.href = '/dashboard';
-      cardArsip.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-70');
-      cardArsip.classList.add('bg-[#224E9F]', 'cursor-pointer', 'hover:-translate-y-2', 'hover:shadow-2xl', 'hover:bg-[#1b3f80]');
-      cardArsip.querySelector('div').classList.remove('bg-gray-200', 'text-gray-500');
-      cardArsip.querySelector('div').classList.add('bg-white', 'text-[#224E9F]', 'group-hover:bg-[#1b3f80]', 'group-hover:text-white');
-      cardArsip.querySelector('p').textContent = 'Akses dan kelola dokumen arsip secara cepat dan aman.';
+      // aktifkan kartu arsip (Hidden for now)
+      // cardArsip.href = '/dashboard';
+      // cardArsip.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-70');
+      // cardArsip.classList.add('bg-[#224E9F]', 'cursor-pointer', 'hover:-translate-y-2', 'hover:shadow-2xl', 'hover:bg-[#1b3f80]');
+      // cardArsip.querySelector('div').classList.remove('bg-gray-200', 'text-gray-500');
+      // cardArsip.querySelector('div').classList.add('bg-white', 'text-[#224E9F]', 'group-hover:bg-[#1b3f80]', 'group-hover:text-white');
+      // cardArsip.querySelector('p').textContent = 'Akses dan kelola dokumen arsip secara cepat dan aman.';
     }
 
   } catch (err) {

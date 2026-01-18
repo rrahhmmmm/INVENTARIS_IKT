@@ -97,10 +97,6 @@ Route::get('arsip', function () {
     });
 
     // Master Inventaris routes
-    Route::get('/instal', function () {
-        return view('instal');
-    })->name('instal');
-
     Route::get('/anggaran', function () {
         return view('anggaran');
     })->name('anggaran');
@@ -108,5 +104,9 @@ Route::get('arsip', function () {
     Route::get('/merk', function () {
         return view('merk');
     })->name('merk');
+
+    Route::get('/perangkat', function () {
+        return view('perangkat');
+    })->name('perangkat');
 
     Route::get('/dashboard-inventaris', [DashboardInventarisController::class, 'index'])->name('dashboard-inventaris');
