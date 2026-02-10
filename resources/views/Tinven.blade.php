@@ -460,8 +460,31 @@ perangkatFilter.addEventListener('change', function() {
 // ==== Download File with Auth Token ====
 async function downloadWithAuth(url, filename) {
     try {
+        // Cek token exists
+        if (!token) {
+            showToast('Sesi telah berakhir, silakan login kembali', 'error');
+            window.location.href = "/";
+            return;
+        }
+
+        // Validasi token dengan memanggil /api/me terlebih dahulu
+        const authCheck = await fetch('/api/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (authCheck.status === 401) {
+            localStorage.removeItem('auth_token');
+            showToast('Sesi telah berakhir, silakan login kembali', 'error');
+            window.location.href = "/";
+            return;
+        }
+
         showToast('Sedang mengunduh file...', 'success');
 
+        // Token valid, lanjutkan export
         const response = await fetch(url, {
             method: 'GET',
             headers: {
