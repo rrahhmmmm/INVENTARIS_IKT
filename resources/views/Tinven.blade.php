@@ -116,9 +116,9 @@
         <button id="addInventarisBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
           <i class="fas fa-plus"></i> <span>Tambah Inventaris</span>
         </button>
-        <a id="exportExcelBtn" href="#" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
+        <button id="exportExcelBtn" type="button" class="bg-green-600 hover:bg-green-700 text-white px-3 md:px-4 py-2 rounded-lg flex items-center space-x-2 text-sm md:text-base">
           <span>Export Excel</span> <i class="fas fa-file-excel"></i>
-        </a>
+        </button>
       </div>
       <input type="text" id="searchInput" placeholder="Cari inventaris..." class="border rounded-lg px-3 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
     </div>
@@ -266,9 +266,9 @@
     <!-- Import Excel -->
     <div class="border-t mt-6 pt-4">
       <h4 class="text-md font-semibold mb-3">Tambah Data Dengan Excel</h4>
-      <a id="downloadTemplateBtn" href="#" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3">
+      <button id="downloadTemplateBtn" type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 mb-3 w-full">
         <span>Download Template</span> <i class="fas fa-download"></i>
-      </a>
+      </button>
       <form id="importForm" class="flex flex-col md:flex-row items-start md:items-center gap-2">
         <input type="file" name="file" id="importFile" class="border px-2 py-1 rounded" required>
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
@@ -457,13 +457,65 @@ perangkatFilter.addEventListener('change', function() {
     loadInventaris("", 1);
 });
 
-// ==== Update Export URLs ====
-function updateExportUrls() {
-    const baseExportUrl = `/api/inventaris/export?terminal_id=${terminalId}&perangkat_id=${selectedPerangkatId}`;
-    const baseTemplateUrl = `/api/inventaris/export-template?perangkat_id=${selectedPerangkatId}`;
+// ==== Download File with Auth Token ====
+async function downloadWithAuth(url, filename) {
+    try {
+        showToast('Sedang mengunduh file...', 'success');
 
-    exportExcelBtn.href = baseExportUrl;
-    downloadTemplateBtn.href = baseTemplateUrl;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Download failed');
+        }
+
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+
+        showToast('File berhasil didownload', 'success');
+    } catch (error) {
+        console.error('Download error:', error);
+        showToast('Gagal download file', 'error');
+    }
+}
+
+// ==== Event Listener untuk Export dan Download Template ====
+exportExcelBtn.addEventListener('click', function() {
+    if (!selectedPerangkatId) {
+        showToast('Pilih jenis perangkat terlebih dahulu', 'error');
+        return;
+    }
+    const url = `/api/inventaris/export?terminal_id=${terminalId}&perangkat_id=${selectedPerangkatId}`;
+    const perangkatName = selectedPerangkat?.NAMA_PERANGKAT?.replace(/\s+/g, '_') || selectedPerangkatId;
+    downloadWithAuth(url, `inventaris_${perangkatName}.xlsx`);
+});
+
+downloadTemplateBtn.addEventListener('click', function() {
+    if (!selectedPerangkatId) {
+        showToast('Pilih jenis perangkat terlebih dahulu', 'error');
+        return;
+    }
+    const url = `/api/inventaris/export-template?perangkat_id=${selectedPerangkatId}`;
+    const perangkatName = selectedPerangkat?.NAMA_PERANGKAT?.replace(/\s+/g, '_') || selectedPerangkatId;
+    downloadWithAuth(url, `template_inventaris_${perangkatName}.xlsx`);
+});
+
+// ==== Update Export URLs (deprecated - using event listeners now) ====
+function updateExportUrls() {
+    // No longer needed since we use event listeners with fetch
+    // Kept for backward compatibility
 }
 
 // ==== Render Table Headers ====

@@ -33,6 +33,10 @@ class InventarisImport implements ToCollection, WithHeadingRow
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
+            // Debug: Log column names to see how they're converted
+            \Log::info('Import row keys: ' . json_encode($row->keys()->toArray()));
+            \Log::info('Import row data: ' . json_encode($row->toArray()));
+
             // Skip empty rows - check mandatory fields
             if (empty($row['tipe']) && empty($row['lokasi_posisi'])) {
                 $this->skipped++;
@@ -54,18 +58,27 @@ class InventarisImport implements ToCollection, WithHeadingRow
                 ];
 
                 // Map param columns from Excel
-                // Excel columns are named like "param1 (serial number)" or just "param1"
+                // WithHeadingRow converts headers - need to match various patterns
                 for ($i = 1; $i <= 16; $i++) {
                     $paramKey = "param{$i}";
+                    $value = null;
 
-                    // Try different column naming patterns
+                    // Try direct access first (exact match after conversion)
                     foreach ($row->keys() as $colName) {
-                        $colNameLower = strtolower($colName);
-                        // Match "param1", "param1 (serial number)", etc.
-                        if (preg_match("/^param{$i}(\s|$|\()/i", $colNameLower)) {
-                            $data[$paramKey] = $row[$colName] ?? null;
+                        $colNameStr = strtolower(trim((string)$colName));
+
+                        // Check if column starts with "param{i}" followed by nothing, space, underscore, or parenthesis
+                        if ($colNameStr === "param{$i}" ||
+                            strpos($colNameStr, "param{$i}_") === 0 ||
+                            strpos($colNameStr, "param{$i} ") === 0 ||
+                            strpos($colNameStr, "param{$i}(") === 0) {
+                            $value = $row[$colName];
                             break;
                         }
+                    }
+
+                    if ($value !== null && $value !== '') {
+                        $data[$paramKey] = $value;
                     }
                 }
 

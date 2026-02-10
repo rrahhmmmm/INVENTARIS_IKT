@@ -153,6 +153,27 @@
         <input type="text" id="createBy" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100 text-gray-600">
       </div>
 
+      <!-- Field Wajib Section (Readonly Info) -->
+      <div class="border-t pt-4 mt-4">
+        <h4 class="text-md font-semibold mb-2 text-gray-700">
+          Field Wajib Inventaris
+          <span class="text-gray-400 text-sm font-normal">(Otomatis ada di form inventaris)</span>
+        </h4>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <div class="flex flex-wrap gap-2">
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Terminal</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Jenis Perangkat</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Merek/Brand</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Tipe/Model</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Tahun Pengadaan</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Lokasi/Posisi</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Kondisi</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">Anggaran</span>
+          </div>
+          <p class="text-gray-500 text-xs mt-2">Field di atas akan selalu muncul di form inventaris untuk semua jenis perangkat.</p>
+        </div>
+      </div>
+
       <!-- Field Configuration Section -->
       <div class="border-t pt-4 mt-4">
         <h4 class="text-md font-semibold mb-3 text-gray-700">
@@ -226,6 +247,7 @@
         </div>
         <p class="text-gray-500 text-xs mt-2">Kosongkan field yang tidak diperlukan. Field yang berisi "KETERANGAN" akan tampil sebagai textarea.</p>
       </div>
+
 
       <div class="flex flex-col md:flex-row gap-3 mt-4">
         <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg">
