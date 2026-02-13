@@ -4,6 +4,9 @@ namespace App\Imports;
 
 use App\Models\T_inventaris;
 use App\Models\M_perangkat;
+use App\Models\M_merk;
+use App\Models\M_kondisi;
+use App\Models\M_anggaran;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -44,16 +47,49 @@ class InventarisImport implements ToCollection, WithHeadingRow
             }
 
             try {
+                // Lookup MERK: coba dengan nama dulu, fallback ke ID
+                $merkId = null;
+                $merkValue = $row['merk'] ?? $row['id_merk'] ?? null;
+                if (!empty($merkValue)) {
+                    if (is_numeric($merkValue)) {
+                        $merkId = $merkValue;
+                    } else {
+                        $merkId = M_merk::where('NAMA_MERK', $merkValue)->value('ID_MERK');
+                    }
+                }
+
+                // Lookup KONDISI: coba dengan nama dulu, fallback ke ID
+                $kondisiId = null;
+                $kondisiValue = $row['kondisi'] ?? $row['id_kondisi'] ?? null;
+                if (!empty($kondisiValue)) {
+                    if (is_numeric($kondisiValue)) {
+                        $kondisiId = $kondisiValue;
+                    } else {
+                        $kondisiId = M_kondisi::where('NAMA_KONDISI', $kondisiValue)->value('ID_KONDISI');
+                    }
+                }
+
+                // Lookup ANGGARAN: coba dengan nama dulu, fallback ke ID
+                $anggaranId = null;
+                $anggaranValue = $row['anggaran'] ?? $row['id_anggaran'] ?? null;
+                if (!empty($anggaranValue)) {
+                    if (is_numeric($anggaranValue)) {
+                        $anggaranId = $anggaranValue;
+                    } else {
+                        $anggaranId = M_anggaran::where('NAMA_ANGGARAN', $anggaranValue)->value('ID_ANGGARAN');
+                    }
+                }
+
                 // Create inventory record with mandatory fields
                 $data = [
                     'ID_TERMINAL' => $this->terminalId,
                     'ID_PERANGKAT' => $this->perangkatId,
-                    'ID_MERK' => $row['id_merk'] ?? null,
+                    'ID_MERK' => $merkId,
                     'TIPE' => $row['tipe'] ?? null,
                     'LOKASI_POSISI' => $row['lokasi_posisi'] ?? null,
                     'TAHUN_PENGADAAN' => $row['tahun_pengadaan'] ?? null,
-                    'ID_KONDISI' => $row['id_kondisi'] ?? null,
-                    'ID_ANGGARAN' => $row['id_anggaran'] ?? null,
+                    'ID_KONDISI' => $kondisiId,
+                    'ID_ANGGARAN' => $anggaranId,
                     'CREATE_BY' => auth()->user()->username ?? 'system'
                 ];
 
