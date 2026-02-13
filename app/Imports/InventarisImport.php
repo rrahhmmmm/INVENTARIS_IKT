@@ -80,13 +80,32 @@ class InventarisImport implements ToCollection, WithHeadingRow
                     }
                 }
 
+                $lokasiPosisi = $row['lokasi_posisi'] ?? null;
+
+                // Cek duplikasi berdasarkan Lokasi
+                if (!empty($lokasiPosisi)) {
+                    $exists = T_inventaris::where('ID_TERMINAL', $this->terminalId)
+                        ->where('ID_PERANGKAT', $this->perangkatId)
+                        ->where('LOKASI_POSISI', $lokasiPosisi)
+                        ->exists();
+
+                    if ($exists) {
+                        $this->errors[] = [
+                            'row' => $row->toArray(),
+                            'error' => "Data duplikat: Lokasi '{$lokasiPosisi}' sudah ada"
+                        ];
+                        $this->skipped++;
+                        continue;
+                    }
+                }
+
                 // Create inventory record with mandatory fields
                 $data = [
                     'ID_TERMINAL' => $this->terminalId,
                     'ID_PERANGKAT' => $this->perangkatId,
                     'ID_MERK' => $merkId,
                     'TIPE' => $row['tipe'] ?? null,
-                    'LOKASI_POSISI' => $row['lokasi_posisi'] ?? null,
+                    'LOKASI_POSISI' => $lokasiPosisi,
                     'TAHUN_PENGADAAN' => $row['tahun_pengadaan'] ?? null,
                     'ID_KONDISI' => $kondisiId,
                     'ID_ANGGARAN' => $anggaranId,
