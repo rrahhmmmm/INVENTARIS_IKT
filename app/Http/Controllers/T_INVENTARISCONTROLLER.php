@@ -44,7 +44,7 @@ class T_INVENTARISCONTROLLER extends Controller
         }
 
         $perPage = $request->input('per_page', 10);
-        return response()->json($query->orderBy('ID_INVENTARIS', 'desc')->paginate($perPage));
+        return response()->json($query->orderBy('ID_INVENTARIS', 'asc')->paginate($perPage));
     }
 
     /**
