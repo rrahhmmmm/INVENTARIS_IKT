@@ -70,6 +70,11 @@ class M_PERANGKATCONTROLLER extends Controller
                 }
             }
 
+            // Add duplicate_check_field
+            if ($request->has('duplicate_check_field')) {
+                $data['duplicate_check_field'] = $request->input('duplicate_check_field') ?: null;
+            }
+
             $perangkat = M_perangkat::create($data);
 
             return response()->json([
@@ -119,6 +124,11 @@ class M_PERANGKATCONTROLLER extends Controller
                 if ($request->has($paramKey)) {
                     $data[$paramKey] = $request->input($paramKey);
                 }
+            }
+
+            // Update duplicate_check_field
+            if ($request->has('duplicate_check_field')) {
+                $data['duplicate_check_field'] = $request->input('duplicate_check_field') ?: null;
             }
 
             $perangkat->update($data);

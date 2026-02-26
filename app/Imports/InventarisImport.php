@@ -82,20 +82,44 @@ class InventarisImport implements ToCollection, WithHeadingRow
 
                 $lokasiPosisi = $row['lokasi_posisi'] ?? null;
 
-                // Cek duplikasi berdasarkan Lokasi
-                if (!empty($lokasiPosisi)) {
-                    $exists = T_inventaris::where('ID_TERMINAL', $this->terminalId)
-                        ->where('ID_PERANGKAT', $this->perangkatId)
-                        ->where('LOKASI_POSISI', $lokasiPosisi)
-                        ->exists();
+                // Cek duplikasi berdasarkan field yang dikonfigurasi di master perangkat
+                $duplicateField = $this->perangkat ? $this->perangkat->getDuplicateCheckField() : null;
 
-                    if ($exists) {
-                        $this->errors[] = [
-                            'row' => $row->toArray(),
-                            'error' => "Data duplikat: Lokasi '{$lokasiPosisi}' sudah ada"
-                        ];
-                        $this->skipped++;
-                        continue;
+                if ($duplicateField) {
+                    $checkValue = null;
+
+                    if ($duplicateField === 'LOKASI_POSISI') {
+                        $checkValue = $lokasiPosisi;
+                    } else {
+                        // Cari nilai dari kolom param di Excel
+                        $paramNum = substr($duplicateField, 5); // param1 -> 1
+                        foreach ($row->keys() as $colName) {
+                            $colNameStr = strtolower(trim((string)$colName));
+                            if ($colNameStr === "param{$paramNum}" ||
+                                strpos($colNameStr, "param{$paramNum}_") === 0 ||
+                                strpos($colNameStr, "param{$paramNum} ") === 0 ||
+                                strpos($colNameStr, "param{$paramNum}(") === 0) {
+                                $checkValue = $row[$colName];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!empty($checkValue)) {
+                        $exists = T_inventaris::where('ID_TERMINAL', $this->terminalId)
+                            ->where('ID_PERANGKAT', $this->perangkatId)
+                            ->where($duplicateField, $checkValue)
+                            ->exists();
+
+                        if ($exists) {
+                            $fieldLabel = $this->perangkat->getDuplicateCheckLabel() ?? $duplicateField;
+                            $this->errors[] = [
+                                'row' => $row->toArray(),
+                                'error' => "Data duplikat: {$fieldLabel} '{$checkValue}' sudah ada"
+                            ];
+                            $this->skipped++;
+                            continue;
+                        }
                     }
                 }
 

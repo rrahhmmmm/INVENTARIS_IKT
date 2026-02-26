@@ -248,6 +248,20 @@
         <p class="text-gray-500 text-xs mt-2">Kosongkan field yang tidak diperlukan. Field yang berisi "KETERANGAN" akan tampil sebagai textarea.</p>
       </div>
 
+      <!-- Duplicate Check Field Section -->
+      <div class="border-t pt-4 mt-4">
+        <h4 class="text-md font-semibold mb-3 text-gray-700">
+          Pengaturan Import Excel
+        </h4>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Field Cek Duplikat</label>
+          <select id="duplicateCheckField" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <option value="">Tidak ada pengecekan duplikat</option>
+            <option value="LOKASI_POSISI">Lokasi/Posisi</option>
+          </select>
+          <p class="text-gray-500 text-xs mt-1">Pilih field yang digunakan untuk mendeteksi data duplikat saat import Excel. Jika tidak dipilih, semua data akan di-import tanpa pengecekan duplikat.</p>
+        </div>
+      </div>
 
       <div class="flex flex-col md:flex-row gap-3 mt-4">
         <button type="button" id="cancelBtn" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg">
@@ -372,8 +386,9 @@ async function loadPerangkat(keyword = "", page = 1) {
                     <td class="px-6 py-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">${item.KODE_PERANGKAT}</span></td>
                     <td class="px-6 py-4">${item.CREATE_BY ?? '-'}</td>
                     <td class="px-6 py-4 text-center space-x-2">
-                        <button onclick="editPerangkat(${item.ID_PERANGKAT})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                        <button onclick="deletePerangkat(${item.ID_PERANGKAT})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                        <button onclick="viewInventaris(${item.ID_PERANGKAT})" class="text-green-600 hover:text-green-800" title="Lihat Inventaris"><i class="fas fa-eye"></i></button>
+                        <button onclick="editPerangkat(${item.ID_PERANGKAT})" class="text-blue-600 hover:text-blue-800" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="deletePerangkat(${item.ID_PERANGKAT})" class="text-red-600 hover:text-red-800" title="Hapus"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `;
@@ -466,6 +481,39 @@ async function loadUsername() {
     }
 }
 
+// ==== Update Duplicate Check Field Options ====
+function updateDuplicateCheckOptions() {
+    const select = document.getElementById("duplicateCheckField");
+    const currentValue = select.value;
+
+    // Reset options
+    select.innerHTML = `
+        <option value="">Tidak ada pengecekan duplikat</option>
+        <option value="LOKASI_POSISI">Lokasi/Posisi</option>
+    `;
+
+    // Add param options based on filled fields
+    for (let i = 1; i <= 16; i++) {
+        const paramValue = document.getElementById(`param${i}`).value.trim();
+        if (paramValue) {
+            const option = document.createElement("option");
+            option.value = `param${i}`;
+            option.textContent = paramValue;
+            select.appendChild(option);
+        }
+    }
+
+    // Restore previous selection if still valid
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+// Add listeners to param fields to update dropdown
+for (let i = 1; i <= 16; i++) {
+    document.getElementById(`param${i}`).addEventListener("input", updateDuplicateCheckOptions);
+}
+
 // ==== Add Modal ====
 addBtn.addEventListener("click", () => {
     modal.classList.add("show");
@@ -477,6 +525,10 @@ addBtn.addEventListener("click", () => {
     for (let i = 1; i <= 16; i++) {
         document.getElementById(`param${i}`).value = "";
     }
+
+    // Reset duplicate check field
+    document.getElementById("duplicateCheckField").value = "";
+    updateDuplicateCheckOptions();
 
     namaError.classList.add("hidden");
     kodeError.classList.add("hidden");
@@ -528,6 +580,9 @@ form.addEventListener("submit", async function(e) {
         const paramValue = document.getElementById(`param${i}`).value.trim();
         payload[`param${i}`] = paramValue || null;
     }
+
+    // Add duplicate_check_field
+    payload.duplicate_check_field = document.getElementById("duplicateCheckField").value || null;
 
     try {
         let res;
@@ -588,6 +643,10 @@ async function editPerangkat(id) {
             document.getElementById(`param${i}`).value = data[`param${i}`] || "";
         }
 
+        // Update dropdown options first, then set value
+        updateDuplicateCheckOptions();
+        document.getElementById("duplicateCheckField").value = data.duplicate_check_field || "";
+
         namaError.classList.add("hidden");
         kodeError.classList.add("hidden");
         namaInput.classList.remove("border-red-500");
@@ -596,6 +655,11 @@ async function editPerangkat(id) {
         console.error(err);
         showToast("Gagal memuat data edit", "error");
     }
+}
+
+// ==== View Inventaris (redirect ke halaman inventaris dengan filter perangkat) ====
+function viewInventaris(perangkatId) {
+    window.location.href = `/inventaris?perangkat_id=${perangkatId}`;
 }
 
 // ==== Delete Perangkat ====

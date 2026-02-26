@@ -21,7 +21,8 @@ class M_perangkat extends Model
         'STATUS',
         'param1', 'param2', 'param3', 'param4', 'param5', 'param6',
         'param7', 'param8', 'param9', 'param10', 'param11', 'param12',
-        'param13', 'param14', 'param15', 'param16'
+        'param13', 'param14', 'param15', 'param16',
+        'duplicate_check_field'
     ];
 
     /**
@@ -94,5 +95,29 @@ class M_perangkat extends Model
     public function inventaris()
     {
         return $this->hasMany(T_inventaris::class, 'ID_PERANGKAT', 'ID_PERANGKAT');
+    }
+
+    /**
+     * Get the field used for duplicate checking during import
+     * Returns null if no duplicate check is configured
+     */
+    public function getDuplicateCheckField(): ?string
+    {
+        return $this->duplicate_check_field ?: null;
+    }
+
+    /**
+     * Get the label for the duplicate check field
+     * Returns null if no duplicate check is configured
+     */
+    public function getDuplicateCheckLabel(): ?string
+    {
+        $field = $this->getDuplicateCheckField();
+        if (!$field) return null;
+        if ($field === 'LOKASI_POSISI') return 'Lokasi/Posisi';
+
+        // Get label from param field
+        $paramValue = $this->{$field};
+        return $paramValue ?: $field;
     }
 }
