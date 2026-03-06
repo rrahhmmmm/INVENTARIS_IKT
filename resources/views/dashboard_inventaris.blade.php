@@ -17,13 +17,22 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Inventaris</h1>
 
-            <!-- Filter Dropdown -->
-            <div class="flex items-center gap-3">
-                <label for="filterPerangkat" class="text-sm font-medium text-gray-600">Filter Perangkat:</label>
-                <select id="filterPerangkat"
-                    class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[200px]">
-                    <option value="">Semua Perangkat</option>
-                </select>
+            <!-- Filter Dropdowns -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <label for="filterPerangkat" class="text-sm font-medium text-gray-600">Perangkat:</label>
+                    <select id="filterPerangkat"
+                        class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[180px]">
+                        <option value="">Semua Perangkat</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="filterTerminal" class="text-sm font-medium text-gray-600">Terminal:</label>
+                    <select id="filterTerminal"
+                        class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[180px]">
+                        <option value="">Semua Terminal</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -192,6 +201,7 @@
 
         // Current filter
         let currentPerangkatId = '';
+        let currentTerminalId = '';
 
         // Fetch with auth
         async function fetchWithAuth(url) {
@@ -225,14 +235,38 @@
             }
         }
 
+        // Load terminal options for filter
+        async function loadTerminalOptions() {
+            try {
+                const data = await fetchWithAuth('/api/m_terminal');
+                const select = document.getElementById('filterTerminal');
+
+                data.forEach(terminal => {
+                    const option = document.createElement('option');
+                    option.value = terminal.ID_TERMINAL;
+                    option.textContent = terminal.NAMA_TERMINAL;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading terminal options:', error);
+            }
+        }
+
         // Load dashboard data
         async function loadDashboard() {
             try {
                 document.getElementById('loadingOverlay').classList.remove('hidden');
 
                 let url = '/api/dashboard-inventaris/statistics';
+                const params = new URLSearchParams();
                 if (currentPerangkatId) {
-                    url += `?perangkat_id=${currentPerangkatId}`;
+                    params.append('perangkat_id', currentPerangkatId);
+                }
+                if (currentTerminalId) {
+                    params.append('terminal_id', currentTerminalId);
+                }
+                if (params.toString()) {
+                    url += '?' + params.toString();
                 }
 
                 const data = await fetchWithAuth(url);
@@ -437,7 +471,7 @@
                 }
             });
 
-            const labels = Object.keys(masihBaik).sort().reverse();
+            const labels = Object.keys(masihBaik).sort();
             if (butuhUpdate > 0) {
                 labels.push('Butuh Pembaharuan (>' + (new Date().getFullYear() - 5) + ')');
             }
@@ -520,9 +554,15 @@
             loadDashboard();
         });
 
+        document.getElementById('filterTerminal').addEventListener('change', function() {
+            currentTerminalId = this.value;
+            loadDashboard();
+        });
+
         // Initialize
         document.addEventListener('DOMContentLoaded', async function() {
             await loadPerangkatOptions();
+            await loadTerminalOptions();
             await loadDashboard();
         });
     </script>
