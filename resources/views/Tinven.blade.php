@@ -82,9 +82,11 @@
 
 <!-- Main Content -->
 <main class="container mx-auto px-3 md:px-6 py-6 flex-1">
-  <!-- Header -->
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-blue-600">Data Inventaris - {{ $nama_terminal }}</h1>
+  <!-- Header with Terminal Selector -->
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <h1 class="text-2xl font-bold text-blue-600">Data Inventaris -  <select id="terminalSelector" class="px-4 py-2 border-2 border-blue-500 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white min-w-[200px] font-medium">
+        <option value="{{ $id_terminal }}">{{ $nama_terminal }}</option>
+      </select></h1>
   </div>
 
   <!-- Perangkat Filter (WAJIB dipilih) -->
@@ -288,7 +290,7 @@
 </div>
 
 <script>
-const terminalId = {{ $id_terminal }};
+let terminalId = {{ $id_terminal }};
 const apiUrl = "/api/t_inventaris";
 const tableBody = document.getElementById("inventarisTableBody");
 const tableHeaders = document.getElementById("tableHeaders");
@@ -319,6 +321,11 @@ const inventarisControls = document.getElementById("inventarisControls");
 const perangkatFilter = document.getElementById("perangkatFilter");
 const exportExcelBtn = document.getElementById("exportExcelBtn");
 const downloadTemplateBtn = document.getElementById("downloadTemplateBtn");
+const terminalSelector = document.getElementById("terminalSelector");
+const currentTerminalName = document.getElementById("currentTerminalName");
+
+// Terminal list
+let terminalList = [];
 
 // Pagination state
 let currentPage = 1;
@@ -370,6 +377,14 @@ async function loadPerangkatOptions() {
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         allSchemas = await schemasRes.json();
+
+        // Check URL parameter for perangkat_id and auto-select
+        const urlParams = new URLSearchParams(window.location.search);
+        const perangkatIdFromUrl = urlParams.get('perangkat_id');
+        if (perangkatIdFromUrl) {
+            perangkatFilter.value = perangkatIdFromUrl;
+            perangkatFilter.dispatchEvent(new Event('change'));
+        }
 
     } catch (err) {
         console.error('Error loading perangkat:', err);
@@ -1102,7 +1117,59 @@ document.getElementById("searchInput").addEventListener("input", function() {
     searchTimeout = setTimeout(() => loadInventaris(keyword, 1), 500);
 });
 
+// ==== Load Terminal Options ====
+async function loadTerminalOptions() {
+    try {
+        const res = await fetch('/api/m_terminal', {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        terminalList = data.data || data;
+
+        // Populate terminal dropdown
+        terminalSelector.innerHTML = '';
+        terminalList.forEach(item => {
+            const selected = item.ID_TERMINAL == terminalId ? 'selected' : '';
+            terminalSelector.innerHTML += `<option value="${item.ID_TERMINAL}" ${selected}>${item.NAMA_TERMINAL}</option>`;
+        });
+    } catch (err) {
+        console.error('Error loading terminal options:', err);
+    }
+}
+
+// ==== Handle Terminal Change ====
+terminalSelector.addEventListener('change', function() {
+    const newTerminalId = this.value;
+    const selectedTerminal = terminalList.find(t => t.ID_TERMINAL == newTerminalId);
+
+    if (newTerminalId && newTerminalId != terminalId) {
+        // Update terminal ID
+        terminalId = parseInt(newTerminalId);
+
+        // Update hidden form field
+        document.getElementById('terminalId').value = terminalId;
+
+        // Update header text
+        if (selectedTerminal) {
+            currentTerminalName.textContent = selectedTerminal.NAMA_TERMINAL;
+            document.title = `Data Inventaris - ${selectedTerminal.NAMA_TERMINAL}`;
+        }
+
+        // Reset perangkat selection and reload data
+        if (selectedPerangkatId) {
+            // Reset column filters
+            columnFilters = {};
+
+            // Reload data with new terminal
+            loadInventaris(lastSearchKeyword, 1);
+
+            showToast(`Terminal diubah ke ${selectedTerminal?.NAMA_TERMINAL || 'Terminal Baru'}`, 'success');
+        }
+    }
+});
+
 // ==== Initialize ====
+loadTerminalOptions();
 loadPerangkatOptions();
 loadDropdownOptions();
 </script>
