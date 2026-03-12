@@ -39,7 +39,7 @@
       <span>DASHBOARD</span>
     </a>
 
-    <a href="/perangkat"
+    <a href="/inventaris"
       class="w-full flex justify-between items-center px-3 py-2 rounded-md font-semibold hover:bg-blue-200">
       <span>TRANSAKSI</span>
     </a>
