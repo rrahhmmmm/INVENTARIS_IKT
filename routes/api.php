@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\M_terminalController;
+use App\Http\Controllers\M_TERMINALCONTROLLER;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\M_divisiController;
 use App\Http\Controllers\M_subdivisiController;
