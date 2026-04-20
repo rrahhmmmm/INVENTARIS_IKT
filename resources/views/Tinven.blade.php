@@ -281,6 +281,19 @@
   </div>
 </div>
 
+<!-- Confirm Terminal Modal -->
+<div id="confirmTerminalModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 max-w-sm mx-auto text-center">
+    <i class="fas fa-exchange-alt text-3xl text-blue-600 mb-3"></i>
+    <h3 class="text-lg font-semibold mb-2">Konfirmasi</h3>
+    <p id="confirmTerminalMsg" class="text-gray-600 mb-4"></p>
+    <div class="flex gap-3 justify-center">
+      <button id="confirmTerminalNo" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium">Tidak</button>
+      <button id="confirmTerminalYes" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">Ya</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 text-sm md:text-base">
   <div class="flex items-center space-x-2">
@@ -322,7 +335,7 @@ const perangkatFilter = document.getElementById("perangkatFilter");
 const exportExcelBtn = document.getElementById("exportExcelBtn");
 const downloadTemplateBtn = document.getElementById("downloadTemplateBtn");
 const terminalSelector = document.getElementById("terminalSelector");
-const currentTerminalName = document.getElementById("currentTerminalName");
+const confirmTerminalModal = document.getElementById("confirmTerminalModal");
 
 // Terminal list
 let terminalList = [];
@@ -1142,30 +1155,34 @@ terminalSelector.addEventListener('change', function() {
     const newTerminalId = this.value;
     const selectedTerminal = terminalList.find(t => t.ID_TERMINAL == newTerminalId);
 
-    if (newTerminalId && newTerminalId != terminalId) {
+    if (!newTerminalId || newTerminalId == terminalId) return;
+
+    // Show confirmation modal
+    document.getElementById('confirmTerminalMsg').textContent =
+        `Apakah anda yakin ingin pindah ke terminal ${selectedTerminal?.NAMA_TERMINAL || 'baru'}?`;
+    confirmTerminalModal.classList.add('show');
+
+    document.getElementById('confirmTerminalYes').onclick = function() {
+        confirmTerminalModal.classList.remove('show');
+
         // Update terminal ID
         terminalId = parseInt(newTerminalId);
-
-        // Update hidden form field
         document.getElementById('terminalId').value = terminalId;
+        document.title = `Data Inventaris - ${selectedTerminal?.NAMA_TERMINAL || ''}`;
 
-        // Update header text
-        if (selectedTerminal) {
-            currentTerminalName.textContent = selectedTerminal.NAMA_TERMINAL;
-            document.title = `Data Inventaris - ${selectedTerminal.NAMA_TERMINAL}`;
-        }
-
-        // Reset perangkat selection and reload data
+        // Reset column filters and reload data
+        columnFilters = {};
         if (selectedPerangkatId) {
-            // Reset column filters
-            columnFilters = {};
-
-            // Reload data with new terminal
             loadInventaris(lastSearchKeyword, 1);
-
-            showToast(`Terminal diubah ke ${selectedTerminal?.NAMA_TERMINAL || 'Terminal Baru'}`, 'success');
         }
-    }
+        showToast(`Terminal diubah ke ${selectedTerminal?.NAMA_TERMINAL || 'Terminal Baru'}`, 'success');
+    };
+
+    document.getElementById('confirmTerminalNo').onclick = function() {
+        confirmTerminalModal.classList.remove('show');
+        // Revert dropdown to current terminal
+        terminalSelector.value = terminalId;
+    };
 });
 
 // ==== Initialize ====
