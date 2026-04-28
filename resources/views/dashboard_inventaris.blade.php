@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen ml-64">
     @include('components.TI_navbar')
 
     <header class="bg-white shadow-lg h-16 md:h-20 w-full"></header>

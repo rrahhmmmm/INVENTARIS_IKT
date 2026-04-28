@@ -14,7 +14,7 @@
         .toast.show { transform: translateX(0); }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 ml-64">
 
 @include('components.TI_navbar')
 
