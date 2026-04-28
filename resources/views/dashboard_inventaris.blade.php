@@ -190,11 +190,12 @@
 
         // Device type colors (consistent)
         const perangkatColors = {
-            'PC/Laptop': 'rgba(59, 130, 246, 0.8)',      // blue
-            'Printer & Scan': 'rgba(245, 158, 11, 0.8)', // amber
-            'CCTV': 'rgba(139, 92, 246, 0.8)',           // purple
-            'Handheld (HENHEL)': 'rgba(16, 185, 129, 0.8)', // green
-            'AP (Access Point)': 'rgba(236, 72, 153, 0.8)'  // pink
+            'PC/Laptop': 'rgba(37, 99, 235, 0.9)',        // blue (lebih deep)
+            'Printer & Scan': 'rgba(249, 115, 22, 0.9)',  // orange (lebih beda dari kuning)
+            'CCTV': 'rgba(124, 58, 237, 0.9)',            // violet (lebih tegas)
+            'Handheld (HENHEL)': 'rgba(5, 150, 105, 0.9)',// emerald (lebih gelap)
+            'AP (Access Point)': 'rgba(219, 39, 119, 0.9)', // pink (lebih bold)
+            'Switch': 'rgba(234, 179, 8, 0.9)'  
         };
 
         const borderColors = colors.map(c => c.replace('0.8', '1'));
