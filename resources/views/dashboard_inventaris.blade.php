@@ -193,7 +193,7 @@
             'PC/Laptop': 'rgba(37, 99, 235, 0.9)',        // blue (lebih deep)
             'Printer & Scan': 'rgba(249, 115, 22, 0.9)',  // orange (lebih beda dari kuning)
             'CCTV': 'rgba(124, 58, 237, 0.9)',            // violet (lebih tegas)
-            'Handheld (HENHEL)': 'rgba(5, 150, 105, 0.9)',// emerald (lebih gelap)
+            'Handheld': 'rgba(5, 150, 105, 0.9)',// emerald (lebih gelap)
             'AP (Access Point)': 'rgba(219, 39, 119, 0.9)', // pink (lebih bold)
             'Switch': 'rgba(234, 179, 8, 0.9)'  
         };
