@@ -54,7 +54,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-gray-50">
+<body class="min-h-screen flex flex-col bg-gray-50 ml-64">
 
   @include('components.TI_navbar')
 

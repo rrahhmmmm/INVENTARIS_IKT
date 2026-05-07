@@ -98,10 +98,13 @@ class DashboardInventarisController extends Controller
             ->get();
 
         // Inventaris per Jenis Perangkat
-        $perPerangkat = T_inventaris::select('M_PERANGKAT.NAMA_PERANGKAT as nama', DB::raw('COUNT(*) as total'))
+        $perPerangkatQuery = T_inventaris::select('M_PERANGKAT.NAMA_PERANGKAT as nama', DB::raw('COUNT(*) as total'))
             ->join('M_PERANGKAT', 'T_INVENTARIS.ID_PERANGKAT', '=', 'M_PERANGKAT.ID_PERANGKAT')
-            ->where('T_INVENTARIS.STATUS', 1)
-            ->groupBy('T_INVENTARIS.ID_PERANGKAT', 'M_PERANGKAT.NAMA_PERANGKAT')
+            ->where('T_INVENTARIS.STATUS', 1);
+        if ($terminalId) {
+            $perPerangkatQuery->where('T_INVENTARIS.ID_TERMINAL', $terminalId);
+        }
+        $perPerangkat = $perPerangkatQuery->groupBy('T_INVENTARIS.ID_PERANGKAT', 'M_PERANGKAT.NAMA_PERANGKAT')
             ->orderBy('total', 'asc')
             ->get();
 

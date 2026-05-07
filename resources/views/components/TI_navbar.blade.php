@@ -8,17 +8,9 @@
 </head>
 <body class="flex bg-gray-100">
 
-  <!-- Tombol Toggle Sidebar -->
-  <button id="toggleSidebar" 
-    class="p-3 bg-white shadow-md fixed top-1/2 -translate-y-1/2 left-4 z-50 rounded-lg hover:bg-[#224E9F] 
-           transition-all duration-300">
-    ☰
-  </button>
-
   <!-- Sidebar -->
-  <aside id="sidebar" 
-  class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl transform -translate-x-full 
-         transition-transform duration-300 z-40 border-r-8 flex flex-col">
+  <aside id="sidebar"
+  class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-40 border-r-8 flex flex-col">
 
   <!-- Logo -->
   <div class="p-4 border-b shrink-0">
@@ -104,30 +96,6 @@
 
 
   <script>
-    let sidebarOpen = false;
-    
-    // Toggle Sidebar
-    const toggleSidebar = document.getElementById("toggleSidebar");
-    const sidebar = document.getElementById("sidebar");
-    const mainContent = document.getElementById("mainContent");
-
-    toggleSidebar.addEventListener("click", () => {
-      sidebar.classList.toggle("-translate-x-full");
-      if (mainContent) {
-        mainContent.classList.toggle("ml-64");
-      }
-
-      if (!sidebarOpen) {
-        toggleSidebar.classList.remove("left-4");
-        toggleSidebar.classList.add("left-[266px]");
-        sidebarOpen = true;
-      } else {
-        toggleSidebar.classList.remove("left-[266px]");
-        toggleSidebar.classList.add("left-4");
-        sidebarOpen = false;
-      }
-    });
-
     // Dropdown Master
     const masterBtn = document.getElementById("masterBtn");
     const masterMenu = document.getElementById("masterMenu");
