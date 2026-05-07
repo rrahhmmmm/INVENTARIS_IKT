@@ -294,6 +294,23 @@
   </div>
 </div>
 
+<!-- Delete All Confirmation Modal -->
+<div id="deleteAllModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 max-w-sm mx-auto text-center">
+    <i class="fas fa-exclamation-triangle text-3xl text-red-600 mb-3"></i>
+    <h3 class="text-lg font-semibold mb-2 text-red-600">Hapus Semua Data</h3>
+    <p id="deleteAllMsg" class="text-gray-600 mb-4"></p>
+    <label class="flex items-center justify-center gap-2 mb-4 cursor-pointer select-none">
+      <input type="checkbox" id="deleteAllCheckbox" class="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500">
+      <span class="text-sm text-gray-700">Saya yakin ingin menghapus semua data</span>
+    </label>
+    <div class="flex gap-3 justify-center">
+      <button id="deleteAllNo" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium">Tidak</button>
+      <button id="deleteAllYes" disabled class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed">Ya, Hapus Semua</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="toast fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 text-sm md:text-base">
   <div class="flex items-center space-x-2">
@@ -617,7 +634,7 @@ function renderTableHeaders() {
     headers += `
             <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="kondisi"></th>
             <th class="px-2 py-2"><input type="text" class="${filterInputClass}" placeholder="Cari..." data-column="anggaran"></th>
-            <th class="px-2 py-2"></th>
+            <th class="px-2 py-2 text-center"><button onclick="deleteAllInventaris()" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap" title="Hapus Semua Data"><i class="fas fa-trash"></i> Hapus Semua</button></th>
         </tr>
     `;
 
@@ -1183,6 +1200,60 @@ terminalSelector.addEventListener('change', function() {
         // Revert dropdown to current terminal
         terminalSelector.value = terminalId;
     };
+});
+
+// ==== Delete All Inventaris ====
+const deleteAllModal = document.getElementById('deleteAllModal');
+const deleteAllCheckbox = document.getElementById('deleteAllCheckbox');
+const deleteAllYesBtn = document.getElementById('deleteAllYes');
+
+function deleteAllInventaris() {
+    if (!selectedPerangkatId) {
+        showToast('Pilih jenis perangkat terlebih dahulu', 'error');
+        return;
+    }
+
+    const perangkatName = selectedPerangkat?.NAMA_PERANGKAT || 'ini';
+    document.getElementById('deleteAllMsg').textContent =
+        `Apakah anda yakin ingin menghapus SEMUA data ${perangkatName} di terminal ini?`;
+
+    deleteAllCheckbox.checked = false;
+    deleteAllYesBtn.disabled = true;
+    deleteAllModal.classList.add('show');
+}
+
+deleteAllCheckbox.addEventListener('change', function() {
+    deleteAllYesBtn.disabled = !this.checked;
+});
+
+document.getElementById('deleteAllNo').addEventListener('click', function() {
+    deleteAllModal.classList.remove('show');
+});
+
+deleteAllYesBtn.addEventListener('click', async function() {
+    deleteAllModal.classList.remove('show');
+
+    try {
+        const res = await fetch(`/api/t_inventaris-delete-all?terminal_id=${terminalId}&perangkat_id=${selectedPerangkatId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+            showToast(result.message || 'Semua data berhasil dihapus');
+            loadInventaris('', 1);
+        } else {
+            showToast(result.message || 'Gagal menghapus data', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Gagal menghapus data', 'error');
+    }
 });
 
 // ==== Initialize ====

@@ -187,6 +187,34 @@ class T_INVENTARISCONTROLLER extends Controller
     }
 
     /**
+     * Remove all inventaris by terminal and perangkat
+     */
+    public function destroyAll(Request $request)
+    {
+        try {
+            $request->validate([
+                'terminal_id' => 'required|integer',
+                'perangkat_id' => 'required|integer',
+            ]);
+
+            $deleted = T_inventaris::where('ID_TERMINAL', $request->terminal_id)
+                ->where('ID_PERANGKAT', $request->perangkat_id)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil menghapus {$deleted} data inventaris"
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Export to Excel with perangkat filter
      */
     public function exportExcel(Request $request)

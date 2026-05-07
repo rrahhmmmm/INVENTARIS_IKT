@@ -149,6 +149,7 @@ Route::middleware('auth:sanctum' )->group(function () {
     Route::get('/inventaris/export', [T_INVENTARISCONTROLLER::class, 'exportExcel']);
     Route::get('/inventaris/export-template', [T_INVENTARISCONTROLLER::class, 'exportTemplate']);
     Route::post('/inventaris/import', [T_INVENTARISCONTROLLER::class, 'importExcel']);
+    Route::delete('/t_inventaris-delete-all', [T_INVENTARISCONTROLLER::class, 'destroyAll']);
     Route::apiResource('t_inventaris', T_INVENTARISCONTROLLER::class);
 
     // Master data for dropdowns
